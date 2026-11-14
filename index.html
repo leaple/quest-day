@@ -730,7 +730,7 @@ document.getElementById("resetBtn").onclick = () => {
 
 if ("serviceWorker" in navigator &&
     location.protocol === "https:") {
-  navigator.serviceWorker.register("./sw.js?v=20261114-17").catch(console.error);
+  navigator.serviceWorker.register("./sw.js?v=20261114-18").catch(console.error);
 }
 
 render();
@@ -745,5 +745,6 @@ render();
   <script src="./upgrade-1.7-social.js?v=20261114-6" defer></script>
   <script src="./upgrade-1.9-cloud.js?v=20261114-16" defer></script>
   <script src="./upgrade-2.0-auth.js?v=20261114-17" defer></script>
+  <script src="./upgrade-2.1-mobile.js?v=20261114-18" defer></script>
 </body>
 </html>
