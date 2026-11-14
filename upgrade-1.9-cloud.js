@@ -104,7 +104,9 @@
    connected&&!enabled?
    '<button data-qd19="enable">내 모든 기록 클라우드 동기화 시작</button>':
    connected&&ready?
-   '<button data-qd19="sync" class="alt">지금 동기화</button>':"";
+   '<button data-qd19="sync" class="alt">지금 동기화</button>':
+   connected&&enabled&&!loading?
+   '<button data-qd19="retry" class="alt">연결 다시 시도</button>':"";
   panel.innerHTML='<h3>☁️ 계정 전체 데이터 동기화</h3>'+
    '<p>퀘스트·완료 기록·XP·골드 계산에 필요한 기록·구매 캐릭터·업적·설정까지 '+
    '<strong>현재 게임 저장 데이터 전체</strong>를 Supabase의 내 계정에 보관해요. '+
@@ -147,6 +149,9 @@
   dirty=!same(state,payload);
   ready=true;issue="";
   if(dirty)schedulePush();
+  if(bridge.isProfileSyncHeld?.()){
+   bridge.resumeProfileSync().catch(e=>{issue=explain(e);draw();});
+  }
   draw();
  }
  async function rpc(name,args){
@@ -181,7 +186,7 @@
    await reconcile(server,true);
    if(ready)subscribe();
   }catch(e){issue=explain(e);ready=false;}
-  finally{if(ticket===epoch){loading=false;draw();}}
+  finally{if(ticket===epoch){loading=false;if(dirty&&ready)schedulePush();draw();}}
  }
  function explain(e){
   const message=e?.message||String(e||"네트워크 오류");
@@ -259,7 +264,7 @@
    if(/SAVE_CONFLICT/.test(e?.message||"")){
     await pull();
    }else{dirty=true;issue=explain(e);}
-  }finally{writing=false;draw();if(dirty&&!blocked&&ready)schedulePush();}
+  }finally{writing=false;draw();/* transient retry handled by next poll */}
  }
  async function pull(){
   if(!enabled||!bridge.isReady()||loading||blocked)return;
@@ -272,7 +277,7 @@
     if(base&&!same(state,base)){dirty=true;schedulePush();}
    }else await reconcile(server);
   }catch(e){issue=explain(e);}
-  finally{if(ticket===epoch){loading=false;draw();}}
+  finally{if(ticket===epoch){loading=false;if(dirty&&ready)schedulePush();draw();}}
  }
  function subscribe(){
   clearInterval(poll);
@@ -326,7 +331,11 @@
   }finally{loading=false;draw();}
  }
  async function requestReset(){
-  if(!enabled||!ready||!bridge.isReady()){
+  if(enabled&&!ready){
+   status("클라우드 연결을 확인하거나 기록 충돌을 해결한 뒤 초기화할 수 있어요.");
+   return;
+  }
+  if(!enabled||!bridge.isReady()){
    if(!confirm("이 기기의 게임 기록을 초기화할까요? 서버 동기화가 설정되지 않았으므로 이 기기 기록만 변경돼요."))return;
    state={tasks:[],events:[]};saveState();render();return;
   }
@@ -352,6 +361,7 @@
   else if(action==="sync"){if(dirty)push();else pull();}
   else if(action==="remote")resolve(true);
   else if(action==="local")resolve(false);
+  else if(action==="retry")bootstrap();
  });
  const earlierSave=saveState;
  saveState=function(){earlierSave();localSaved();};
