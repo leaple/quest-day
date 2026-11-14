@@ -200,7 +200,7 @@
     const fallback=svgPortrait(character);
     // Uploaded art assets are optional: the SVG illustration remains visible if an asset is missing.
     const image='<img loading="lazy" decoding="async" src="./art/'+safe(id)+
-      '.png?v=2" alt="" onload="this.previousElementSibling.style.visibility=\'hidden\'" onerror="this.remove()">';
+      '.png?v=3" alt="" onload="this.previousElementSibling.style.visibility=\'hidden\'" onerror="this.remove()">';
     return '<div class="ch-art">'+fallback+image+'</div>';
   }
 
