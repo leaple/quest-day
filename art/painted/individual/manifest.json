@@ -1,0 +1,258 @@
+{
+  "width": 360,
+  "height": 450,
+  "artworks": [
+    {
+      "id": "hero_aren",
+      "stage": 1,
+      "file": "hero_aren-stage1.webp",
+      "size_bytes": 19386,
+      "sha256": "058356e7431e10c7fff8a97841f41e1a2bf59acbd8ccd9392877cad9a10656ca"
+    },
+    {
+      "id": "hero_aren",
+      "stage": 2,
+      "file": "hero_aren-stage2.webp",
+      "size_bytes": 33834,
+      "sha256": "563ea0d866360f1c8fcb101293821ddcd0477739ea97cf97c9910ef4444361c2"
+    },
+    {
+      "id": "hero_aren",
+      "stage": 3,
+      "file": "hero_aren-stage3.webp",
+      "size_bytes": 45468,
+      "sha256": "0f59811b4dbfaa10f06cf6fd8759498c01c0afff9090c05566018cdaa6682a30"
+    },
+    {
+      "id": "hero_lyra",
+      "stage": 1,
+      "file": "hero_lyra-stage1.webp",
+      "size_bytes": 23502,
+      "sha256": "e13101dd35dc1f6e6021001b225e3183438f351b41d391edacec80dd41435cb0"
+    },
+    {
+      "id": "hero_lyra",
+      "stage": 2,
+      "file": "hero_lyra-stage2.webp",
+      "size_bytes": 41404,
+      "sha256": "bc42f605d728a522b54fdaa4994d442cdaa08cec80c60fbe272c649be246acc3"
+    },
+    {
+      "id": "hero_lyra",
+      "stage": 3,
+      "file": "hero_lyra-stage3.webp",
+      "size_bytes": 49534,
+      "sha256": "5b35b409f96fe2a66879dbb3a8a60b10614cce6f925d971fa25a7664a89e0395"
+    },
+    {
+      "id": "hero_kyle",
+      "stage": 1,
+      "file": "hero_kyle-stage1.webp",
+      "size_bytes": 18808,
+      "sha256": "0f3fa4df4a5ef8d8b111d0bb0dc7bccbf6a2eb4b807b089052f8b65f9e0dfa51"
+    },
+    {
+      "id": "hero_kyle",
+      "stage": 2,
+      "file": "hero_kyle-stage2.webp",
+      "size_bytes": 31574,
+      "sha256": "240c2346dab6b6469ba79a49a7a27679383cd8d7b362b634a76018455424e688"
+    },
+    {
+      "id": "hero_kyle",
+      "stage": 3,
+      "file": "hero_kyle-stage3.webp",
+      "size_bytes": 44976,
+      "sha256": "7e1c1193e48fe3489c2ba709c3d1392be5194a587fcd2a2b778d081fbe621a3c"
+    },
+    {
+      "id": "hero_sera",
+      "stage": 1,
+      "file": "hero_sera-stage1.webp",
+      "size_bytes": 18368,
+      "sha256": "15ae3145bf588ffaeb0eb3e0a033c00e9dd3259f84c72c2b40d74748bc11423f"
+    },
+    {
+      "id": "hero_sera",
+      "stage": 2,
+      "file": "hero_sera-stage2.webp",
+      "size_bytes": 33614,
+      "sha256": "1d8ca9e6764084263dfd4c049de349bdcabbb58549641c50234e0209ff49c6f9"
+    },
+    {
+      "id": "hero_sera",
+      "stage": 3,
+      "file": "hero_sera-stage3.webp",
+      "size_bytes": 43738,
+      "sha256": "fbbaed742e8fb01b76a82ddccfb5bb3f5bc1e98d5c3391579c2c18b49d58a4af"
+    },
+    {
+      "id": "hero_zed",
+      "stage": 1,
+      "file": "hero_zed-stage1.webp",
+      "size_bytes": 16894,
+      "sha256": "3da8cca30786f415f1ccddbdcd350b417c93b46e711ffa07f5ca5b827a8e2385"
+    },
+    {
+      "id": "hero_zed",
+      "stage": 2,
+      "file": "hero_zed-stage2.webp",
+      "size_bytes": 28396,
+      "sha256": "f8451d1ab27e7c500f21ab12211dbcad6e0661e773aa1749922348231fedd49e"
+    },
+    {
+      "id": "hero_zed",
+      "stage": 3,
+      "file": "hero_zed-stage3.webp",
+      "size_bytes": 40390,
+      "sha256": "0d255c490929e9f2ffd4c9393f23473ee800215540dea8a2e52dc64126f6ed01"
+    },
+    {
+      "id": "hero_elin",
+      "stage": 1,
+      "file": "hero_elin-stage1.webp",
+      "size_bytes": 18864,
+      "sha256": "810d9972bae4c354349bc34575d408f4e49a19a727e51831f6f840ff03e68a99"
+    },
+    {
+      "id": "hero_elin",
+      "stage": 2,
+      "file": "hero_elin-stage2.webp",
+      "size_bytes": 32550,
+      "sha256": "b73f51cf2883ef83958e2011ce9d7a44ac99fa87fecc98955e5235cffa40ee8d"
+    },
+    {
+      "id": "hero_elin",
+      "stage": 3,
+      "file": "hero_elin-stage3.webp",
+      "size_bytes": 44904,
+      "sha256": "7bdbc50c0497b757816e9816e4ea486e7f1a18bad632a20d5c54e17a5adb6339"
+    },
+    {
+      "id": "hero_rohan",
+      "stage": 1,
+      "file": "hero_rohan-stage1.webp",
+      "size_bytes": 17296,
+      "sha256": "01e1ad5017d0a1cbf6db8fcaea0f0aff88dcf164c1babd3d497c547bc199688f"
+    },
+    {
+      "id": "hero_rohan",
+      "stage": 2,
+      "file": "hero_rohan-stage2.webp",
+      "size_bytes": 33870,
+      "sha256": "9f1ae3eb73385bf7ac9b9d2a0177b0aa331286972d69a754c5c63b14f691f4fd"
+    },
+    {
+      "id": "hero_rohan",
+      "stage": 3,
+      "file": "hero_rohan-stage3.webp",
+      "size_bytes": 43702,
+      "sha256": "9f0c44a03b47bd115d2ab867a4cb34a49b80b7c756b9eda69698c4daf48c7c46"
+    },
+    {
+      "id": "hero_eve",
+      "stage": 1,
+      "file": "hero_eve-stage1.webp",
+      "size_bytes": 15728,
+      "sha256": "ce17491b322cea0ecfb5688648b04526afbe5b048262733707edc424b3fd4f3c"
+    },
+    {
+      "id": "hero_eve",
+      "stage": 2,
+      "file": "hero_eve-stage2.webp",
+      "size_bytes": 28246,
+      "sha256": "18574a750fdd9953efa118cd3550a854a8cf6c3389745951f59a396e22695f69"
+    },
+    {
+      "id": "hero_eve",
+      "stage": 3,
+      "file": "hero_eve-stage3.webp",
+      "size_bytes": 41740,
+      "sha256": "d3f1cbe90d01565030c28692b3c1a0f3f0f146df58feec9c71346b3ab1a0930a"
+    },
+    {
+      "id": "hero_baruk",
+      "stage": 1,
+      "file": "hero_baruk-stage1.webp",
+      "size_bytes": 20774,
+      "sha256": "b31045f4609785e3154c7b80a372ca13034891e62cf2ad0e78e4f35cccc0e0c3"
+    },
+    {
+      "id": "hero_baruk",
+      "stage": 2,
+      "file": "hero_baruk-stage2.webp",
+      "size_bytes": 32702,
+      "sha256": "76228b80287945725854d8cb69798d8d3b9e47a9b207e22b24cd0e210bd8abe6"
+    },
+    {
+      "id": "hero_baruk",
+      "stage": 3,
+      "file": "hero_baruk-stage3.webp",
+      "size_bytes": 43694,
+      "sha256": "47c11bdbf84a2b2e0d7f4957f4df1d05bd05792ca328efcd53ceea3c87b6b0e7"
+    },
+    {
+      "id": "hero_nia",
+      "stage": 1,
+      "file": "hero_nia-stage1.webp",
+      "size_bytes": 17762,
+      "sha256": "f2c1bae1aef0b15de53cd8d183c0ed09b83b2a019549da38650ffa7e856bae89"
+    },
+    {
+      "id": "hero_nia",
+      "stage": 2,
+      "file": "hero_nia-stage2.webp",
+      "size_bytes": 32880,
+      "sha256": "d0c7aebc7f489e519da1aa54d14a789842aec5ae4dcba36c5ffa5c860f186048"
+    },
+    {
+      "id": "hero_nia",
+      "stage": 3,
+      "file": "hero_nia-stage3.webp",
+      "size_bytes": 40100,
+      "sha256": "d81f62c8d56fb1dc0c6d5ce75587188505baccb4a12b5ed31e0c52fdd31a4bdd"
+    },
+    {
+      "id": "hero_sion",
+      "stage": 1,
+      "file": "hero_sion-stage1.webp",
+      "size_bytes": 19716,
+      "sha256": "6b60f45f4397992b17b6dfdfbb7efda59e0b634cf47ea6af076aeeea977924d0"
+    },
+    {
+      "id": "hero_sion",
+      "stage": 2,
+      "file": "hero_sion-stage2.webp",
+      "size_bytes": 35656,
+      "sha256": "eb1cad62d6c954e671e630595cb7e84970cba3abb8574114e4865c19232b4c44"
+    },
+    {
+      "id": "hero_sion",
+      "stage": 3,
+      "file": "hero_sion-stage3.webp",
+      "size_bytes": 47742,
+      "sha256": "129baba157f8f34c8e06b50db8e044298c5c5502e77afbc77fcb0d5a615dd8a6"
+    },
+    {
+      "id": "hero_lumi",
+      "stage": 1,
+      "file": "hero_lumi-stage1.webp",
+      "size_bytes": 18660,
+      "sha256": "98190e3a4097ed1fb66d28ece9e7a6d20d1742b0200ea5852c08ca60d7c209cf"
+    },
+    {
+      "id": "hero_lumi",
+      "stage": 2,
+      "file": "hero_lumi-stage2.webp",
+      "size_bytes": 32586,
+      "sha256": "8d6b7deaf4996d2ecaf67bf636d8df3a972f457e78d168ce066de5fe48d4371a"
+    },
+    {
+      "id": "hero_lumi",
+      "stage": 3,
+      "file": "hero_lumi-stage3.webp",
+      "size_bytes": 43414,
+      "sha256": "1cc21452e167f2ce9cb39a49ddde0d2bc1a9ec9e807618a7152ae73ed9a838f8"
+    }
+  ]
+}
