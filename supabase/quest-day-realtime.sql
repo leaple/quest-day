@@ -202,6 +202,21 @@ begin
  return true;
 end $$;
 
+-- Deletes only the QUEST DAY friend data hosted in this project.
+-- The anonymous Supabase Auth user itself remains; it has no active shared profile.
+create or replace function public.qd_remove_my_profile()
+ returns boolean language plpgsql security definer set search_path = ''
+ as $
+declare me uuid:=auth.uid();
+begin
+ if me is null then raise exception 'Sign in first'; end if;
+ delete from public.qd_friend_requests where sender_id=me or recipient_id=me;
+ delete from public.qd_friendships where user_a=me or user_b=me;
+ delete from public.qd_invites where user_id=me;
+ delete from public.qd_profiles where user_id=me;
+ return true;
+end $;
+
 revoke all on function public.qd_bootstrap() from public;
 revoke all on function public.qd_rotate_invite() from public;
 revoke all on function public.qd_send_request(text) from public;
@@ -209,6 +224,7 @@ revoke all on function public.qd_request_previews() from public;
 revoke all on function public.qd_respond_request(uuid,boolean) from public;
 revoke all on function public.qd_cancel_request(uuid) from public;
 revoke all on function public.qd_remove_friend(uuid) from public;
+revoke all on function public.qd_remove_my_profile() from public;
 grant execute on function public.qd_bootstrap() to authenticated;
 grant execute on function public.qd_rotate_invite() to authenticated;
 grant execute on function public.qd_send_request(text) to authenticated;
@@ -216,6 +232,7 @@ grant execute on function public.qd_request_previews() to authenticated;
 grant execute on function public.qd_respond_request(uuid,boolean) to authenticated;
 grant execute on function public.qd_cancel_request(uuid) to authenticated;
 grant execute on function public.qd_remove_friend(uuid) to authenticated;
+grant execute on function public.qd_remove_my_profile() to authenticated;
 
 -- Allow Realtime Postgres Changes for only these three tables.
 do $$
