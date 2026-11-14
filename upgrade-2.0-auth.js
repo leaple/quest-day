@@ -225,6 +225,8 @@
  async function submitLogin(values){
   if(!guardEmail(values.email)||!values.password)throw Error("이메일과 비밀번호를 입력해 주세요.");
   const sup=await client();
+  // Wait for launch-time anonymous sign-in before changing Auth credentials.
+  await bridge.waitForIdentity?.();
   const existing=await sup.auth.getUser();
   const prev=bridge.getUser()?.id||existing.data?.user?.id||null;
   // Preserve warnings even if realtime friends were switched off: an anonymous
@@ -241,6 +243,7 @@
   if(!guardEmail(values.email))throw Error("올바른 이메일을 입력해 주세요.");
   emailDraft=values.email;
   const sup=await client();
+  await bridge.waitForIdentity?.();
   const get=await sup.auth.getUser();
   const u=get.data?.user;
   if(u?.email&&!u.is_anonymous){
@@ -357,6 +360,7 @@
   (async()=>{
    try{
     const sup=await client();
+    await bridge.waitForIdentity?.();
     const session=await sup.auth.getSession();
     if(ticket!==requestId)return;
     const id=session.data?.session?.user?.id;
