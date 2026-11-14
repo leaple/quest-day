@@ -78,21 +78,28 @@ returns boolean language sql stable security definer set search_path='' as $$
  and not exists(select 1 from public.qd_blocks bl
  where (bl.blocker_id=a and bl.blocked_id=b) or (bl.blocker_id=b and bl.blocked_id=a)),false)
 $$;
+drop policy if exists qd17_blocks_read on public.qd_blocks;
 create policy qd17_blocks_read on public.qd_blocks for select to authenticated
  using(blocker_id=(select auth.uid()));
+drop policy if exists qd17_msgs_read on public.qd_messages;
 create policy qd17_msgs_read on public.qd_messages for select to authenticated
  using((sender_id=(select auth.uid()) or recipient_id=(select auth.uid()))
  and public.qd_can_contact(sender_id,recipient_id));
+drop policy if exists qd17_reads_owner on public.qd_chat_reads;
 create policy qd17_reads_owner on public.qd_chat_reads for select to authenticated
  using(user_id=(select auth.uid()));
+drop policy if exists qd17_cheers_read on public.qd_cheers;
 create policy qd17_cheers_read on public.qd_cheers for select to authenticated
  using((sender_id=(select auth.uid()) or recipient_id=(select auth.uid()))
  and public.qd_can_contact(sender_id,recipient_id));
+drop policy if exists qd17_parties_read on public.qd_parties;
 create policy qd17_parties_read on public.qd_parties for select to authenticated
  using((creator_id=(select auth.uid()) or invitee_id=(select auth.uid()))
  and public.qd_can_contact(creator_id,invitee_id));
+drop policy if exists qd17_weekly_read on public.qd_weekly_progress;
 create policy qd17_weekly_read on public.qd_weekly_progress for select to authenticated
  using(user_id=(select auth.uid()) or public.qd_can_contact(user_id,(select auth.uid())));
+drop policy if exists qd17_reports_read on public.qd_reports;
 create policy qd17_reports_read on public.qd_reports for select to authenticated
  using(reporter_id=(select auth.uid()));
 
