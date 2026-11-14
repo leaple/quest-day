@@ -1,0 +1,173 @@
+{
+  "version": "1.3.1-art-direction",
+  "note": "Visual art direction only: the existing app behavior, economy, unlock conditions and IDs remain unchanged. Illustrations must be independently drawn, not visually duplicated.",
+  "style": {
+    "genre": "premium-chibi-fantasy",
+    "bodyProportions": "2.5~3.0 heads",
+    "camera": "vary 0°, 3/4, profile dynamically per pose",
+    "facialRange": [
+      "wide-smile",
+      "wink",
+      "determined",
+      "deadpan",
+      "surprised",
+      "stoic-deadpan",
+      "peaceful",
+      "cool-deadpan",
+      "excited",
+      "serious",
+      "delighted",
+      "emotionless"
+    ],
+    "poseUniqueness": "all 12 have distinct poseTag",
+    "silhouetteUniqueness": "do not reuse identical hair, cape outline, arm and leg positioning",
+    "background": "transparent PNG per character; no text or card border",
+    "assetNames": "art/<character id>.png"
+  },
+  "characters": [
+    {
+      "id": "sprout",
+      "name": "새싹 모험가",
+      "personality": "낙천적·용감한 초보",
+      "facialExpression": "입을 크게 벌린 환한 웃음, 눈이 반달이 되는 즐거움",
+      "pose": "한쪽 주먹을 높이 들고 발뒤꿈치를 띄운 작은 승리 점프",
+      "gaze": "관객 정면",
+      "bodySilhouette": "둥근 잎사귀 후드와 짧은 통통한 망토",
+      "signature": "잎사귀가 흔들리고 작은 씨앗이 튀어 오름",
+      "emotion": "joyful",
+      "poseTag": "victory-jump"
+    },
+    {
+      "id": "paper_messenger",
+      "name": "종이비행기 메신저",
+      "personality": "장난꾸러기·호기심 많은 전달자",
+      "facialExpression": "한쪽 눈을 찡긋하고 장난스럽게 웃음",
+      "pose": "몸을 대각선으로 기울여 뛰면서 반대 손으로 종이비행기를 던짐",
+      "gaze": "날아가는 비행기를 올려다봄",
+      "bodySilhouette": "접힌 삼각 모자, 작은 크로스백, 옆으로 휘날리는 스카프",
+      "signature": "종이비행기와 흩날리는 편지 봉투",
+      "emotion": "playful-wink",
+      "poseTag": "diagonal-throw"
+    },
+    {
+      "id": "dawn_runner",
+      "name": "새벽 러너",
+      "personality": "경쟁심·집중력 강한 행동파",
+      "facialExpression": "입술을 굳게 다물고 눈썹을 내린 진지한 집중 표정",
+      "pose": "상체를 크게 앞으로 숙인 전력 질주, 팔을 앞뒤로 크게 휘두름",
+      "gaze": "달릴 방향의 수평선",
+      "bodySilhouette": "뒤로 휘날리는 긴 머리, 고글, 큰 운동화, 스피드 라인",
+      "signature": "뒤꿈치에 푸른 바람 잔상",
+      "emotion": "determined",
+      "poseTag": "full-sprint"
+    },
+    {
+      "id": "sunset_scribe",
+      "name": "저녁 기록가",
+      "personality": "냉정·사려 깊은 관찰자",
+      "facialExpression": "눈꺼풀이 반쯤 내려오고 입꼬리가 거의 움직이지 않는 완전한 무표정",
+      "pose": "똑바로 선 채 한쪽 팔에 두꺼운 책을 안고 다른 손으로 책장을 넘김",
+      "gaze": "눈을 살짝 내리깔고 책 내용에 집중",
+      "bodySilhouette": "넓은 베레모, 긴 코트, 가지런한 긴 머리",
+      "signature": "장식이 적고 석양색 그림자만 깔림",
+      "emotion": "deadpan",
+      "poseTag": "still-reading"
+    },
+    {
+      "id": "forest",
+      "name": "숲의 연금술사",
+      "personality": "엉뚱·실험을 즐기는 호기심쟁이",
+      "facialExpression": "커진 동그란 눈과 작게 벌어진 O자 입, 실험 성공에 깜짝 놀람",
+      "pose": "몸을 뒤로 젖히면서 한쪽 손의 발광 약병을 높이 들어 올림",
+      "gaze": "발광 약병",
+      "bodySilhouette": "넓은 잎사귀 모자, 약병 가득한 허리띠와 층진 소매",
+      "signature": "약병에서 둥근 빛방울과 새싹 연기",
+      "emotion": "surprised",
+      "poseTag": "lean-back-potion"
+    },
+    {
+      "id": "clockkeeper",
+      "name": "시계탑 관리자",
+      "personality": "엄격·침착·완벽주의",
+      "facialExpression": "곧게 뻗은 일자 입, 거의 움직이지 않는 눈썹, 무심한 눈빛",
+      "pose": "두 발을 붙이고 정면에서 직립, 시계 지팡이를 바닥에 짚고 정확히 선 자세",
+      "gaze": "관객보다 약간 아래를 응시",
+      "bodySilhouette": "높은 실린더 모자와 각진 기어 어깨 장식",
+      "signature": "어깨 주변에 움직임 없이 정렬된 시계 톱니",
+      "emotion": "stoic-deadpan",
+      "poseTag": "rigid-symmetric"
+    },
+    {
+      "id": "star_scribe",
+      "name": "별조각 서기",
+      "personality": "몽상가·온화·몰입형",
+      "facialExpression": "두 눈을 감은 평온한 옅은 미소",
+      "pose": "공중에 다리를 꼬고 앉아 마도서를 무릎에 올린 채 깃펜으로 기록",
+      "gaze": "감은 눈",
+      "bodySilhouette": "머리카락을 크게 늘어뜨리고 둥근 로브가 달처럼 펼쳐짐",
+      "signature": "떠다니는 책과 메모 페이지, 잔잔한 별가루",
+      "emotion": "peaceful",
+      "poseTag": "floating-seated"
+    },
+    {
+      "id": "ninja",
+      "name": "그림자 러너",
+      "personality": "말수 적음·수수께끼 같은 전략가",
+      "facialExpression": "표정 변화 없는 반쯤 감긴 눈, 웃음기 없는 무심한 시선",
+      "pose": "몸을 옆으로 틀어 한쪽 무릎을 굽히고 뒤돌아보는 낮은 경계 자세",
+      "gaze": "어깨 너머로 옆을 응시",
+      "bodySilhouette": "한쪽으로 길게 찢어진 망토와 낮은 후드, 비대칭 스카프",
+      "signature": "뒤로 뻗는 자주색 망토 끝과 그림자 잔상",
+      "emotion": "cool-deadpan",
+      "poseTag": "three-quarter-crouch"
+    },
+    {
+      "id": "mage",
+      "name": "별빛 마법사",
+      "personality": "밝고 대담한 쇼맨십",
+      "facialExpression": "눈동자가 별처럼 빛나고 크게 웃는 열정적인 표정",
+      "pose": "한 발을 들고 몸을 회전시키며 지팡이를 하늘로 뻗음",
+      "gaze": "지팡이 끝에서 터지는 별",
+      "bodySilhouette": "큼직한 뾰족 모자, 풍성하게 퍼지는 반원형 치마",
+      "signature": "크게 회전하는 별자리 고리와 마법 리본",
+      "emotion": "excited",
+      "poseTag": "twirling-cast"
+    },
+    {
+      "id": "knight",
+      "name": "달빛 기사",
+      "personality": "고독한 수호자·책임감",
+      "facialExpression": "단단히 다문 입, 미간은 살짝 좁히고 눈매는 무표정에 가까움",
+      "pose": "한쪽 다리를 앞으로 내딛고 방패를 몸 앞에 세우며 다른 손은 검자루에 얹음",
+      "gaze": "정면 위쪽 먼 곳",
+      "bodySilhouette": "커다란 초승달 방패, 비대칭 갑옷, 직선적으로 내려오는 망토",
+      "signature": "갑옷에 달빛이 한 줄 반사되는 단단한 분위기",
+      "emotion": "serious",
+      "poseTag": "guardian-shield"
+    },
+    {
+      "id": "dream_whale",
+      "name": "꿈고래 소환사",
+      "personality": "다정·상상력이 풍부한 친구",
+      "facialExpression": "두 눈을 반짝 뜨고 이를 드러내지 않는 따뜻한 웃음, 볼을 살짝 붉힘",
+      "pose": "한 손을 뻗어 소환한 고래를 바라보며 발끝으로 천천히 떠오름",
+      "gaze": "옆에서 헤엄치는 고래 정령",
+      "bodySilhouette": "고래 꼬리 장식의 긴 스카프, 물결형 치맛자락",
+      "signature": "고래 정령과 떠 있는 물방울, 부드러운 궤적",
+      "emotion": "delighted",
+      "poseTag": "levitating-reach"
+    },
+    {
+      "id": "time_guardian",
+      "name": "시간의 수호자",
+      "personality": "초연·정적·인간적 감정에 무심함",
+      "facialExpression": "눈꺼풀이 조금 내려오고 입은 수평선, 기쁨·분노가 없는 완벽한 무표정",
+      "pose": "두 팔을 천천히 벌린 채 수직으로 부유하며 발끝이 바닥에 닿지 않음",
+      "gaze": "관객을 지나 먼 곳을 보는 초점 없는 눈",
+      "bodySilhouette": "커다란 시계 광륜과 대칭적인 길고 하얀 옷자락",
+      "signature": "시간 고리, 중력 없이 떠 있는 모래시계와 황금 조각",
+      "emotion": "emotionless",
+      "poseTag": "levitating-t-pose-variation"
+    }
+  ]
+}
