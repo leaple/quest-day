@@ -47,6 +47,7 @@
   let availableArt = new Set();
   const rarity = {common:"COMMON",rare:"RARE",epic:"EPIC",legendary:"LEGENDARY"};
   const knownLegacy = {starter:"sprout",forest:"forest",mage:"mage",ninja:"ninja",knight:"knight"};
+  const legacyAstronaut = {id:"astronaut",name:"우주 개척자",rarity:"rare",price:400,tagline:"끝없는 우주를 향해 떠나는 개척자",visual:{palette:["#79B8F3","#E6F6FF","#446CAA"]},evolution:[{stage:1}]};
   const defaultAvatar = {id:"sprout",name:"새싹 모험가",rarity:"common",price:0,
     visual:{palette:["#88C98A","#F5E8CF","#457E57"],prop:"새싹 배낭"},evolution:[{stage:1}]};
 
@@ -60,7 +61,7 @@
   }
   function canonicalId(id) {return knownLegacy[id] || id;}
   function findCharacter(id) {return catalog.find(c => c.id === canonicalId(id)) || null;}
-  function avatar() {return findCharacter(state.rpg.equipped) || defaultAvatar;}
+  function avatar() {return findCharacter(state.rpg.equipped) || (state.rpg.equipped==="astronaut"?legacyAstronaut:defaultAvatar);}
   function owned(c) {
     if (c.id === "sprout") return true;
     return state.rpg.purchases.some(p => p && (p.id === c.id || (c.legacyId && p.id === c.legacyId)));
@@ -157,6 +158,7 @@
       case "mage": return '<path d="M70 45L117 0L173 43L149 47L104 29L77 54Z" fill="#594db2" stroke="#39388a" stroke-width="3"/><path d="M66 45Q116 35 176 46" fill="none" stroke="#a89af0" stroke-width="10"/>'+addStar(122,22,12);
       case "knight": return '<path d="M82 48L87 17L152 17L165 47Z" fill="#d5e1ed" stroke="#7e94b0" stroke-width="4"/><path d="M88 39H162M122 18V40" stroke="#6b7c9c" stroke-width="4"/><path d="M117 13Q127 2 136 13" fill="none" stroke="#d3b46d" stroke-width="5"/>';
       case "dream_whale": return '<path d="M79 43Q104 14 157 40Q176 36 182 45Q152 48 125 40Z" fill="#7abbd9" stroke="#457bb3" stroke-width="3"/><circle cx="143" cy="37" r="5" fill="#e9f7ff"/>';
+      case "astronaut": return '<path d="M72 74Q66 16 120 12Q179 13 171 75" fill="#b7dcf3" stroke="#537ca4" stroke-width="6"/><ellipse cx="120" cy="78" rx="49" ry="43" fill="#daf3ff" opacity=".55" stroke="#76afdc" stroke-width="4"/>';
       case "time_guardian": return '<circle cx="121" cy="57" r="57" fill="none" stroke="#dcb969" stroke-width="8"/><circle cx="121" cy="57" r="48" fill="none" stroke="#f9e5ae" stroke-width="3" stroke-dasharray="3 10"/>'+addStar(121,7,9);
       default: return addStar(121,23,9);
     }
@@ -413,6 +415,10 @@
     }
     render();
   };
+
+  // The original save button held a reference to createTask before it was wrapped.
+  const questSaveButton=document.getElementById("saveBtn");
+  if(questSaveButton)questSaveButton.onclick=function(){createTask();};
 
   function updateTodayGoal(){
     currentRpg();
