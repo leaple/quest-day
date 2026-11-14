@@ -25,6 +25,7 @@
     ".ch-card.locked .ch-art{filter:grayscale(.8);opacity:.58}.ch-card:not(.locked) .ch-art{filter:drop-shadow(0 7px 5px #27224d11)}",
     ".ch-tier{position:absolute;left:9px;top:9px;z-index:1}.ch-stage{position:absolute;right:9px;top:9px;background:#ffffffed;color:#5b55a0;font-size:10px;border-radius:20px;padding:6px 8px;z-index:1}",
     ".ch-card-content{padding:11px 12px 13px}.ch-card-content h3{font-size:14px;line-height:1.3;margin:0 0 6px}.ch-card-content p{margin:0 0 9px;font-size:11px;line-height:1.4;color:#8589a1;min-height:31px}",
+    ".ch-expression{display:inline-block;background:#f2eeff;color:#6655b8;border-radius:18px;font-size:10px;padding:5px 9px;margin-bottom:11px;font-weight:800}",
     ".ch-mini-actions{display:flex;gap:6px}.ch-mini-actions button{flex:1;min-width:0;padding:9px 6px;font-size:11px}",
     ".ch-progress{background:#eeedf7;border-radius:8px;overflow:hidden;height:6px;margin:9px 0}.ch-progress i{display:block;height:100%;background:#9d8bff;border-radius:8px}",
     ".ch-growth-panel{background:white;border-radius:18px;padding:16px;margin:13px 0;border:1px solid #e9e6f5}",
@@ -199,7 +200,7 @@
     const fallback=svgPortrait(character);
     // Uploaded art assets are optional: the SVG illustration remains visible if an asset is missing.
     const image='<img loading="lazy" decoding="async" src="./art/'+safe(id)+
-      '.png" alt="" onerror="this.remove()">';
+      '.png?v=2" alt="" onload="this.previousElementSibling.style.visibility=\'hidden\'" onerror="this.remove()">';
     return '<div class="ch-art">'+fallback+image+'</div>';
   }
 
@@ -216,7 +217,7 @@
       '<div class="ch-image-wrap"><div class="ch-tier"><span class="ch-pill '+character.rarity+'">'+rarity[character.rarity]+'</span></div>' +
       '<span class="ch-stage">진화 '+stage+'/3</span>'+portrait(character)+'</div>' +
       '<div class="ch-card-content"><h3>'+safe(character.name)+'</h3>' +
-      '<p>'+safe(character.tagline||"")+'</p><div class="ch-mini-actions">' +
+      '<p>'+safe(character.tagline||"")+'</p><div class="ch-expression">'+safe(character.visual?.expressionTag||"")+'</div><div class="ch-mini-actions">' +
       '<button class="ch-btn secondary" data-ch-preview="'+character.id+'">자세히</button>' +
       '<button class="ch-btn" data-ch-action="'+character.id+'"'+
       (isEquipped||locked||(!isOwned&&gold()<character.price)?' disabled':'')+'>'+action+'</button></div></div></article>';
@@ -273,6 +274,8 @@
       '<div class="ch-detail-header"><div class="ch-detail-art">'+portrait(character)+'</div>'+
       '<div><div class="ch-detail-title">'+safe(character.name)+'</div>'+
       '<div class="ch-note">'+safe(character.tagline||"")+'</div>'+
+      '<p class="ch-note" style="margin-top:9px">표정: '+safe(character.visual?.expression||"")+'</p>'+
+      '<p class="ch-note">포즈: '+safe(character.visual?.pose||"")+'</p>'+
       '<p class="ch-note" style="margin-top:10px">현재 진화 '+stage+'/3 · '+(isOwned?"보유 중":"미보유")+'</p></div></div>'+
       '<div class="ch-label">🔓 해금 조건</div>'+ruleHtml+
       '<div class="ch-label">✨ 성장 단계</div>'+stages+
