@@ -71,3 +71,18 @@ GitHub Pages에 Supabase의 secret/service-role key를 넣지 마세요. 앱은 
 - 메일 앱이나 보안 필터가 링크를 미리 접속해 인증 토큰이 만료되는 경우가 있습니다. 이 경우 새 메일을 요청하세요.
 
 관련 Supabase 공식 문서: [이메일 템플릿](https://supabase.com/docs/guides/auth/auth-email-templates), [리디렉션 URL](https://supabase.com/docs/guides/auth/redirect-urls), [익명 계정 전환](https://supabase.com/docs/guides/auth/auth-anonymous).
+
+## 계정 관리 화면 통합 (v25)
+
+QUEST DAY에는 **하나의 계정 관리 UI만** 남겨 두었습니다.
+
+- 첫 실행: 로그인 / 회원가입 / 게스트 시작
+- 기존 사용자: **설정 → 계정 및 로그인 → 계정 관리**
+- 게스트: **현재 게스트 기록에 이메일 연결** → 메일 링크 인증 → 비밀번호 설정 (기존 Supabase 익명 사용자 ID 유지)
+- 이메일 회원: **인증된 이메일 표시** / **비밀번호 설정·변경** / 다른 이메일 계정으로 로그인
+- 성장 기록 동기화 보류 상태: 설정 계정 관리에서 복구 버튼 표시. 클라우드 게임 기록 충돌이 있으면 **계정 전체 데이터 동기화** 화면에서 먼저 해결해야 합니다.
+- Supabase URL, Auth 설정, SQL, LocalStorage 게임 저장 키(`quest-day-mvp-v1`), 클라우드 계정 데이터는 변경하지 않습니다.
+
+이전 1.8 `upgrade-1.8-stability.js` 파일은 복구를 위해 저장소에 남아 있지만, **index.html과 서비스 워커에서 더 이상 로드하지 않습니다.** 따라서 두 번째 이메일/로그인 폼은 생성되지 않습니다. `upgrade-1.9-cloud.js`는 기존처럼 별도의 클라우드 저장/충돌 관리 UI를 유지합니다.
+
+테스트용 링크: https://leaple.github.io/quest-day/?qd_update=25
