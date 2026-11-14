@@ -113,16 +113,22 @@
    });
    return sdkPromise;
  }
+ async function ensureClient(){
+   if(!configured)throw new Error("Supabase 공개 연결 설정을 확인해 주세요.");
+   if(client)return client;
+   const lib=await loadSDK();
+   client=client||lib.createClient(cfg.url.trim().replace(/\/$/,""),cfg.publishableKey.trim(),{
+     auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},
+     realtime:{params:{eventsPerSecond:5}}
+   });
+   return client;
+ }
  async function start(){
    if(!configured||started||connecting)return;
    connecting=true;errorText="";
    if(root.classList.contains("active"))drawLive();
    try {
-     const lib=await loadSDK();
-     client=client||lib.createClient(cfg.url.trim().replace(/\/$/,""),cfg.publishableKey.trim(),{
-       auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false},
-       realtime:{params:{eventsPerSecond:5}}
-     });
+     client=await ensureClient();
      let result=await client.auth.getUser();
      if(!result.data?.user){
        const anonymous=await client.auth.signInAnonymously();
@@ -493,6 +499,7 @@
  }
  window.QuestDayRealtime={
    getClient:()=>client,
+   ensureClient,
    getUser:()=>me,
    isReady:()=>started,
    getFriends:()=>contacts.slice(),
