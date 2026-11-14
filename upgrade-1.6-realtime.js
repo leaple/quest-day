@@ -41,6 +41,7 @@
  let client=null,me=null,invite="",channel=null,started=false,connecting=false,online=false;
  let requests=[],contacts=[],lastSync="",lastPublished="",syncTimer=null,pollTimer=null,refreshTimer=null;
  let sdkPromise=null,operation=false,errorText="",showCode=false,appCode="";
+ let reconnectTimer=null,lastResumeAttempt=0,resuming=false;
  const esc=v=>escapeHtml(String(v??""));
  function shortNick(v){return String(v||"모험가").trim().slice(0,16)||"모험가";}
  function localName(){return shortNick(state.friends?.profile?.nickname);}
@@ -138,7 +139,11 @@
      await reload();
      subscribe();
      clearInterval(pollTimer);
-     pollTimer=setInterval(()=>{if(started)reload();},45000);
+     pollTimer=setInterval(()=>{
+       if(!started || navigator.onLine===false || document.visibilityState==="hidden")return;
+       publish().catch(showError);
+       reload();
+     },45000);
    } catch(e){
      started=false;
      online=false;
@@ -198,6 +203,17 @@
    clearTimeout(refreshTimer);
    refreshTimer=setTimeout(()=>{reload();},400);
  }
+ function reconnectSoon(){
+   if(reconnectTimer || !started || localStorage.getItem(CONSENT_KEY)!=="yes")return;
+   reconnectTimer=setTimeout(()=>{
+     reconnectTimer=null;
+     if(!started || navigator.onLine===false || document.visibilityState==="hidden")return;
+     // Realtime subscriptions can time out while a mobile PWA is suspended.
+     subscribe();
+     publish().catch(showError);
+     reload();
+   },6000);
+ }
  function subscribe(){
    if(!client||!me)return;
    if(channel)client.removeChannel(channel);
@@ -210,8 +226,14 @@
     .on("postgres_changes",{event:"UPDATE",schema:"public",table:"qd_friendships"},refreshSoon)
     .subscribe(status=>{
       online=status==="SUBSCRIBED";
+      if(online){
+        clearTimeout(reconnectTimer);
+        reconnectTimer=null;
+        refreshSoon();
+      } else if(status==="TIMED_OUT" || status==="CHANNEL_ERROR" || status==="CLOSED"){
+        reconnectSoon();
+      }
       if(root.classList.contains("active"))drawLive();
-      if(online)refreshSoon();
     });
  }
  function showDate(input){
@@ -325,6 +347,7 @@
  async function stop(){
    started=false;online=false;me=null;
    clearTimeout(syncTimer);clearTimeout(refreshTimer);clearInterval(pollTimer);
+   clearTimeout(reconnectTimer);reconnectTimer=null;
    if(channel&&client){client.removeChannel(channel);channel=null;}
    localStorage.removeItem(CONSENT_KEY);
    beforeStart();
@@ -404,6 +427,33 @@
      drawLive();
    }else beforeStart();
  });
+ // Once the user has opted in, recovery is automatic when the PWA opens,
+ // returns to the foreground, or regains connectivity. No manual refresh needed.
+ async function resumeAutomatically(){
+   if(!configured || localStorage.getItem(CONSENT_KEY)!=="yes" ||
+      navigator.onLine===false || document.visibilityState==="hidden" ||
+      connecting || resuming)return;
+   const now=Date.now();
+   if(now-lastResumeAttempt<2500)return;
+   lastResumeAttempt=now;
+   resuming=true;
+   try{
+     if(!started){
+       await start();
+     }else{
+       await publish();
+       await reload();
+       if(!online)subscribe();
+     }
+   }catch(e){showError(e);reconnectSoon();}
+   finally{resuming=false;}
+ }
+ document.addEventListener("visibilitychange",()=>{
+   if(document.visibilityState==="visible")resumeAutomatically();
+ });
+ window.addEventListener("pageshow",resumeAutomatically);
+ window.addEventListener("focus",resumeAutomatically);
+ window.addEventListener("online",resumeAutomatically);
  const savePrevious=saveState;
  saveState=function(){
    savePrevious();
