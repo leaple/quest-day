@@ -70,7 +70,7 @@
    node.innerHTML='<h3>🌐 실시간 친구 기능</h3>'+
     '<p>서버를 아직 연결하지 않았어요. 현재 친구 코드는 기존의 수동 갱신 방식으로 작동합니다.</p>'+
     '<p>실시간 친구 신청과 자동 기록 갱신은 Supabase 프로젝트를 설정하면 활성화돼요. '+
-    '설정 안내는 GitHub의 <strong>supabase/SETUP.md</strong>에 있어요.</p>';
+    '설정 안내: <a href="https://github.com/leaple/quest-day/blob/main/supabase/SETUP.md" target="_blank" rel="noopener noreferrer">GitHub 연결 안내서 열기</a></p>';
    root.prepend(node);
  }
  function offlineBanner(){
@@ -138,7 +138,13 @@
      subscribe();
      clearInterval(pollTimer);
      pollTimer=setInterval(()=>{if(started)reload();},45000);
-   } catch(e){showError(e);}
+   } catch(e){
+     started=false;
+     online=false;
+     lastPublished="";
+     if(channel&&client){client.removeChannel(channel);channel=null;}
+     showError(e);
+   }
    finally {
      connecting=false;
      if(root.classList.contains("active"))drawLive();
@@ -232,6 +238,9 @@
  }
  function drawLive(){
    if(!root.classList.contains("active"))return;
+   const draftInvite=document.getElementById("rt16AddCode")?.value||"";
+   const draftNickname=document.getElementById("rt16Nick")?.value||"";
+   const activeField=document.activeElement?.id||"";
    if(!started){
      root.innerHTML='<div class="rt16-top"><h3>🌐 실시간 친구</h3>'+
        '<p>'+(connecting?"서버에 연결하고 있어요.":"서버 연결이 아직 완료되지 않았어요.")+'</p>'+
@@ -287,6 +296,12 @@
     '<div class="rt16-warning">🔒 퀘스트 제목이나 세부 활동 기록은 업로드하지 않아요. '+
     '익명 계정은 기기를 바꾸거나 브라우저 데이터를 삭제하면 복구할 수 없을 수 있어요. '+
     '서로 친구가 된 상대에게만 성장 요약이 보여요.</div>';
+   const addField=document.getElementById("rt16AddCode");
+   const nickField=document.getElementById("rt16Nick");
+   if(addField&&draftInvite)addField.value=draftInvite;
+   if(nickField&&draftNickname&&activeField==="rt16Nick")nickField.value=draftNickname;
+   if(activeField==="rt16AddCode")addField?.focus();
+   else if(activeField==="rt16Nick")nickField?.focus();
  }
  async function rpc(name,params){
    const r=await client.rpc(name,params||{});
