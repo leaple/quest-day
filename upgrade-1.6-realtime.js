@@ -138,6 +138,7 @@
      await publish(true);
      await reload();
      subscribe();
+     window.dispatchEvent(new CustomEvent("qd:realtime-ready"));
      clearInterval(pollTimer);
      pollTimer=setInterval(()=>{
        if(!started || navigator.onLine===false || document.visibilityState==="hidden")return;
@@ -197,6 +198,7 @@
      lastSync=new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
      errorText="";
      if(root.classList.contains("active"))drawLive();
+     window.dispatchEvent(new CustomEvent("qd:friends-updated"));
    }catch(e){showError(e);}
  }
  function refreshSoon(){
@@ -276,6 +278,7 @@
      ...contacts].sort((a,b)=>b.xp-a.xp||a.nickname.localeCompare(b.nickname,"ko"));
    const incoming=requests.filter(r=>r.direction==="received");
    const outgoing=requests.filter(r=>r.direction==="sent");
+   window.QuestDaySocial?.captureDraft?.();
    root.innerHTML=
     '<div class="fr-title"><div><h2>🌐 실시간 친구</h2><p class="fr-muted">서로 친구가 되면 성장 기록이 자동 갱신돼요.</p></div>'+
     '<span class="rt16-status">'+(online?"🟢 연결됨":"🟠 다시 연결 중")+'</span></div>'+
@@ -319,6 +322,7 @@
     '<div class="rt16-warning">🔒 퀘스트 제목이나 세부 활동 기록은 업로드하지 않아요. '+
     '익명 계정은 기기를 바꾸거나 브라우저 데이터를 삭제하면 복구할 수 없을 수 있어요. '+
     '서로 친구가 된 상대에게만 성장 요약이 보여요.</div>';
+   window.QuestDaySocial?.mount?.();
    const addField=document.getElementById("rt16AddCode");
    const nickField=document.getElementById("rt16Nick");
    if(addField&&draftInvite)addField.value=draftInvite;
@@ -350,6 +354,7 @@
    clearTimeout(reconnectTimer);reconnectTimer=null;
    if(channel&&client){client.removeChannel(channel);channel=null;}
    localStorage.removeItem(CONSENT_KEY);
+   window.dispatchEvent(new CustomEvent("qd:realtime-stopped"));
    beforeStart();
  }
  async function execute(action,target){
@@ -468,6 +473,13 @@
      else if(localStorage.getItem(OFFLINE_KEY)==="yes")offlineBanner();
      else if(localStorage.getItem(CONSENT_KEY)!=="yes")beforeStart();
    }
+ };
+ window.QuestDayRealtime={
+   getClient:()=>client,
+   getUser:()=>me,
+   isReady:()=>started,
+   getFriends:()=>contacts.slice(),
+   refreshFriends:()=>reload()
  };
  if(configured&&localStorage.getItem(CONSENT_KEY)==="yes")start();
 })();
