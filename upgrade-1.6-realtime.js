@@ -1,7 +1,6 @@
-/* QUEST DAY 1.6 — opt-in realtime friends via Supabase.
-   Requires supabase/quest-day-realtime.sql + realtime-config.js.
-   No quest titles, dates, event logs, purchase history, or sensitive info is sent.
-   Local-only friend cards from 1.5 remain available until opted in. */
+/* QUEST DAY 2.0 — automatically connect realtime friends via Supabase.
+   Keep existing account sessions, private game data and offline preference.
+   Only social profile summary is published; full game saves remain separately protected. */
 (function(){
  "use strict";
  const cfg=window.QUEST_DAY_REALTIME_CONFIG||{};
@@ -37,6 +36,7 @@
    !cfg.publishableKey.includes("service_role")&&!cfg.publishableKey.startsWith("sb_secret_");
  const configured=URL_OK&&KEY_OK;
  const CONSENT_KEY="quest-day-realtime-opt-in-v1";
+ const AUTO_FLAG="qd21-realtime-autoconnect-v1";
  const SYNC_HOLD_KEY="qd18-remote-profile-sync-hold-v1";
  const OFFLINE_KEY="quest-day-realtime-offline-choice-v1";
  let client=null,me=null,invite="",channel=null,started=false,connecting=false,online=false;
@@ -81,19 +81,16 @@
    const banner=document.createElement("div");
    banner.id="rt16OfflineBanner";banner.className="rt16-top";
    banner.innerHTML='<h3>🌐 실시간 친구 기능 사용 가능</h3>'+
-     '<p>지금은 기존 친구 카드 모드예요. 친구 신청·수락과 자동 갱신을 사용하려면 실시간 모드를 켜세요.</p>'+
-     action("실시간 친구 기능 켜기","enable");
+     '<p>오프라인 모드예요. 게임 기록은 이 기기에 유지돼요. 서버 연결을 다시 시작하려면 아래 버튼을 눌러 주세요.</p>'+
+     action("서버 다시 연결","enable");
    root.prepend(banner);
  }
  function beforeStart(){
-   root.innerHTML='<div class="rt16-top"><h3>🌐 실시간 친구 시작하기</h3>'+
-    '<p>상대방과 <strong>서로 수락한 친구</strong>만 실시간 성장 정보를 볼 수 있어요. '+
-    '공유 정보: 닉네임, 장착 캐릭터, 레벨, 누적 XP, 완료 퀘스트 수, 연속 기록.</p>'+
-    '<p>퀘스트 제목·상세 완료 내역·골드·연락처는 서버에 전송되지 않아요. '+
-    '서버에는 임시 익명 계정이 만들어지고, 같은 기기에서만 로그인 상태가 유지돼요. '+
-    '브라우저 데이터를 삭제하거나 기기를 바꾸면 계정 접근이 사라질 수 있어요.</p>'+
-    '<div class="rt16-options">'+action("동의하고 실시간 기능 켜기","enable")+
-    action("기존 코드 친구 계속 사용","offline","alt")+'</div></div>';
+   root.innerHTML='<div class="rt16-top"><h3>🌐 서버 자동 연결</h3>'+
+     '<p>QUEST DAY는 앱을 실행하면 친구 서버에 자동 연결돼요. 친구 요청·채팅·랭킹은 별도 연결 버튼 없이 사용할 수 있어요.</p>'+
+     '<p>친구에게 수락된 경우 닉네임·장착 캐릭터·레벨·XP·완료 퀘스트 수·연속 기록이 공유돼요. '+
+     '퀘스트 제목과 구매 기록은 여기서 공유하지 않아요.</p>'+
+     action("연결 상태 확인","retry")+'</div>';
  }
  function showError(e){
    errorText=typeof e==="string"?e:(e?.message||"서버에 연결하지 못했어요.");
@@ -365,8 +362,11 @@
    clearTimeout(reconnectTimer);reconnectTimer=null;
    if(channel&&client){client.removeChannel(channel);channel=null;}
    localStorage.removeItem(CONSENT_KEY);
+   // An explicit disconnect must remain disconnected across app launches.
+   localStorage.setItem(OFFLINE_KEY,"yes");
    window.dispatchEvent(new CustomEvent("qd:realtime-stopped"));
-   beforeStart();
+   root.innerHTML="";
+   offlineBanner();
  }
  async function execute(action,target){
    if(operation)return;
@@ -374,7 +374,6 @@
    try{
      if(action==="retry"){await start();return;}
      if(action==="enable"){
-       if(!confirm("내 닉네임·캐릭터·XP·퀘스트 완료 횟수·연속 기록을 실시간 친구 서버에 저장할까요?"))return;
        localStorage.removeItem(OFFLINE_KEY);
        localStorage.setItem(CONSENT_KEY,"yes");
        await start();return;
@@ -435,16 +434,14 @@
    }
    execute(btn.dataset.rtAction,btn.dataset.target||"");
  });
- // The 1.5 legacy button draws its offline view first; this handler shows live mode above it.
+ // Social pages automatically use the live connection; only explicit offline mode opts out.
  tab.addEventListener("click",()=>{
    if(!configured){setupBanner();return;}
-   if(!started && !connecting && localStorage.getItem(OFFLINE_KEY)==="yes") { offlineBanner(); return; }
-   if(started||connecting||localStorage.getItem(CONSENT_KEY)==="yes"){
-     if(!started&&!connecting)start();
-     drawLive();
-   }else beforeStart();
+   if(localStorage.getItem(OFFLINE_KEY)==="yes"){offlineBanner();return;}
+   if(!started&&!connecting)start();
+   drawLive();
  });
- // Once the user has opted in, recovery is automatic when the PWA opens,
+ // After an automatic connection, recovery continues when the PWA opens,
  // returns to the foreground, or regains connectivity. No manual refresh needed.
  async function resumeAutomatically(){
    if(!configured || localStorage.getItem(CONSENT_KEY)!=="yes" ||
@@ -483,7 +480,7 @@
      if(!configured)setupBanner();
      else if(started||connecting)drawLive();
      else if(localStorage.getItem(OFFLINE_KEY)==="yes")offlineBanner();
-     else if(localStorage.getItem(CONSENT_KEY)!=="yes")beforeStart();
+     else { if(!started&&!connecting)start(); drawLive(); }
    }
  };
  async function switchIdentity(){
@@ -518,5 +515,13 @@
      }
    }
  };
- if(configured&&localStorage.getItem(CONSENT_KEY)==="yes")start();
+ if(configured&&localStorage.getItem(OFFLINE_KEY)!=="yes"){
+   // Do not mistake automatic server setup for a returning human player in 2.0.
+   // Pre-existing explicit connections retain their previous onboarding status.
+   if(localStorage.getItem(CONSENT_KEY)!=="yes"){
+     localStorage.setItem(AUTO_FLAG,"yes");
+   }
+   localStorage.setItem(CONSENT_KEY,"yes");
+   start();
+ }
 })();
