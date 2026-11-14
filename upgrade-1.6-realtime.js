@@ -67,10 +67,11 @@
    if(existing)return;
    const node=document.createElement("div");
    node.id="rt16Setup";node.className="rt16-top";
-   node.innerHTML='<h3>🌐 실시간 친구 기능</h3>'+
-    '<p>서버를 아직 연결하지 않았어요. 현재 친구 코드는 기존의 수동 갱신 방식으로 작동합니다.</p>'+
-    '<p>실시간 친구 신청과 자동 기록 갱신은 Supabase 프로젝트를 설정하면 활성화돼요. '+
-    '설정 안내: <a href="https://github.com/leaple/quest-day/blob/main/supabase/SETUP.md" target="_blank" rel="noopener noreferrer">GitHub 연결 안내서 열기</a></p>';
+   node.innerHTML='<h3>🌐 실시간 친구 연결 확인</h3>'+
+    '<p>이 기기에서 Supabase 연결 설정을 읽지 못했어요. 최신 설정을 다시 불러와 주세요.</p>'+
+    '<div class="rt16-options">'+action("최신 설정 다시 불러오기","reload","")+'</div>'+
+    '<p>연결 설정을 아직 입력하지 않았다면 '+
+    '<a href="https://github.com/leaple/quest-day/blob/main/supabase/SETUP.md" target="_blank" rel="noopener noreferrer">GitHub 연결 안내서</a>를 확인해 주세요.</p>';
    root.prepend(node);
  }
  function offlineBanner(){
@@ -385,7 +386,14 @@
 
  root.addEventListener("click",event=>{
    const btn=event.target.closest("button[data-rt-action]");
-   if(btn)execute(btn.dataset.rtAction,btn.dataset.target||"");
+   if(!btn)return;
+   if(btn.dataset.rtAction==="reload"){
+     const dest=new URL(window.location.href);
+     dest.searchParams.set("qd_update","11");
+     window.location.assign(dest.toString());
+     return;
+   }
+   execute(btn.dataset.rtAction,btn.dataset.target||"");
  });
  // The 1.5 legacy button draws its offline view first; this handler shows live mode above it.
  tab.addEventListener("click",()=>{
