@@ -43,7 +43,7 @@ h2{font-size:16px;margin:0}.pill{font-size:10px;color:#f6dea3;border:1px solid #
 <p>본 페이지는 게임에 실제 적용된 원화풍 캐릭터 일러스트입니다. 진화 단계별 모습을 눌러 확대할 수 있습니다.</p></div><a href="./index.html">게임으로 돌아가기</a></header>
 <div id="gallery"><p>캐릭터를 불러오는 중...</p></div></main>
 <div id="zoom" role="dialog" aria-modal="true" aria-label="영웅 일러스트 확대 보기"><button id="exit">닫기 ×</button><div class="picture"></div></div>
-<script src="./hero-portraits.js?v=20261115-11"></script>
+<script src="./hero-portraits.js?v=20261115-12"></script>
 <script>
 (async()=>{
 const box=document.getElementById('gallery'),overlay=document.getElementById('zoom'),picture=overlay.querySelector('.picture');
@@ -64,7 +64,7 @@ try{
     const panel=document.createElement('div');panel.className='stage';panel.innerHTML=window.QuestDayHeroArt.draw(c.id,stage);
     const label=document.createElement('span');label.textContent='진화 '+stage+'/3';panel.append(label);
     const stageLink=document.createElement('a');
-    stageLink.href='./art/painted/individual/'+c.id+'-stage'+stage+'.webp?v=20261115-11';
+    stageLink.href='./art/painted/individual/'+c.id+'-stage'+stage+((c.id==='hero_elin' && stage===1)?'.svg':'.webp')+'?v=20261115-12';
     stageLink.textContent='개별 원화 보기';
     stageLink.target='_blank';
     stageLink.rel='noopener';
