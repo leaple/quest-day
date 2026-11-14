@@ -45,6 +45,11 @@
     return "현재 익명 QUEST DAY 계정이에요. 이메일 인증 전에는 기기를 바꾸거나 앱 데이터를 삭제하면 계정을 복구할 수 없어요.";
   }
   function render(){
+    // Keep both the expanded section and typed values across status updates.
+    // Previously innerHTML recreated both fields after every email request.
+    const ids=["qd18LinkEmail","qd18Otp","qd18NewPassword","qd18LoginEmail","qd18LoginPassword"];
+    const snapshots=Object.fromEntries(ids.map(id=>[id,box.querySelector("#"+id)?.value||""]));
+    const expanded=Array.from(box.querySelectorAll("details"),node=>node.open);
     const locked=bridge.isProfileSyncHeld?.();
     box.innerHTML='<h3>🔐 QUEST DAY 계정 보호</h3>'+
       '<p>현재 QUEST DAY 계정에 이메일과 비밀번호를 연결하면 다른 기기에서 로그인할 수 있어요. '+
@@ -61,13 +66,11 @@
       '<label for="qd18LinkEmail">본인이 관리하는 이메일</label>'+
       '<input id="qd18LinkEmail" type="email" autocomplete="email" maxlength="180" placeholder="example@email.com">'+
       '<button data-qd18="linkEmail" type="button">인증 이메일 보내기</button>'+
-      '<p>이메일을 받은 뒤 인증 링크를 열거나 메일의 6자리 코드를 아래에 입력하세요.</p>'+
-      '<label for="qd18VerifyEmail">인증할 이메일</label>'+
-      '<input id="qd18VerifyEmail" type="email" autocomplete="email" maxlength="180" placeholder="example@email.com">'+
-      '<label for="qd18Otp">이메일 인증 코드 (있을 경우)</label>'+
-      '<input id="qd18Otp" type="text" autocomplete="one-time-code" inputmode="numeric" maxlength="8" placeholder="인증 코드">'+
-      '<button class="qd18-muted-btn" data-qd18="verify" type="button">코드로 인증하기</button>'+
-      '<button class="qd18-muted-btn" data-qd18="status" type="button">인증 상태 다시 확인</button>'+
+      '<p>📩 Supabase 기본 메일은 <strong>인증 링크</strong>를 보내요. 메일의 Confirm Email 링크를 누른 뒤 이 화면으로 돌아와 아래 인증 상태 확인을 눌러 주세요. 인증 코드가 메일에 따로 있는 경우에만 코드를 입력하면 돼요.</p>'+
+      '<button class="qd18-muted-btn" data-qd18="status" type="button">메일 링크 인증 상태 확인</button>'+
+      '<label for="qd18Otp">메일에 숫자 코드가 포함된 경우에만 입력 (선택)</label>'+
+      '<input id="qd18Otp" type="text" autocomplete="one-time-code" inputmode="numeric" maxlength="8" placeholder="메일에 코드가 없다면 비워 두세요">'+
+      '<button class="qd18-muted-btn" data-qd18="verify" type="button">숫자 코드로 인증</button>'+
       '<label for="qd18NewPassword">이메일 인증 후 설정할 새 비밀번호 (12자 이상)</label>'+
       '<input id="qd18NewPassword" type="password" autocomplete="new-password" minlength="12" maxlength="128">'+
       '<button data-qd18="password" type="button">계정 비밀번호 설정</button></details>'+
@@ -83,6 +86,12 @@
       '<p>이메일·비밀번호는 이 앱의 로컬 퀘스트 저장 데이터에 넣지 않아요. '+
       '복구 정보 분실 시에는 프로젝트의 인증 설정에 따라 별도 비밀번호 재설정이 필요할 수 있어요.</p>'+
       (notice?'<div class="qd18-feedback" role="status" style="'+(noticeIsError?'color:#ac3655;background:#fff0f4':'')+'">'+safe(notice)+'</div>':"");
+    for(const [i,details] of Array.from(box.querySelectorAll("details")).entries())
+      details.open=!!expanded[i];
+    for(const id of ids){
+      const el=box.querySelector("#"+id);
+      if(el&&snapshots[id])el.value=snapshots[id];
+    }
   }
   async function updateStatus(){
     if(!isReady()){currentUser=null;render();return;}
@@ -105,19 +114,26 @@
   }
   async function act(name,fields){
     if(busy)return;
-    if(!isReady())return report("먼저 친구 탭에서 실시간 서버 연결을 완료해 주세요.",true);
+    if(!isReady())return report("서버 자동 연결 중이에요. 잠시 후 다시 시도해 주세요.",true);
     busy=true;
     try{
-      if(name==="status"){await updateStatus();return;}
+      if(name==="status"){
+        await updateStatus();
+        if(currentUser?.email&&currentUser.email_confirmed_at)
+          report("이메일 인증이 확인됐어요. 아래에서 비밀번호를 설정하면 다른 기기에서도 같은 계정으로 로그인할 수 있어요.");
+        else report("아직 이메일 인증이 확인되지 않았어요. 메일 속 Confirm Email 링크를 열고 다시 시도해 주세요.",true);
+        return;
+      }
       if(name==="linkEmail"){
         const email=fields.linkEmail.toLowerCase();
         if(!validEmail(email))throw Error("올바른 이메일 주소를 입력해 주세요.");
         if(!confirm("현재 익명 친구 계정에 이 이메일을 연결하고 확인 메일을 보낼까요?"))return;
-        const result=await userClient().auth.updateUser({email});
+        const redirectTo=window.location.origin+window.location.pathname;
+        const result=await userClient().auth.updateUser({email},{emailRedirectTo:redirectTo});
         if(result.error)throw result.error;
-        report("인증 요청을 보냈어요. 메일함에서 확인하고 인증을 완료해 주세요. 이메일 발송량 제한이 있을 수 있어요.");
+        report("이메일 확인 요청을 보냈어요. 메일의 Confirm Email 링크를 누르세요. 숫자 코드가 없는 것이 정상이니, 링크 확인 후 이 화면의 '메일 링크 인증 상태 확인'을 누르면 돼요. 링크가 다른 사이트로 열리면 Supabase Authentication → URL Configuration의 Site URL을 QUEST DAY 주소로 바꿔 주세요.");
       }else if(name==="verify"){
-        const email=fields.verifyEmail.toLowerCase(),code=fields.code;
+        const email=fields.linkEmail.toLowerCase(),code=fields.code;
         if(!validEmail(email)||!/^\d{6,8}$/.test(code))throw Error("이메일과 6자리 인증 코드를 확인해 주세요.");
         const result=await userClient().auth.verifyOtp({email,token:code,type:"email_change"});
         if(result.error)throw result.error;
@@ -175,8 +191,7 @@
     if(!btn)return;
     // Snapshot form values synchronously before any asynchronous redraw.
     const fields={
-      linkEmail:value("qd18LinkEmail"),verifyEmail:value("qd18VerifyEmail"),
-      code:value("qd18Otp"),password:document.getElementById("qd18NewPassword")?.value||"",
+      linkEmail:value("qd18LinkEmail"),code:value("qd18Otp"),password:document.getElementById("qd18NewPassword")?.value||"",
       loginEmail:value("qd18LoginEmail"),loginPassword:document.getElementById("qd18LoginPassword")?.value||""
     };
     act(btn.dataset.qd18,fields);
