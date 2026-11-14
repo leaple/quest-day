@@ -15,6 +15,7 @@
     ".ch-art[data-qdp-stage='3']::after{box-shadow:inset 0 0 20px var(--qd-aura,#b2b5ff),0 0 17px var(--qd-aura,#b2b5ff);opacity:.7}",
     ".ch-image-wrap{overflow:visible}.ch-image-wrap .ch-art{overflow:hidden;border-radius:12px}",
     ".ch-art.qdh-hero{overflow:visible}.ch-art.qdh-hero svg{display:block!important;width:100%;height:100%;max-height:none;overflow:visible;filter:drop-shadow(0 8px 8px #28274722)}",
+    ".ch-art.qdh-hero svg.qd-painted-stage{overflow:hidden!important;max-width:100%;max-height:100%;clip-path:inset(0 0 0 0)}",
     ".ch-collection-divider{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:16px 1px 10px;font-size:13px;font-weight:850;color:#5748b7}",
     ".ch-collection-divider small{font-size:11px;color:#9992bf;font-weight:600}",
     ".ch-pill{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:850;border-radius:30px;padding:6px 9px;display:inline-block;background:#fff;color:#594db4}",
