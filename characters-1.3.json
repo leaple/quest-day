@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "1.3.0",
+  "catalogVersion": "1.4.0",
   "locale": "ko-KR",
   "currencies": {
     "gold": "G",
@@ -727,6 +727,698 @@
         "pose": "두 팔을 천천히 벌린 채 수직으로 부유하며 발끝이 바닥에 닿지 않음",
         "bodySilhouette": "커다란 시계 광륜과 대칭적인 길고 하얀 옷자락"
       }
+    },
+    {
+      "id": "hero_aren",
+      "name": "아렌",
+      "role": "기사",
+      "collection": "vanguard",
+      "rarity": "epic",
+      "price": 240,
+      "tagline": "은빛 성기사의 맹세",
+      "skill": "강철 수호",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "bossQuestCompletions",
+            "min": 20
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "기사 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "bossQuestCompletions",
+            "min": 45
+          },
+          "visualChange": "은빛 견갑과 월계 장식"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "bossQuestCompletions",
+            "min": 90
+          },
+          "visualChange": "푸른 날개 갑주와 서광의 광륜"
+        }
+      ],
+      "visual": {
+        "silhouette": "기사 전투 판타지 외형",
+        "palette": [
+          "#6688cf",
+          "#d9eaff",
+          "#e4bf74"
+        ],
+        "prop": "강철 수호",
+        "mood": "은빛 성기사의 맹세",
+        "expressionTag": "굳은 결의",
+        "expression": "굳은 결의",
+        "pose": "폭넓은 검과 방패를 들고 전진",
+        "bodySilhouette": "기사 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_lyra",
+      "name": "리라",
+      "role": "마법사",
+      "collection": "vanguard",
+      "rarity": "epic",
+      "price": 260,
+      "tagline": "별을 해석하는 보랏빛 마도사",
+      "skill": "자수정 마법",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedByCategory:공부",
+            "min": 70
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "마법사 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedByCategory:공부",
+            "min": 125
+          },
+          "visualChange": "수정 지팡이와 마력의 어깨장식"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedByCategory:공부",
+            "min": 215
+          },
+          "visualChange": "별자리 왕관과 거대한 보랏빛 마법진"
+        }
+      ],
+      "visual": {
+        "silhouette": "마법사 전투 판타지 외형",
+        "palette": [
+          "#9a67e9",
+          "#f0d4ff",
+          "#3d2b7c"
+        ],
+        "prop": "자수정 마법",
+        "mood": "별을 해석하는 보랏빛 마도사",
+        "expressionTag": "신비로운 미소",
+        "expression": "신비로운 미소",
+        "pose": "공중에 떠서 지팡이로 별자리 소환",
+        "bodySilhouette": "마법사 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_kyle",
+      "name": "카일",
+      "role": "궁수",
+      "collection": "vanguard",
+      "rarity": "rare",
+      "price": 125,
+      "tagline": "숲바람을 따라 명중하는 사냥꾼",
+      "skill": "자연의 화살",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedQuests",
+            "min": 35
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "궁수 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 85
+          },
+          "visualChange": "장궁과 솔잎 망토"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 185
+          },
+          "visualChange": "녹빛 바람의 고리와 정령 활"
+        }
+      ],
+      "visual": {
+        "silhouette": "궁수 전투 판타지 외형",
+        "palette": [
+          "#5bba82",
+          "#d5f6a4",
+          "#295c40"
+        ],
+        "prop": "자연의 화살",
+        "mood": "숲바람을 따라 명중하는 사냥꾼",
+        "expressionTag": "자신감 있는 눈빛",
+        "expression": "자신감 있는 눈빛",
+        "pose": "활시위를 당기는 비스듬한 자세",
+        "bodySilhouette": "궁수 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_sera",
+      "name": "세라",
+      "role": "성녀",
+      "collection": "vanguard",
+      "rarity": "epic",
+      "price": 230,
+      "tagline": "새벽의 빛으로 동료를 응원해",
+      "skill": "치유의 서광",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "dailyGoalAchievedDays",
+            "min": 15
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "성녀 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "dailyGoalAchievedDays",
+            "min": 38
+          },
+          "visualChange": "하얀 성의와 빛나는 성배"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "dailyGoalAchievedDays",
+            "min": 85
+          },
+          "visualChange": "여섯 장의 황금빛 깃날개와 성광"
+        }
+      ],
+      "visual": {
+        "silhouette": "성녀 전투 판타지 외형",
+        "palette": [
+          "#e9d0a2",
+          "#fff4db",
+          "#94a9ef"
+        ],
+        "prop": "치유의 서광",
+        "mood": "새벽의 빛으로 동료를 응원해",
+        "expressionTag": "온화한 미소",
+        "expression": "온화한 미소",
+        "pose": "기도하며 빛의 파동을 펼치는 자세",
+        "bodySilhouette": "성녀 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_zed",
+      "name": "제드",
+      "role": "암살자",
+      "collection": "vanguard",
+      "rarity": "rare",
+      "price": 160,
+      "tagline": "어둠 속에서도 목표를 놓치지 않아",
+      "skill": "그림자 연무",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedInHourRange:19-24",
+            "min": 20
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "암살자 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedInHourRange:19-24",
+            "min": 48
+          },
+          "visualChange": "짙은 후드와 경량 단검"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedInHourRange:19-24",
+            "min": 95
+          },
+          "visualChange": "붉은 그림자 잔상과 검은 연무"
+        }
+      ],
+      "visual": {
+        "silhouette": "암살자 전투 판타지 외형",
+        "palette": [
+          "#b34f80",
+          "#f49cad",
+          "#301e45"
+        ],
+        "prop": "그림자 연무",
+        "mood": "어둠 속에서도 목표를 놓치지 않아",
+        "expressionTag": "날카로운 눈빛",
+        "expression": "날카로운 눈빛",
+        "pose": "낮은 자세에서 빠르게 방향 전환",
+        "bodySilhouette": "암살자 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_elin",
+      "name": "엘린",
+      "role": "정령술사",
+      "collection": "vanguard",
+      "rarity": "rare",
+      "price": 140,
+      "tagline": "반딧불과 나무의 목소리를 들어",
+      "skill": "숲 정령의 노래",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "bestStreakDays",
+            "min": 14
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "정령술사 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "bestStreakDays",
+            "min": 28
+          },
+          "visualChange": "작은 나뭇가지 지팡이와 꽃 장식"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "bestStreakDays",
+            "min": 50
+          },
+          "visualChange": "빛나는 사슴 정령과 생명의 원"
+        }
+      ],
+      "visual": {
+        "silhouette": "정령술사 전투 판타지 외형",
+        "palette": [
+          "#78c8b3",
+          "#f0ffdc",
+          "#4ba28d"
+        ],
+        "prop": "숲 정령의 노래",
+        "mood": "반딧불과 나무의 목소리를 들어",
+        "expressionTag": "환한 미소",
+        "expression": "환한 미소",
+        "pose": "한 손을 높이 들어 정령을 부르는 자세",
+        "bodySilhouette": "정령술사 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_rohan",
+      "name": "로한",
+      "role": "거너",
+      "collection": "vanguard",
+      "rarity": "rare",
+      "price": 175,
+      "tagline": "어려운 퀘스트에도 흔들림 없이",
+      "skill": "화염의 연금 장치",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "bossQuestCompletions",
+            "min": 10
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "거너 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "bossQuestCompletions",
+            "min": 28
+          },
+          "visualChange": "붉은 전투 코트와 마력 장치"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "bossQuestCompletions",
+            "min": 60
+          },
+          "visualChange": "거대한 화염의 원과 태양 엔진"
+        }
+      ],
+      "visual": {
+        "silhouette": "거너 전투 판타지 외형",
+        "palette": [
+          "#d96f48",
+          "#f5c89c",
+          "#4e3040"
+        ],
+        "prop": "화염의 연금 장치",
+        "mood": "어려운 퀘스트에도 흔들림 없이",
+        "expressionTag": "결연한 표정",
+        "expression": "결연한 표정",
+        "pose": "한 팔을 뻗어 마력 장치를 작동하는 자세",
+        "bodySilhouette": "거너 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_eve",
+      "name": "이브",
+      "role": "검성",
+      "collection": "vanguard",
+      "rarity": "epic",
+      "price": 280,
+      "tagline": "고요한 집중이 세상을 가르는 검이 돼",
+      "skill": "청명한 검기",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedByCategory:공부",
+            "min": 75
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "검성 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedByCategory:공부",
+            "min": 145
+          },
+          "visualChange": "푸른 쌍검과 청색 망토"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedByCategory:공부",
+            "min": 250
+          },
+          "visualChange": "푸른 용오름과 빛나는 검의 궤적"
+        }
+      ],
+      "visual": {
+        "silhouette": "검성 전투 판타지 외형",
+        "palette": [
+          "#6699e5",
+          "#ddeaff",
+          "#3b3f89"
+        ],
+        "prop": "청명한 검기",
+        "mood": "고요한 집중이 세상을 가르는 검이 돼",
+        "expressionTag": "차분한 결의",
+        "expression": "차분한 결의",
+        "pose": "검을 비스듬히 뻗고 한 발을 내딛는 자세",
+        "bodySilhouette": "검성 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_baruk",
+      "name": "바루크",
+      "role": "수호자",
+      "collection": "vanguard",
+      "rarity": "epic",
+      "price": 290,
+      "tagline": "절대 무너지지 않는 황금 방벽",
+      "skill": "대지의 방패",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedQuests",
+            "min": 90
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "수호자 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 170
+          },
+          "visualChange": "거대한 방패와 청금 갑옷"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 310
+          },
+          "visualChange": "황금 방벽과 여명빛 호위 광륜"
+        }
+      ],
+      "visual": {
+        "silhouette": "수호자 전투 판타지 외형",
+        "palette": [
+          "#d0a456",
+          "#fff0c9",
+          "#465381"
+        ],
+        "prop": "대지의 방패",
+        "mood": "절대 무너지지 않는 황금 방벽",
+        "expressionTag": "믿음직한 표정",
+        "expression": "믿음직한 표정",
+        "pose": "발을 넓게 벌리고 방패를 단단히 세움",
+        "bodySilhouette": "수호자 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_nia",
+      "name": "니아",
+      "role": "소환사",
+      "collection": "vanguard",
+      "rarity": "epic",
+      "price": 255,
+      "tagline": "작은 친구들의 힘을 하나로 모아",
+      "skill": "벚꽃 정령",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "createdQuestCount",
+            "min": 40
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "소환사 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "createdQuestCount",
+            "min": 80
+          },
+          "visualChange": "분홍색 소환서와 작은 정령"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "createdQuestCount",
+            "min": 150
+          },
+          "visualChange": "커다란 분홍 여우 정령과 꽃보라"
+        }
+      ],
+      "visual": {
+        "silhouette": "소환사 전투 판타지 외형",
+        "palette": [
+          "#e582b3",
+          "#ffe3f0",
+          "#ab5789"
+        ],
+        "prop": "벚꽃 정령",
+        "mood": "작은 친구들의 힘을 하나로 모아",
+        "expressionTag": "장난스러운 미소",
+        "expression": "장난스러운 미소",
+        "pose": "두 손을 벌려 정령을 부르는 자세",
+        "bodySilhouette": "소환사 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_sion",
+      "name": "시온",
+      "role": "흑마술사",
+      "collection": "vanguard",
+      "rarity": "legendary",
+      "price": 0,
+      "tagline": "끝없이 쌓인 노력이 심연을 밝힌다",
+      "skill": "황혼의 룬",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedQuests",
+            "min": 240
+          },
+          {
+            "metric": "currentLevel",
+            "min": 10
+          },
+          {
+            "metric": "claimedChallenges",
+            "min": 3
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "흑마술사 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 380
+          },
+          "visualChange": "검은 마도서와 검보랏빛 룬"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 620
+          },
+          "visualChange": "보랏빛 일식 광륜과 우주 마력"
+        }
+      ],
+      "visual": {
+        "silhouette": "흑마술사 전투 판타지 외형",
+        "palette": [
+          "#7a54bb",
+          "#dec9ff",
+          "#28234e"
+        ],
+        "prop": "황혼의 룬",
+        "mood": "끝없이 쌓인 노력이 심연을 밝힌다",
+        "expressionTag": "무표정",
+        "expression": "무표정",
+        "pose": "양손에 마력 구체를 띄우는 부유 자세",
+        "bodySilhouette": "흑마술사 진화형 실루엣"
+      }
+    },
+    {
+      "id": "hero_lumi",
+      "name": "루미",
+      "role": "드루이드",
+      "collection": "vanguard",
+      "rarity": "legendary",
+      "price": 0,
+      "tagline": "매일의 꾸준함이 숲을 되살려",
+      "skill": "생명의 순환",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "bestStreakDays",
+            "min": 35
+          },
+          {
+            "metric": "completedQuests",
+            "min": 160
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "드루이드 기본 의상과 고유 장비"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "bestStreakDays",
+            "min": 50
+          },
+          "visualChange": "나뭇가지 왕관과 여린 잎사귀"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "bestStreakDays",
+            "min": 75
+          },
+          "visualChange": "거대한 빛사슴 정령과 숲의 광륜"
+        }
+      ],
+      "visual": {
+        "silhouette": "드루이드 전투 판타지 외형",
+        "palette": [
+          "#8bbb76",
+          "#f3eec9",
+          "#456a4f"
+        ],
+        "prop": "생명의 순환",
+        "mood": "매일의 꾸준함이 숲을 되살려",
+        "expressionTag": "평화로운 표정",
+        "expression": "평화로운 표정",
+        "pose": "양팔을 펼쳐 자연 에너지를 감싸는 자세",
+        "bodySilhouette": "드루이드 진화형 실루엣"
+      }
     }
-  ]
+  ],
+  "newCollection": {
+    "id": "vanguard",
+    "title": "전투 영웅단",
+    "description": "기존 수호자에 더해 새롭게 합류한 12명의 판타지 영웅",
+    "count": 12,
+    "randomGacha": false,
+    "realMoneyPurchases": false
+  }
 }
