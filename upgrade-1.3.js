@@ -14,6 +14,9 @@
     ".ch-art[data-qdp-stage='2']::after{box-shadow:inset 0 0 15px var(--qd-aura,#b2b5ff),0 0 8px #b0d3ff88;opacity:.43}",
     ".ch-art[data-qdp-stage='3']::after{box-shadow:inset 0 0 20px var(--qd-aura,#b2b5ff),0 0 17px var(--qd-aura,#b2b5ff);opacity:.7}",
     ".ch-image-wrap{overflow:visible}.ch-image-wrap .ch-art{overflow:hidden;border-radius:12px}",
+    ".ch-art.qdh-hero{overflow:visible}.ch-art.qdh-hero svg{display:block!important;width:100%;height:100%;max-height:none;overflow:visible;filter:drop-shadow(0 8px 8px #28274722)}",
+    ".ch-collection-divider{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:16px 1px 10px;font-size:13px;font-weight:850;color:#5748b7}",
+    ".ch-collection-divider small{font-size:11px;color:#9992bf;font-weight:600}",
     ".ch-pill{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:850;border-radius:30px;padding:6px 9px;display:inline-block;background:#fff;color:#594db4}",
     ".ch-pill.common{color:#2c946e;background:#e4f7ed}.ch-pill.rare{color:#386bb1;background:#e6f1ff}.ch-pill.epic{color:#8352bf;background:#f0e7ff}.ch-pill.legendary{color:#956a19;background:#fff4d3}",
     ".ch-btn{border:0;border-radius:11px;padding:10px 12px;background:#7566e8;color:white;font-size:12px;font-weight:800;cursor:pointer}",
@@ -244,6 +247,7 @@
   }
 
   function warmPortrait(id) {
+    if(window.QuestDayHeroArt?.has(id))return;
     const key=portraitKey(id);
     if(readyPortraits.has(key) || failedPortraits.has(key) || warmingPortraits.has(key)) return;
     const image = new Image();
@@ -304,6 +308,9 @@
 
   function portrait(character) {
     const id=character.id,key=portraitKey(id),stage=portraitStage(id);
+    if(character.collection==="vanguard" && window.QuestDayHeroArt?.has(id)) {
+      return '<div class="ch-art qdh-hero" data-qdp-id="'+safe(id)+'" data-qdp-stage="'+stage+'">'+window.QuestDayHeroArt.draw(id,stage)+'</div>';
+    }
     const status=failedPortraits.has(key)?"failed":readyPortraits.has(key)?"ready":"loading";
     const svg=svgPortrait(character);
     const source=portraitSrc(id);
@@ -466,13 +473,16 @@
       store.innerHTML='<div class="ch-collection-header"><div><h2>🛍 캐릭터 상점</h2>'+
         '<div class="ch-note">갖고 싶은 수호자를 해금하고 성장시켜 보세요.</div></div>'+
         '<span class="ch-wallet">🪙 '+g+' G</span></div>'+
-        '<div class="ch-grid">'+catalog.map(cardMarkup).join("")+'</div>'+
+        '<div class="ch-collection-divider">🌿 기존 수호자 <small>12명</small></div>'+ 
+        '<div class="ch-grid">'+catalog.filter(c=>c.collection!=="vanguard").map(cardMarkup).join("")+'</div>'+
+        '<div class="ch-collection-divider">⚔️ 신규 전투 영웅단 <small>12명 · 3단계 진화</small></div>'+ 
+        '<div class="ch-grid">'+catalog.filter(c=>c.collection==="vanguard").map(cardMarkup).join("")+'</div>'+
         '<p class="ch-note" style="margin-top:12px">모든 캐릭터는 앱 안에서만 사용하는 가상 골드로 획득할 수 있어요.</p>';
     }
 
-    const tabs=[["all","전체"],["owned","보유"],["common","COMMON"],["rare","RARE"],["epic","EPIC"],["legendary","LEGENDARY"]];
+    const tabs=[["all","전체"],["owned","보유"],["original","기존 수호자"],["vanguard","전투 영웅단"],["common","COMMON"],["rare","RARE"],["epic","EPIC"],["legendary","LEGENDARY"]];
     const filtered=catalog.filter(c=>categoryFilter==="all" ||
-      (categoryFilter==="owned"?owned(c):c.rarity===categoryFilter));
+      (categoryFilter==="owned"?owned(c):categoryFilter==="original"?c.collection!=="vanguard":categoryFilter==="vanguard"?c.collection==="vanguard":c.rarity===categoryFilter));
     collection.innerHTML='<div class="ch-collection-header"><div><h2>✦ 수호자 도감</h2>'+
       '<div class="ch-note">보유 '+obtained+'/'+catalog.length+' · 나만의 모험 동료 컬렉션</div></div>'+
       '<span class="ch-wallet">🪙 '+g+' G</span></div>'+
