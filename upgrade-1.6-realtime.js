@@ -37,6 +37,7 @@
    !cfg.publishableKey.includes("service_role")&&!cfg.publishableKey.startsWith("sb_secret_");
  const configured=URL_OK&&KEY_OK;
  const CONSENT_KEY="quest-day-realtime-opt-in-v1";
+ const SYNC_HOLD_KEY="qd18-remote-profile-sync-hold-v1";
  const OFFLINE_KEY="quest-day-realtime-offline-choice-v1";
  let client=null,me=null,invite="",channel=null,started=false,connecting=false,online=false;
  let requests=[],contacts=[],lastSync="",lastPublished="",syncTimer=null,pollTimer=null,refreshTimer=null;
@@ -158,7 +159,9 @@
    }
  }
  async function publish(force=false){
-   if(!client||!me)return;
+   // A recovered social account may hold more progress than the local device.
+   // Never overwrite its remote summary until the user explicitly chooses to.
+   if(!client||!me||localStorage.getItem(SYNC_HOLD_KEY)==="yes")return;
    const data=stats();
    const signature=JSON.stringify(data);
    if(!force&&lastPublished===signature)return;
@@ -406,6 +409,7 @@
        await client.auth.signOut();
        lastPublished="";invite="";contacts=[];requests=[];
        await stop();
+       localStorage.removeItem(SYNC_HOLD_KEY);
        alert("서버의 공유 정보를 삭제했어요. 로컬 퀘스트는 유지돼요.");
      }
    }catch(e){showError(e);alert("실시간 기능 오류: "+(e.message||"연결을 확인해 주세요."));}
@@ -474,12 +478,30 @@
      else if(localStorage.getItem(CONSENT_KEY)!=="yes")beforeStart();
    }
  };
+ async function switchIdentity(){
+   // Supabase auth session was intentionally changed by explicit sign-in.
+   // Stop old subscriptions; reload all social data with the new user id.
+   clearTimeout(syncTimer);clearTimeout(refreshTimer);clearTimeout(reconnectTimer);
+   clearInterval(pollTimer);reconnectTimer=null;
+   if(channel&&client)client.removeChannel(channel);
+   channel=null;started=false;online=false;connecting=false;
+   me=null;contacts=[];requests=[];invite="";lastPublished="";
+   window.dispatchEvent(new CustomEvent("qd:realtime-stopped"));
+   await start();
+ }
  window.QuestDayRealtime={
    getClient:()=>client,
    getUser:()=>me,
    isReady:()=>started,
    getFriends:()=>contacts.slice(),
-   refreshFriends:()=>reload()
+   refreshFriends:()=>reload(),
+   switchIdentity,
+   isProfileSyncHeld:()=>localStorage.getItem(SYNC_HOLD_KEY)==="yes",
+   resumeProfileSync:async()=>{
+     localStorage.removeItem(SYNC_HOLD_KEY);
+     await publish(true);
+     await reload();
+   }
  };
  if(configured&&localStorage.getItem(CONSENT_KEY)==="yes")start();
 })();
