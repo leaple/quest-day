@@ -25,18 +25,26 @@
     hero_rohan:[3,0], hero_eve:[3,1], hero_baruk:[3,2],
     hero_nia:[4,0], hero_sion:[4,1], hero_lumi:[4,2]
   });
-  const PAINTED_ART_VERSION = "20261115-7";
+  const PAINTED_ART_VERSION = "20261115-9";
   function paintedPortrait(id,stage){
     const coords=paintedRoster[id];
     if(!coords)return "";
+    stage=Math.max(1,Math.min(3,Number(stage)||1));
     const x=(stage-1)*360,y=coords[1]*450;
-    const src="./art/painted/heroes-"+coords[0]+".webp?v="+PAINTED_ART_VERSION;
+    const fallback="./art/painted/heroes-"+coords[0]+".webp?v="+PAINTED_ART_VERSION;
+    // 36 independently exported files, produced by export-hero-portraits.yml.
+    // The older group atlas remains clipped behind each image until the new
+    // individual file loads (and as a safe fallback for an offline update).
+    const individual="./art/painted/individual/"+id+"-stage"+stage+".webp?v=20261115-9";
+    const clip="qd-painted-cell-"+id+"-s"+stage;
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" '+
-      'role="img" aria-label="진화 '+stage+'단계 원화" class="qd-painted-stage" '+
-      'data-painted-hero="'+id+'" data-painted-stage="'+stage+'">'+
-      '<defs><clipPath id="qd-painted-cell"><rect x="0" y="0" width="360" height="450"/></clipPath></defs>'+
-      '<g clip-path="url(#qd-painted-cell)"><image href="'+src+'" x="-'+x+'" y="-'+y+'" width="1080" height="1350" '+
-      'preserveAspectRatio="none" /></g></svg>';
+      'role="img" aria-label="진화 '+stage+'단계 단독 원화" class="qd-painted-stage" '+
+      'data-painted-hero="'+id+'" data-painted-stage="'+stage+'" overflow="hidden">'+
+      '<defs><clipPath id="'+clip+'"><rect x="0" y="0" width="360" height="450"/></clipPath></defs>'+
+      '<g clip-path="url(#'+clip+')">'+
+      '<image href="'+fallback+'" x="-'+x+'" y="-'+y+'" width="1080" height="1350" preserveAspectRatio="none"/>'+
+      '<image href="'+individual+'" x="0" y="0" width="360" height="450" preserveAspectRatio="xMidYMid meet"/>'+
+      '</g></svg>';
   }
   const cache = new Map();
   function path(d,fill,stroke,width,extra){
