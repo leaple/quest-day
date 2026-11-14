@@ -168,7 +168,7 @@
     button("회원가입","signup","alt")+
     button("이전 화면","back","ghost");
   if(mode==="signup"||mode==="link")return field("qd20Email","이메일","email","name@example.com","email",'maxlength="180" inputmode="email"')+
-    (mode==="signup"?field("qd20Password","새 비밀번호 (12자 이상)","password","12자 이상","new-password",'minlength="12" maxlength="128"'):"")+
+    (mode==="signup"?field("qd20Password","새 비밀번호 (10자 이상)","password","10자 이상","new-password",'minlength="10" maxlength="128"'):"")+
     button(mode==="link"?"기존 계정에 이메일 연결":"가입하고 인증 메일 받기","submitSignup")+
     button("이미 가입한 이메일로 로그인","login","alt")+
     button("뒤로","back","ghost");
@@ -181,7 +181,7 @@
   if(mode==="authError")return button("인증 다시 시도","signup")+
     button("기존 계정 로그인","login","alt")+
     button("게스트로 돌아가기","guest","ghost");
-  if(mode==="finishLink"||mode==="password")return field("qd20Password","새 비밀번호 (12자 이상)","password","12자 이상","new-password",'minlength="12" maxlength="128"')+
+  if(mode==="finishLink"||mode==="password")return field("qd20Password","새 비밀번호 (10자 이상)","password","10자 이상","new-password",'minlength="10" maxlength="128"')+
     button("새 비밀번호 저장","savePassword")+
     (mode==="finishLink"?button("나중에 설정 (다른 기기 로그인은 아직 불가)","finishLinked","ghost"):button("계정 관리로 돌아가기","back","ghost"));
   if(mode==="account"){
@@ -261,7 +261,7 @@
   };
  }
  function guardEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)&&v.length<=180;}
- function guardPass(v){return typeof v==="string"&&v.length>=12&&v.length<=128;}
+ function guardPass(v){return typeof v==="string"&&v.length>=10&&v.length<=128;}
  async function client(){return bridge.ensureClient();}
  function fail(e){
   const msg=e?.message||String(e||"인증 처리 중 오류가 발생했어요.");
@@ -323,7 +323,7 @@
    flow="link";mode="verifyLink";noticeText="기존 게스트 계정의 친구·게임 기록을 유지해요. 메일의 Confirm Email 링크를 열고, 이 화면에서 인증 상태를 확인하세요.";
    render();return;
   }
-  if(!guardPass(values.password))throw Error("비밀번호는 12~128자로 입력해 주세요.");
+  if(!guardPass(values.password))throw Error("비밀번호는 10~128자로 입력해 주세요.");
   const result=await sup.auth.signUp({
    email:values.email,password:values.password,
    options:{emailRedirectTo:window.location.origin+window.location.pathname}
@@ -377,7 +377,7 @@
   }
  }
  async function savePassword(values){
-  if(!guardPass(values.password))throw Error("비밀번호를 12~128자로 설정해 주세요.");
+  if(!guardPass(values.password))throw Error("비밀번호를 10~128자로 설정해 주세요.");
   const changing=mode==="password";
   const sup=await client(),userResult=await sup.auth.getUser();
   const u=userResult.data?.user;
