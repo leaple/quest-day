@@ -303,17 +303,22 @@
  // forced through an irreversible registration screen after an update.
  const legacy=localHasHistory();
  if(!localStorage.getItem(DONE)&&legacy)localStorage.setItem(DONE,"existing");
- if(!localStorage.getItem(DONE)){
-  show("welcome");
+ // Also finish a signup email callback when the user started from guest mode.
+ // This is intentionally scoped to an Auth callback: ordinary returning guests
+ // are never silently converted into a different account.
+ const hasAuthCallback=/(?:^|[?&#])(?:code|access_token|token_hash)=/.test(
+  window.location.search+window.location.hash);
+ if(!localStorage.getItem(DONE)||hasAuthCallback){
+  if(!localStorage.getItem(DONE))show("welcome");
   const ticket=++requestId;
   (async()=>{
    try{
     const sup=await client();
     const session=await sup.auth.getSession();
-    if(ticket!==requestId||root.hidden)return;
+    if(ticket!==requestId)return;
     const id=session.data?.session?.user?.id;
     if(id&&!session.data.session.user.is_anonymous){
-     await activate(id,null);
+     await activate(id,bridge.getUser()?.id||null);
     }
    }catch(e){
     // Guest play remains available offline or if the auth CDN cannot load.
