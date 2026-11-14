@@ -222,6 +222,14 @@
    applyRemote(remote,false);
    markSynced(remote,serverRev);return;
   }
+  // The device changed offline, but the server still has the same revision:
+  // keep this device's new progress and upload it automatically, without a prompt.
+  if(meta.userId===user && Number(meta.revision)===serverRev){
+   rev=serverRev;base=remote;
+   metaWrite(user,serverRev,JSON.stringify(remote));
+   ready=true;blocked=false;dirty=true;issue="";
+   schedulePush();draw();return;
+  }
   if(base&&meta.userId===user){
    const merged=merge3(base,local,remote);
    if(merged!==UNRESOLVED&&valid(merged)){
