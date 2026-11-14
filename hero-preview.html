@@ -15,6 +15,7 @@ h2{font-size:16px;margin:0}.pill{font-size:10px;color:#f6dea3;border:1px solid #
 .stage{border-radius:12px;overflow:hidden;background:radial-gradient(circle at 50% 43%,#56567e,#282944 76%);border:1px solid #484764;padding:6px 2px 4px;text-align:center;cursor:zoom-in}
 .stage svg{width:100%;height:auto;max-height:215px;display:block}
 .stage span{display:block;font-size:12px;color:#d8d3ef;font-weight:650}
+.stage a{display:inline-block;margin:4px 0 2px;color:#dbcaff;font-size:11px;text-decoration:underline;text-underline-offset:3px}
 .note{color:#a9a9bf;font-size:11px;margin-top:7px;min-height:30px}
 #zoom{display:none;position:fixed;inset:0;z-index:90;align-items:center;justify-content:center;background:#10111bec;padding:22px}
 #zoom.open{display:flex}#zoom .picture{height:min(87vh,760px);max-width:90vw;aspect-ratio:5/5.6;background:radial-gradient(circle,#585274,#24253c);border-radius:18px}
@@ -42,7 +43,7 @@ h2{font-size:16px;margin:0}.pill{font-size:10px;color:#f6dea3;border:1px solid #
 <p>본 페이지는 게임에 실제 적용된 원화풍 캐릭터 일러스트입니다. 진화 단계별 모습을 눌러 확대할 수 있습니다.</p></div><a href="./index.html">게임으로 돌아가기</a></header>
 <div id="gallery"><p>캐릭터를 불러오는 중...</p></div></main>
 <div id="zoom" role="dialog" aria-modal="true" aria-label="영웅 일러스트 확대 보기"><button id="exit">닫기 ×</button><div class="picture"></div></div>
-<script src="./hero-portraits.js?v=20261115-7"></script>
+<script src="./hero-portraits.js?v=20261115-10"></script>
 <script>
 (async()=>{
 const box=document.getElementById('gallery'),overlay=document.getElementById('zoom'),picture=overlay.querySelector('.picture');
@@ -62,6 +63,13 @@ try{
   for(let stage=1;stage<=3;stage++){
     const panel=document.createElement('div');panel.className='stage';panel.innerHTML=window.QuestDayHeroArt.draw(c.id,stage);
     const label=document.createElement('span');label.textContent='진화 '+stage+'/3';panel.append(label);
+    const stageLink=document.createElement('a');
+    stageLink.href='./art/painted/individual/'+c.id+'-stage'+stage+'.webp?v=20261115-10';
+    stageLink.textContent='개별 원화 보기';
+    stageLink.target='_blank';
+    stageLink.rel='noopener';
+    stageLink.onclick=(event)=>event.stopPropagation();
+    panel.append(stageLink);
     panel.onclick=()=>{picture.className='picture';picture.innerHTML=window.QuestDayHeroArt.draw(c.id,stage);overlay.classList.add('open')};
     stages.append(panel);
   }
