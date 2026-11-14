@@ -8,6 +8,7 @@
  if(!bridge||!bridge.ensureClient)return;
  const DONE="qd20-onboarding-complete-v1";
  const CONSENT="quest-day-realtime-opt-in-v1";
+ const AUTO_FLAG="qd21-realtime-autoconnect-v1";
  const CLOUD="qd19-game-cloud-consent-v1:";
  const HOLD="qd18-remote-profile-sync-hold-v1";
  const SETTINGS=document.getElementById("settings");
@@ -92,7 +93,10 @@
   }
  }
  const localHasHistory=()=>{
-  if(localStorage.getItem(CONSENT)==="yes")return true;
+  // Automatic realtime connection is not evidence of an existing player.
+  // Preserve legacy manual opt-in sessions, but still show onboarding to
+  // brand-new visitors whose anonymous session was just created at startup.
+  if(localStorage.getItem(CONSENT)==="yes"&&localStorage.getItem(AUTO_FLAG)!=="yes")return true;
   if(localStorage.getItem("quest-day-realtime-offline-choice-v1")==="yes")return true;
   try{
    const meta=JSON.parse(localStorage.getItem("qd19-game-cloud-meta-v1")||"null");
@@ -180,8 +184,9 @@
    '<div class="qd20-card">'+content()+
    (error?'<div class="qd20-error" role="alert">'+safe(error)+'</div>':"")+
    (noticeText?'<div class="qd20-notice" role="status">'+safe(noticeText)+'</div>':"")+
-   '</div><p class="qd20-foot">게스트 기록은 계정 연결 전까지 다른 기기에서 복구할 수 없어요.<br>'+
-   '이메일·비밀번호는 Supabase 인증 서비스에서 처리하며 게임 기록에 저장하지 않아요.</p></div>';
+   '</div><p class="qd20-foot">앱을 실행하면 서버에 자동 연결돼요. 게스트는 임시 익명 계정을 사용해요.<br>'+
+   '친구로 수락된 상대에게 닉네임·성장 요약이 공유될 수 있어요.<br>'+
+   '게스트 기록은 계정 연결 전까지 다른 기기에서 복구할 수 없어요.</p></div>';
   if(document.getElementById("qd20Email")&&emailDraft)
    document.getElementById("qd20Email").value=emailDraft;
  }
