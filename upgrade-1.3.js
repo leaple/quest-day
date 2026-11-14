@@ -226,7 +226,7 @@
   function portraitSrc(id) {
     const stage=portraitStage(id);
     if(stagedArt[id]?.has(stage))
-      return "./art/evolution/"+encodeURIComponent(id)+"-stage"+stage+".svg?v=33";
+      return "./art/evolution/"+encodeURIComponent(id)+"-stage"+stage+".svg?v=34";
     return "./art/"+encodeURIComponent(id)+".png?v="+PORTRAIT_VERSION;
   }
 
