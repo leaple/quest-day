@@ -160,8 +160,10 @@
  }
  async function publish(force=false){
    // A recovered social account may hold more progress than the local device.
-   // Never overwrite its remote summary until the user explicitly chooses to.
+   // Don't update public XP until private full-game data is restored.
    if(!client||!me||localStorage.getItem(SYNC_HOLD_KEY)==="yes")return;
+   if(localStorage.getItem("qd19-game-cloud-consent-v1:"+me.id)==="yes" &&
+      !window.QuestDayCloud?.ready)return;
    const data=stats();
    const signature=JSON.stringify(data);
    if(!force&&lastPublished===signature)return;
