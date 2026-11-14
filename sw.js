@@ -1,5 +1,5 @@
 /* QUEST DAY 1.1 — network first, offline fallback */
-const CACHE_NAME = "quest-day-cache-v22";
+const CACHE_NAME = "quest-day-cache-v23";
 const FILES = [
   "./",
   "./index.html",
@@ -12,11 +12,11 @@ const FILES = [
   "./upgrade-1.4.js",
   "./upgrade-1.5-friends.js",
   "./realtime-config.js?v=20261114-1",
-  "./upgrade-1.6-realtime.js?v=20261114-8",
+  "./upgrade-1.6-realtime.js?v=20261114-13",
   "./upgrade-1.7-social.js?v=20261114-6",
-  "./upgrade-1.8-stability.js?v=20261114-7",
+  "./upgrade-1.8-stability.js?v=20261114-13",
   "./upgrade-1.9-cloud.js?v=20261114-8",
-  "./upgrade-2.0-auth.js?v=20261114-12",
+  "./upgrade-2.0-auth.js?v=20261114-13",
   "./characters-1.3.json",
   "./art/sprout.png?v=4",
   "./art/paper_messenger.png?v=4",
