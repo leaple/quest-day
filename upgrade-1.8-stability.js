@@ -42,21 +42,20 @@
        " · 다른 기기에서 로그인하려면 비밀번호 설정도 완료해 주세요.";
     }
     if(currentUser.new_email)return "새 이메일 인증 대기 중이에요. 메일함에서 인증을 완료해 주세요.";
-    return "현재 익명 친구 계정이에요. 앱 데이터가 지워지면 친구 계정을 되찾기 어려울 수 있어요.";
+    return "현재 익명 QUEST DAY 계정이에요. 이메일 인증 전에는 기기를 바꾸거나 앱 데이터를 삭제하면 계정을 복구할 수 없어요.";
   }
   function render(){
     const locked=bridge.isProfileSyncHeld?.();
-    box.innerHTML='<h3>🔐 친구 계정 보호 · QUEST DAY 1.8</h3>'+
-      '<p>현재 친구 계정을 이메일로 보호하면 기기를 바꾸었을 때 다시 로그인할 수 있어요. '+
+    box.innerHTML='<h3>🔐 QUEST DAY 계정 보호</h3>'+
+      '<p>현재 QUEST DAY 계정에 이메일과 비밀번호를 연결하면 다른 기기에서 로그인할 수 있어요. '+
       '이메일 연결은 선택 사항이고, 기존 익명 모드도 계속 사용할 수 있어요.</p>'+
       '<div class="qd18-state">'+safe(status())+'</div>'+
-      '<div class="qd18-warning">⚠️ 친구 계정과 게임 저장 데이터는 달라요. '+
-      '이 기능으로 친구·채팅 계정을 다시 로그인할 수 있지만, 이 기기에 저장된 퀘스트·골드·캐릭터 기록이 다른 기기에 자동 복원되는 것은 아니에요. '+
-      '기기를 옮기기 전에는 설정의 <strong>데이터 백업</strong>도 이용해 주세요.</div>'+
-      (locked?'<div class="qd18-warning">🔒 다른 기기에서 친구 계정을 복구했어요. '+
-      '복구 전 서버에 있던 레벨·XP를 덮어쓰지 않도록 이 기기의 성장 정보 업로드는 일시 중지했어요.<div>'+
-      '<button data-qd18="resumeSync">이 기기의 성장 기록으로 동기화 재개</button></div></div>':"")+
-      '<details><summary>1. 현재 친구 계정을 이메일로 보호하기 (선택)</summary>'+
+      '<div class="qd18-warning">☁️ 위의 <strong>계정 전체 데이터 동기화</strong>를 활성화하면 '+
+      '퀘스트·골드·캐릭터까지 계정에 저장되고 다른 기기에서 이어서 사용할 수 있어요. '+
+      '이메일 인증과 비밀번호 설정을 완료해야 다른 기기에서 같은 계정으로 로그인할 수 있어요.</div>'+
+      (locked?'<div class="qd18-warning">🔒 계정 전환 후 기존 서버 기록을 보호하고 있어요. '+
+      '위의 클라우드 동기화 화면에서 기존 기록을 불러오거나 충돌을 해결해 주세요.</div>':"")+
+      '<details><summary>1. 현재 QUEST DAY 계정에 이메일 연결 (선택)</summary>'+
       '<p>Supabase에서 Email 로그인을 활성화하고, Authentication 설정의 Manual Linking을 허용해야 할 수 있어요. '+
       '이메일은 Supabase 인증에만 사용하고 친구에게 공개되지 않아요.</p>'+
       '<label for="qd18LinkEmail">본인이 관리하는 이메일</label>'+
@@ -72,15 +71,15 @@
       '<label for="qd18NewPassword">이메일 인증 후 설정할 새 비밀번호 (12자 이상)</label>'+
       '<input id="qd18NewPassword" type="password" autocomplete="new-password" minlength="12" maxlength="128">'+
       '<button data-qd18="password" type="button">계정 비밀번호 설정</button></details>'+
-      '<details><summary>2. 다른 기기에서 기존 친구 계정으로 로그인하기</summary>'+
+      '<details><summary>2. 다른 기기에서 QUEST DAY 계정으로 로그인하기</summary>'+
       '<p>원래 기기에서 이메일 인증과 비밀번호 설정을 완료한 경우에만 이용할 수 있어요. '+
-      '이 기기의 익명 친구 계정은 교체되지만, 로컬 퀘스트·골드·캐릭터 저장 데이터는 그대로 남아요. '+
-      '로그인 전에 백업해 두는 것을 권장해요.</p>'+
+      '이 기기의 로컬 데이터는 바로 삭제하지 않으며, 계정의 클라우드 게임 기록을 확인한 후 안전하게 가져와요. '+
+      '서로 다른 게임 기록이 있으면 선택할 수 있도록 안내해요.</p>'+
       '<label for="qd18LoginEmail">계정 이메일</label>'+
       '<input id="qd18LoginEmail" type="email" autocomplete="username" maxlength="180" placeholder="example@email.com">'+
       '<label for="qd18LoginPassword">비밀번호</label>'+
       '<input id="qd18LoginPassword" type="password" autocomplete="current-password" maxlength="128">'+
-      '<button data-qd18="login" type="button">기존 친구 계정으로 로그인</button></details>'+
+      '<button data-qd18="login" type="button">QUEST DAY 계정으로 로그인</button></details>'+
       '<p>이메일·비밀번호는 이 앱의 로컬 퀘스트 저장 데이터에 넣지 않아요. '+
       '복구 정보 분실 시에는 프로젝트의 인증 설정에 따라 별도 비밀번호 재설정이 필요할 수 있어요.</p>'+
       (notice?'<div class="qd18-feedback" role="status" style="'+(noticeIsError?'color:#ac3655;background:#fff0f4':'')+'">'+safe(notice)+'</div>':"");
@@ -134,7 +133,7 @@
       }else if(name==="login"){
         const email=fields.loginEmail.toLowerCase();
         if(!validEmail(email)||!fields.loginPassword)throw Error("이메일과 비밀번호를 확인해 주세요.");
-        if(!confirm("현재 이 기기의 친구 로그인 계정을 교체할까요?\n\n이 기기의 퀘스트·골드·캐릭터 데이터는 그대로 남지만, 다른 기기의 게임 기록이 자동 복원되지는 않아요. 새 친구 계정의 서버 XP를 덮어쓰지 않도록 자동 업로드를 중지해 둘게요."))return;
+        if(!confirm("이 기기에서 기존 QUEST DAY 계정으로 로그인할까요?\n\n기기의 게임 기록은 먼저 유지하고, 서버 기록과 비교한 뒤 안전하게 동기화할게요."))return;
         const oldId=bridge.getUser()?.id;
         const result=await userClient().auth.signInWithPassword({
           email,password:fields.loginPassword
@@ -142,13 +141,16 @@
         if(result.error)throw result.error;
         const newId=result.data?.user?.id;
         if(!newId)throw Error("로그인 결과를 확인할 수 없어요.");
-        if(newId!==oldId)localStorage.setItem(HOLD_KEY,"yes");
+        if(newId!==oldId){
+          localStorage.setItem(HOLD_KEY,"yes");
+          localStorage.setItem("qd19-game-cloud-consent-v1:"+newId,"yes");
+        }
         await bridge.switchIdentity();
         if(!bridge.isReady())throw Error("로그인했지만 친구 서버를 다시 연결하지 못했어요. 친구 탭에서 연결 상태를 확인해 주세요.");
         await updateStatus();
         report(newId===oldId?
-          "같은 친구 계정으로 로그인했어요.":
-          "친구 계정 로그인을 완료했어요. 기존 서버의 XP를 보호하기 위해 이 기기에서는 성장 기록 업로드가 중지돼 있어요. 로컬 백업을 확인한 후 동기화를 재개할 수 있어요.");
+          "같은 QUEST DAY 계정으로 로그인했어요.":
+          "QUEST DAY 계정으로 로그인했어요. 계정 게임 기록을 가져오고 있으니 위의 클라우드 동기화 상태를 확인해 주세요. 충돌이 나면 두 기록을 보존한 뒤 선택할 수 있어요.");
       }else if(name==="resumeSync"){
         if(!bridge.isProfileSyncHeld?.())return;
         let remoteXP=null;
