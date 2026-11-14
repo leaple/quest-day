@@ -32,6 +32,28 @@
     ".qd14-evo-celebrate{background:radial-gradient(circle at 50% 10%,#6255a5,#1c1e3e);color:white;border-radius:24px;text-align:center;overflow:hidden;position:relative}",
     ".qd14-evo-celebrate h2{font-size:26px;color:white;margin:12px 0}.qd14-evo-celebrate p{color:#dbd5ff}",
     ".qd14-evo-spark{font-size:57px;animation:qd14-pop 1s ease-in-out infinite alternate}",
+    ".qd14-evo-celebrate{--qd14-evo-light:#b9a8ff;background:radial-gradient(circle at 50% 31%,#373c70 0%,#242646 46%,#15172c 100%);box-shadow:inset 0 0 45px #0006;padding:20px 18px 23px;isolation:isolate}",
+    ".qd14-evo-celebrate h2{position:relative;z-index:4;font-size:clamp(20px,5vw,27px);margin:6px 0 7px}.qd14-evo-celebrate p{position:relative;z-index:4;margin:8px 0;line-height:1.5}",
+    ".qd14-evo-overline{font-size:10px!important;letter-spacing:.22em;font-weight:850;color:#d6c9ff!important}",
+    ".qd14-evo-scene{height:min(50vh,280px);min-height:205px;max-width:350px;margin:4px auto 4px;position:relative;display:grid;place-items:center;isolation:isolate}",
+    ".qd14-evo-scene::before{content:'';position:absolute;inset:5% 8%;background:radial-gradient(ellipse,var(--qd14-evo-light),transparent 66%);opacity:.2;animation:qd14-aura-bloom 2.3s both;pointer-events:none}",
+    ".qd14-evo-orbit{position:absolute;inset:5% 13%;border-radius:50%;border:2px solid var(--qd14-evo-light);box-shadow:0 0 19px var(--qd14-evo-light),inset 0 0 19px #ffffff33;opacity:0;animation:qd14-orbit-bloom 2.3s both;pointer-events:none}",
+    ".qd14-evo-orbit::before,.qd14-evo-orbit::after{content:'✦';position:absolute;color:#fff6d1;text-shadow:0 0 13px var(--qd14-evo-light);font-size:22px}.qd14-evo-orbit::before{top:-12px;left:47%}.qd14-evo-orbit::after{bottom:8px;right:3%}",
+    ".qd14-evo-figure{position:absolute;inset:0;display:grid;place-items:center;overflow:visible;pointer-events:none}",
+    ".qd14-evo-figure svg,.qd14-evo-figure img{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block;overflow:visible;filter:drop-shadow(0 9px 18px #0009)}",
+    ".qd14-evo-before{animation:qd14-form-depart 1.5s both}.qd14-evo-after{opacity:0;animation:qd14-form-arrive 2.4s both}",
+    ".qd14-evo-flash{position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(circle,var(--qd14-evo-light) 0%,#fff9ed 13%,transparent 62%);opacity:0;animation:qd14-evo-flare 2.4s both;mix-blend-mode:screen}",
+    ".qd14-evo-motes{position:absolute;inset:0;z-index:2;pointer-events:none}.qd14-evo-motes i{position:absolute;left:var(--x);top:var(--y);width:6px;height:6px;background:#fff3ca;box-shadow:0 0 13px var(--qd14-evo-light);border-radius:1px;transform:rotate(45deg);opacity:0;animation:qd14-mote-rise 2.25s var(--delay) both}",
+    ".qd14-evo-stage-label{font-size:12px!important;color:#f6de9f!important;font-weight:800;letter-spacing:.04em}",
+    ".qd14-evo-celebrate .qd14-save{position:relative;z-index:4;min-height:43px;background:linear-gradient(110deg,#fff0c5,#c0adff);color:#31264f;font-weight:850}",
+    "@keyframes qd14-form-depart{0%,23%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}51%{opacity:.78;transform:translateY(-4px) scale(.93);filter:brightness(2)}70%,100%{opacity:0;transform:translateY(14px) scale(.76)}}",
+    "@keyframes qd14-form-arrive{0%,43%{opacity:0;transform:translateY(15px) scale(.8);filter:brightness(2)}64%{opacity:1;transform:translateY(-9px) scale(1.07);filter:brightness(1.4)}100%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}}",
+    "@keyframes qd14-orbit-bloom{0%,24%{opacity:0;transform:rotate(-20deg) scale(.5)}45%{opacity:.8;transform:rotate(35deg) scale(1.1)}74%{opacity:.45;transform:rotate(90deg) scale(1)}100%{opacity:.25;transform:rotate(105deg) scale(.96)}}",
+    "@keyframes qd14-aura-bloom{0%{opacity:.1;transform:scale(.5)}51%{opacity:.55;transform:scale(1.1)}100%{opacity:.2;transform:scale(1)}}",
+    "@keyframes qd14-evo-flare{0%,34%{opacity:0;transform:scale(.2)}47%{opacity:.85;transform:scale(.95)}64%,100%{opacity:0;transform:scale(1.4)}}",
+    "@keyframes qd14-mote-rise{0%,24%{opacity:0;transform:translateY(40px) rotate(0) scale(.2)}51%{opacity:1;transform:translateY(-10px) rotate(90deg) scale(1.2)}100%{opacity:0;transform:translateY(-95px) rotate(160deg) scale(.4)}}",
+    "@media(prefers-reduced-motion:reduce){.qd14-evo-celebrate .qd14-evo-scene *, .qd14-evo-scene::before,.qd14-evo-orbit{animation:none!important;transition:none!important}.qd14-evo-before{display:none}.qd14-evo-after{opacity:1!important;transform:none!important}.qd14-evo-flash,.qd14-evo-motes,.qd14-evo-orbit{display:none}}",
+    "@media(max-width:430px){.qd14-evo-scene{height:220px;min-height:200px}.qd14-evo-celebrate{padding:14px 12px 18px}}",
     "@keyframes qd14-pop{from{transform:translateY(5px) scale(.95);filter:brightness(1)}to{transform:translateY(-7px) scale(1.08);filter:brightness(1.25)}}",
     "@media(max-width:430px){.qd14-card{padding:12px}.qd14-calendar,.qd14-week{gap:3px}.qd14-day{min-height:55px;padding:6px 1px}.qd14-edit{padding:7px 6px}nav{gap:1px;padding-left:3px;padding-right:3px}nav button{flex:1;min-width:0;font-size:10px}}"
   ].join("");
@@ -424,6 +446,9 @@
     if(e.target===evoDialog || e.target.closest("[data-qd14-evo-close]"))
       evoDialog.classList.remove("open");
   });
+  document.addEventListener("keydown",function(event){
+    if(event.key==="Escape" && evoDialog.classList.contains("open"))evoDialog.classList.remove("open");
+  });
 
   function bestStreak(){
     const arr=[...new Set(state.events.map(e=>e.day))].sort();
@@ -469,14 +494,42 @@
     }
     return level;
   }
-  function showEvolution(character,level){
+  function evolutionArtwork(character, form) {
+    const id=character.id;
+    if(character.collection==="vanguard" && window.QuestDayHeroArt?.has(id)) {
+      return window.QuestDayHeroArt.draw(id,form);
+    }
+    // Original guardians retain their own existing stage artwork.
+    const url="./art/evolution/"+encodeURIComponent(id)+"-stage"+form+".svg?v=35";
+    return '<img src="'+url+'" alt="'+escapeHtml(character.name)+' 진화 '+form+'단계" loading="eager" decoding="async">';
+  }
+  function showEvolution(character,level,previous) {
+    const from=Math.max(1,Math.min(level-1,Number(previous)||level-1));
     const description=character.evolution?.find(e=>e.stage===level)?.visualChange || "성장의 빛이 반짝여요.";
-    evoDialog.innerHTML='<div class="qd14-dialog qd14-evo-celebrate">' +
-      '<div class="qd14-evo-spark">✨</div><p>CHARACTER EVOLVED</p>' +
+    const hue=character.visual?.palette?.[0]||"#baa0ff";
+    // Deterministic particles, no external assets and no infinite animation.
+    const particles=Array.from({length:14},(_,i)=>
+      '<i aria-hidden="true" style="--x:'+(9+(i*53)%83)+'%;--y:'+(15+(i*31)%76)+'%;--delay:'+(i%5*.09).toFixed(2)+'s"></i>').join("");
+    evoDialog.innerHTML='<div class="qd14-dialog qd14-evo-celebrate" style="--qd14-evo-light:'+escapeHtml(hue)+'">' +
+      '<p class="qd14-evo-overline">✦ CHARACTER EVOLVED ✦</p>' +
+      '<div class="qd14-evo-scene" aria-label="'+escapeHtml(character.name)+' 진화 '+from+'단계에서 '+level+'단계로 변화">' +
+      '<div class="qd14-evo-orbit" aria-hidden="true"></div>' +
+      '<div class="qd14-evo-figure qd14-evo-before" aria-hidden="true">'+evolutionArtwork(character,from)+'</div>' +
+      '<div class="qd14-evo-flash" aria-hidden="true"></div>' +
+      '<div class="qd14-evo-figure qd14-evo-after">'+evolutionArtwork(character,level)+'</div>' +
+      '<div class="qd14-evo-motes" aria-hidden="true">'+particles+'</div></div>' +
       '<h2>'+escapeHtml(character.name)+' 진화!</h2>'+
-      '<p>진화 '+level+'단계 달성</p><p>'+escapeHtml(description)+'</p>' +
-      '<button class="qd14-save" data-qd14-evo-close style="border:0;border-radius:12px;padding:12px 22px;margin-top:13px">계속 모험하기</button></div>';
+      '<p class="qd14-evo-stage-label">진화 '+level+'/3 단계 달성</p><p>'+escapeHtml(description)+'</p>'+
+      '<button class="qd14-save" type="button" data-qd14-evo-close style="border:0;border-radius:12px;padding:12px 22px;margin-top:13px">계속 모험하기</button></div>';
+    // Existing assets always have a safe PNG fallback on the main game screens.
+    evoDialog.querySelectorAll(".qd14-evo-figure img").forEach(image=>{
+      image.addEventListener("error",function(){
+        const backup="./art/"+encodeURIComponent(character.id)+".png?v=4";
+        if(!image.dataset.fallback){image.dataset.fallback="1";image.src=backup;}
+      });
+    });
     evoDialog.classList.add("open");
+    evoDialog.querySelector("[data-qd14-evo-close]")?.focus({preventScroll:true});
   }
   function updateEvolution(){
     if(!catalog || !state.rpg || !Array.isArray(state.events))return;
@@ -494,7 +547,7 @@
           state.rpg.evolutionSeen[c.id]=current;
           changed=true;
           const equipped=state.rpg.equipped==="starter"?"sprout":state.rpg.equipped;
-          if(equipped===c.id && !evoDialog.classList.contains("open"))showEvolution(c,current);
+          if(equipped===c.id && !evoDialog.classList.contains("open"))showEvolution(c,current,seen);
         }
       }
       if(changed){
