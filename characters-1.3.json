@@ -1,0 +1,672 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "1.3.0",
+  "locale": "ko-KR",
+  "currencies": {
+    "gold": "G",
+    "premiumCurrency": null,
+    "randomGacha": false,
+    "realMoneyPurchases": false
+  },
+  "artDirection": {
+    "title": "프리미엄 치비 판타지 — 일상을 함께하는 작은 수호자들",
+    "proportions": "머리:몸 약 1:1.2, 큰 표정, 각 캐릭터별 독특한 실루엣",
+    "presentation": "정면 3/4 뷰, 흰색 또는 투명 배경, 과장되지 않은 부드러운 음영, 카드형 도감",
+    "originality": "기존 게임의 캐릭터나 의상 디자인을 복제하지 않은 독자적 아트",
+    "rarityAccents": {
+      "common": "#83C8AA",
+      "rare": "#75A7E8",
+      "epic": "#B18AF9",
+      "legendary": "#E7C264"
+    },
+    "evolving": "1단계 기본 → 2단계 장식/소품 추가 → 3단계 고유 오라 및 배경 연출"
+  },
+  "playerStorage": {
+    "existingKey": "quest-day-mvp-v1",
+    "readPaths": [
+      "tasks",
+      "events",
+      "rpg.purchases",
+      "rpg.claimed",
+      "rpg.equipped"
+    ],
+    "newOptionalPaths": [
+      "rpg.characterEvolution",
+      "activityLog",
+      "rpg.collection"
+    ],
+    "compatibility": "기존 1.2 구매 기록과 장착 ID를 우선 인정한다. 구매 내역, 지불한 가격, XP, 골드, 이벤트를 소급 수정하거나 덮어쓰지 않는다.",
+    "legacyCharacterIds": [
+      "starter",
+      "forest",
+      "mage",
+      "ninja",
+      "knight",
+      "astronaut"
+    ],
+    "legacyOnlyItemPolicy": "astronaut는 신규 12종에 포함되지 않는 기존 1.2 전용 외형으로 계속 이용 가능하도록 유지한다.",
+    "legacyOwnershipPolicy": "legacyId가 일치하는 기존 구매자는 변경된 해금 조건이나 가격과 무관하게 해당 캐릭터를 계속 소유하며 장착할 수 있다.",
+    "balancePolicy": "기존 goldBalance 계산은 유지하고 새 캐릭터의 구매 이력만 purchases에 추가한다."
+  },
+  "metricDefinitions": {
+    "completedQuests": "state.events.length; 완료 취소 시 감소",
+    "completedByCategory": "완료 당시 category 스냅샷을 우선 집계, 없으면 현재 task.category 참고; 삭제된 과거 퀘스트는 범주 불명으로 처리",
+    "completedByFrequency": "완료 당시 frequency 스냅샷을 우선 집계, 없으면 현재 task.frequency 참고",
+    "completedInHourRange": "완료 시각의 지역시간 hour로 집계; 기존 날짜만 있는 기록은 시간대 불명으로 간주",
+    "createdQuestCount": "퀘스트 생성 로그 누적값. 신규 버전부터 기록; 현재 보유 퀘스트로 역사적 누적 생성 횟수를 추정하지 않음",
+    "dailyGoalAchievedDays": "하루가 끝날 때 목표 달성일 1회 기록(중복 방지); 1.1의 목표 변경 기록이 없으므로 과거를 추정하지 않음",
+    "bestStreakDays": "state.events의 날짜를 기준으로 계산한 역대 최장 연속 달성일",
+    "bossQuestCompletions": "완료 당시 원래 XP가 50인 퀘스트 수",
+    "currentLevel": "기존 levelInfo().level",
+    "claimedChallenges": "state.rpg.claimed 안에서 수령한 서로 다른 도전과제 수"
+  },
+  "acquisitionRules": {
+    "unlockAndPurchase": "free가 아닌 캐릭터는 해금 조건을 달성한 뒤 gold로 구매. 이미 소유한 캐릭터는 구매 재요구 없음.",
+    "legendary": "0G이지만 모든 해금 조건을 달성했을 때만 획득 가능",
+    "ownershipIsPermanent": true,
+    "noRandomizedPurchases": true,
+    "evolution": "캐릭터별 2·3단계 조건 달성 시 자동 진화. 현재 데이터로 검증할 수 없는 조건은 진행률 미확인으로 표시."
+  },
+  "characters": [
+    {
+      "id": "sprout",
+      "name": "새싹 모험가",
+      "rarity": "common",
+      "price": 0,
+      "tagline": "모든 모험은 작은 한 걸음에서 시작돼.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": []
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "작은 새싹 배낭과 연두 망토"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 10
+          },
+          "visualChange": "가방에 반짝이는 씨앗 배지"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 30
+          },
+          "visualChange": "풀잎 오라와 작은 꽃 정령"
+        }
+      ],
+      "visual": {
+        "silhouette": "둥근 머리와 콩잎 망토",
+        "palette": [
+          "#88C98A",
+          "#F5E8CF",
+          "#457E57"
+        ],
+        "prop": "새싹 배낭",
+        "mood": "호기심 많은 초보 수호자"
+      },
+      "legacyId": "starter"
+    },
+    {
+      "id": "paper_messenger",
+      "name": "종이비행기 메신저",
+      "rarity": "common",
+      "price": 30,
+      "tagline": "작은 일을 끝낼 때마다 한 장 더 날아올라.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedQuests",
+            "min": 5
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "크림 후드와 종이비행기 모자"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedByCategory:일상",
+            "min": 15
+          },
+          "visualChange": "접힌 종이 날개"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedByCategory:일상",
+            "min": 40
+          },
+          "visualChange": "반짝이는 편지와 흰 구름 꼬리"
+        }
+      ],
+      "visual": {
+        "silhouette": "삼각 종이비행기 모자",
+        "palette": [
+          "#F5E8CF",
+          "#A9CBED",
+          "#F5B76C"
+        ],
+        "prop": "봉투 가방",
+        "mood": "장난기 있는 배달 소년"
+      }
+    },
+    {
+      "id": "dawn_runner",
+      "name": "새벽 러너",
+      "rarity": "common",
+      "price": 40,
+      "tagline": "오늘의 첫 걸음부터 가볍게.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedInHourRange:05-11",
+            "min": 7
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "파란 후드와 운동화"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedInHourRange:05-11",
+            "min": 20
+          },
+          "visualChange": "바람 리본과 발광 신발끈"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedInHourRange:05-11",
+            "min": 50
+          },
+          "visualChange": "여명빛 구름과 바람의 고리"
+        }
+      ],
+      "visual": {
+        "silhouette": "커다란 스니커즈와 달리는 자세",
+        "palette": [
+          "#8DD3EC",
+          "#F7D58A",
+          "#475A98"
+        ],
+        "prop": "바람 스카프",
+        "mood": "활기차고 경쾌함"
+      }
+    },
+    {
+      "id": "sunset_scribe",
+      "name": "저녁 기록가",
+      "rarity": "common",
+      "price": 40,
+      "tagline": "오늘의 장면을 소중히 남겨.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedInHourRange:19-24",
+            "min": 7
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "노을 코트와 주머니 수첩"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedInHourRange:19-24",
+            "min": 20
+          },
+          "visualChange": "반짝이는 책갈피"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedInHourRange:19-24",
+            "min": 50
+          },
+          "visualChange": "따뜻한 달빛 램프와 공중 일기장"
+        }
+      ],
+      "visual": {
+        "silhouette": "큰 펜촉 머리장식",
+        "palette": [
+          "#E9A478",
+          "#724F89",
+          "#F2DDB0"
+        ],
+        "prop": "미니 수첩",
+        "mood": "차분하고 사려 깊음"
+      }
+    },
+    {
+      "id": "forest",
+      "name": "숲의 연금술사",
+      "rarity": "rare",
+      "price": 90,
+      "tagline": "꾸준함은 하루하루 자라는 마법이야.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "bestStreakDays",
+            "min": 7
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "큰 잎사귀 후드와 초록 병"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "bestStreakDays",
+            "min": 14
+          },
+          "visualChange": "빛나는 약병 두 개와 나뭇가지 지팡이"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "bestStreakDays",
+            "min": 30
+          },
+          "visualChange": "반딧불 정령과 숲빛 오라"
+        }
+      ],
+      "visual": {
+        "silhouette": "넓은 잎사귀 모자와 둥근 유리병",
+        "palette": [
+          "#64B890",
+          "#2D705C",
+          "#DFCF8C"
+        ],
+        "prop": "발광 유리병",
+        "mood": "신비롭고 따뜻함"
+      },
+      "legacyId": "forest"
+    },
+    {
+      "id": "clockkeeper",
+      "name": "시계탑 관리자",
+      "rarity": "rare",
+      "price": 100,
+      "tagline": "시간을 친구로 삼는 모험가.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedByFrequency:weekly",
+            "min": 5
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "톱니 베레모와 시계 태엽"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedByFrequency:weekly",
+            "min": 12
+          },
+          "visualChange": "회전하는 작은 시계 장치"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedByFrequency:weekly",
+            "min": 30
+          },
+          "visualChange": "하늘색 시간의 고리와 황금 태엽"
+        }
+      ],
+      "visual": {
+        "silhouette": "기어 장식 모자와 큰 시계 펜던트",
+        "palette": [
+          "#D4B77B",
+          "#6A829E",
+          "#F5EAD5"
+        ],
+        "prop": "태엽 시계",
+        "mood": "꼼꼼하고 기품 있음"
+      }
+    },
+    {
+      "id": "star_scribe",
+      "name": "별조각 서기",
+      "rarity": "rare",
+      "price": 95,
+      "tagline": "기록한 꿈은 길을 잃지 않아.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "createdQuestCount",
+            "min": 20
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "보랏빛 잉크펜과 별 쪽지"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "createdQuestCount",
+            "min": 50
+          },
+          "visualChange": "공중에 떠 있는 메모 조각"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "createdQuestCount",
+            "min": 100
+          },
+          "visualChange": "은하수 잉크와 작은 책 정령"
+        }
+      ],
+      "visual": {
+        "silhouette": "펜촉 귀걸이와 별 모양 베레모",
+        "palette": [
+          "#AE9DE8",
+          "#5B4C9A",
+          "#E6D9FF"
+        ],
+        "prop": "유성 잉크펜",
+        "mood": "창의적이고 섬세함"
+      }
+    },
+    {
+      "id": "ninja",
+      "name": "그림자 러너",
+      "rarity": "rare",
+      "price": 110,
+      "tagline": "한 걸음의 실행이 생각을 바꿔.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "dailyGoalAchievedDays",
+            "min": 10
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "밤색 아닌 짙은 남색 후드와 경량 장화"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "dailyGoalAchievedDays",
+            "min": 25
+          },
+          "visualChange": "반짝이는 발자국과 어깨 장식"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "dailyGoalAchievedDays",
+            "min": 60
+          },
+          "visualChange": "보랏빛 잔상과 별빛 휘장"
+        }
+      ],
+      "visual": {
+        "silhouette": "날렵한 후드와 비대칭 스카프",
+        "palette": [
+          "#2F365E",
+          "#7967D6",
+          "#C4B7F9"
+        ],
+        "prop": "빛의 나침반",
+        "mood": "침착하고 재빠름"
+      },
+      "legacyId": "ninja"
+    },
+    {
+      "id": "mage",
+      "name": "별빛 마법사",
+      "rarity": "epic",
+      "price": 180,
+      "tagline": "집중은 별을 밝히는 힘이야.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedByCategory:공부",
+            "min": 50
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "진보라 망토와 별 지팡이"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedByCategory:공부",
+            "min": 100
+          },
+          "visualChange": "공중에 떠 있는 세 개의 별조각"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedByCategory:공부",
+            "min": 180
+          },
+          "visualChange": "은하수 오라와 펼쳐진 마도서"
+        }
+      ],
+      "visual": {
+        "silhouette": "길고 뾰족한 별 모자와 반짝이는 로브",
+        "palette": [
+          "#6C5ACD",
+          "#C3ACFF",
+          "#FFE5A5"
+        ],
+        "prop": "별 지팡이",
+        "mood": "몽환적이고 현명함"
+      },
+      "legacyId": "mage"
+    },
+    {
+      "id": "knight",
+      "name": "달빛 기사",
+      "rarity": "epic",
+      "price": 220,
+      "tagline": "어려운 길 끝에 새로운 빛이 있어.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "bossQuestCompletions",
+            "min": 15
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "초승달 방패와 은빛 갑옷"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "bossQuestCompletions",
+            "min": 35
+          },
+          "visualChange": "푸른 망토와 달빛 깃"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "bossQuestCompletions",
+            "min": 70
+          },
+          "visualChange": "커다란 초승달 광륜과 은빛 별가루"
+        }
+      ],
+      "visual": {
+        "silhouette": "초승달 모양 투구와 둥근 방패",
+        "palette": [
+          "#C9D8E9",
+          "#586A97",
+          "#EED6A2"
+        ],
+        "prop": "초승달 방패",
+        "mood": "믿음직하고 당당함"
+      },
+      "legacyId": "knight"
+    },
+    {
+      "id": "dream_whale",
+      "name": "꿈고래 소환사",
+      "rarity": "epic",
+      "price": 240,
+      "tagline": "가장 멀리 가는 꿈은 천천히 자라.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedByFrequency:monthly",
+            "min": 3
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "푸른 머플러와 손바닥 고래"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedByFrequency:monthly",
+            "min": 8
+          },
+          "visualChange": "별빛 거품과 작은 고래 정령"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedByFrequency:monthly",
+            "min": 15
+          },
+          "visualChange": "공중을 헤엄치는 푸른 고래와 구름 오라"
+        }
+      ],
+      "visual": {
+        "silhouette": "고래 꼬리 장식과 긴 파란 머플러",
+        "palette": [
+          "#7EBDDE",
+          "#465B9A",
+          "#E4F6FB"
+        ],
+        "prop": "꿈고래 정령",
+        "mood": "포근하고 신비로움"
+      }
+    },
+    {
+      "id": "time_guardian",
+      "name": "시간의 수호자",
+      "rarity": "legendary",
+      "price": 0,
+      "tagline": "쌓아 온 하루들이 너만의 별자리가 돼.",
+      "unlockCondition": {
+        "mode": "all",
+        "rules": [
+          {
+            "metric": "completedQuests",
+            "min": 200
+          },
+          {
+            "metric": "bestStreakDays",
+            "min": 30
+          },
+          {
+            "metric": "currentLevel",
+            "min": 10
+          },
+          {
+            "metric": "claimedChallenges",
+            "min": 5
+          }
+        ]
+      },
+      "evolution": [
+        {
+          "stage": 1,
+          "requirement": null,
+          "visualChange": "남색과 흰색 예복, 황금 시계 고리"
+        },
+        {
+          "stage": 2,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 300
+          },
+          "visualChange": "시간 조각 세 개와 별빛 장갑"
+        },
+        {
+          "stage": 3,
+          "requirement": {
+            "metric": "completedQuests",
+            "min": 500
+          },
+          "visualChange": "거대한 황금 시계 광륜과 우주빛 망토"
+        }
+      ],
+      "visual": {
+        "silhouette": "떠 있는 원형 시계 고리와 긴 비대칭 망토",
+        "palette": [
+          "#20274D",
+          "#F8F8F1",
+          "#E4C26D"
+        ],
+        "prop": "시계 광륜",
+        "mood": "조용하고 장엄함"
+      }
+    }
+  ]
+}
