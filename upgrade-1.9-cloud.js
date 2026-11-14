@@ -117,9 +117,9 @@
    connected&&enabled&&!loading?
    '<button data-qd19="retry" class="alt">연결 다시 시도</button>':"";
   panel.innerHTML='<h3>☁️ 계정 전체 데이터 동기화</h3>'+
-   '<p>퀘스트·완료 기록·XP·골드 계산에 필요한 기록·구매 캐릭터·업적·설정까지 '+
-   '<strong>현재 게임 저장 데이터 전체</strong>를 Supabase의 내 계정에 보관해요. '+
-   '친구·채팅은 기존 계정 연동을 유지해요.</p>'+
+   '<p><strong>이메일 인증된 계정은 자동 저장</strong>돼요. 퀘스트·완료 기록·XP·골드 계산에 필요한 기록·구매 캐릭터·업적·설정까지 '+
+   '현재 게임 저장 데이터 전체를 Supabase의 내 계정에 보관해요. '+
+   '게스트는 기본적으로 기기에만 저장되며, 친구·채팅 연결은 별도로 유지돼요.</p>'+
    '<div class="qd19-state'+(blocked||issue?' warn':'')+'">'+esc(statusText)+
    (lastSuccessful&&ready?'<small>마지막 동기화: '+esc(lastSuccessful)+'</small>':'')+
    (issue?'<small>'+esc(issue)+'</small>':'')+'</div>'+
