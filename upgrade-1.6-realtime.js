@@ -40,7 +40,7 @@
  const SYNC_HOLD_KEY="qd18-remote-profile-sync-hold-v1";
  const OFFLINE_KEY="quest-day-realtime-offline-choice-v1";
  let client=null,me=null,invite="",channel=null,started=false,connecting=false,online=false;
- let identityInitialization=null,connectionEpoch=0;
+ let identityInitialization=null,connectionEpoch=0,startRetryTimer=null,startRetryDelay=5000;
  let requests=[],contacts=[],lastSync="",lastPublished="",syncTimer=null,pollTimer=null,refreshTimer=null;
  let sdkPromise=null,operation=false,errorText="",showCode=false,appCode="";
  let reconnectTimer=null,lastResumeAttempt=0,resuming=false;
@@ -109,6 +109,8 @@
      script.onerror=()=>reject(new Error("실시간 라이브러리를 다운로드하지 못했어요. 네트워크를 확인해 주세요."));
      document.head.appendChild(script);
    });
+   // An interrupted first load must be retriable after connectivity returns.
+   sdkPromise.catch(()=>{sdkPromise=null;});
    return sdkPromise;
  }
  async function ensureClient(){
@@ -141,8 +143,19 @@
    work.finally(()=>{if(identityInitialization===work)identityInitialization=null;}).catch(()=>{});
    return work;
  }
+ function queueInitialRetry(){
+   if(startRetryTimer||!configured||localStorage.getItem(OFFLINE_KEY)==="yes")return;
+   const delay=startRetryDelay;
+   startRetryDelay=Math.min(startRetryDelay*2,60000);
+   startRetryTimer=setTimeout(()=>{
+     startRetryTimer=null;
+     if(!started&&!connecting&&navigator.onLine!==false&&
+       document.visibilityState!=="hidden"&&localStorage.getItem(OFFLINE_KEY)!=="yes")start();
+   },delay);
+ }
  async function start(){
    if(!configured||started||connecting)return;
+   clearTimeout(startRetryTimer);startRetryTimer=null;
    const run=++connectionEpoch;
    connecting=true;errorText="";
    if(root.classList.contains("active"))drawLive();
@@ -159,6 +172,7 @@
      await reload();
      if(run!==connectionEpoch)return;
      subscribe();
+     startRetryDelay=5000;
      window.dispatchEvent(new CustomEvent("qd:realtime-ready"));
      clearInterval(pollTimer);
      pollTimer=setInterval(()=>{
@@ -173,6 +187,7 @@
      lastPublished="";
      if(channel&&client){client.removeChannel(channel);channel=null;}
      showError(e);
+     queueInitialRetry();
    }
    finally {
      if(run===connectionEpoch){
@@ -377,6 +392,9 @@
    }catch(e){state.friends.profile.nickname=old;showError(e);}
  }
  async function stop(){
+   ++connectionEpoch;
+   connecting=false;
+   clearTimeout(startRetryTimer);startRetryTimer=null;
    started=false;online=false;me=null;
    clearTimeout(syncTimer);clearTimeout(refreshTimer);clearInterval(pollTimer);
    clearTimeout(reconnectTimer);reconnectTimer=null;
@@ -506,6 +524,7 @@
  async function switchIdentity(){
    // Invalidate in-flight automatic guest bootstrap after an explicit login.
    ++connectionEpoch;
+   clearTimeout(startRetryTimer);startRetryTimer=null;startRetryDelay=5000;
    // Supabase auth session was intentionally changed by explicit sign-in.
    // Stop old subscriptions; reload all social data with the new user id.
    clearTimeout(syncTimer);clearTimeout(refreshTimer);clearTimeout(reconnectTimer);
