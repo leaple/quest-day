@@ -209,14 +209,15 @@
   const failedPortraits = new Set();
   const warmingPortraits = new Map();
   const PORTRAIT_VERSION = "4";
-  // Ten self-contained evolution illustrations: four corrected base portraits
-  // plus stage 2/3 designs for three featured characters.
-  const stagedArt = {
-    knight:new Set([1,2,3]),
-    mage:new Set([1,2,3]),
-    dream_whale:new Set([1,2,3]),
-    time_guardian:new Set([1])
-  };
+  // Every catalog character now has three stage-specific, self-contained
+  // SVG illustrations. Each artwork contains its source portrait plus unique
+  // stage effects; unlock conditions and user ownership remain unchanged.
+  const stagedArt = Object.fromEntries(
+    ["sprout","paper_messenger","dawn_runner","sunset_scribe",
+     "forest","clockkeeper","star_scribe","ninja",
+     "mage","knight","dream_whale","time_guardian"]
+     .map(id=>[id,new Set([1,2,3])])
+  );
   function portraitStage(id) {
     const c=findCharacter(id);
     return c?evolutionStage(c):1;
@@ -225,7 +226,7 @@
   function portraitSrc(id) {
     const stage=portraitStage(id);
     if(stagedArt[id]?.has(stage))
-      return "./art/evolution/"+encodeURIComponent(id)+"-stage"+stage+".svg?v=32";
+      return "./art/evolution/"+encodeURIComponent(id)+"-stage"+stage+".svg?v=33";
     return "./art/"+encodeURIComponent(id)+".png?v="+PORTRAIT_VERSION;
   }
 
