@@ -497,6 +497,7 @@
    isReady:()=>started,
    getFriends:()=>contacts.slice(),
    refreshFriends:()=>reload(),
+   syncProfile:()=>publish(),
    switchIdentity,
    isProfileSyncHeld:()=>localStorage.getItem(SYNC_HOLD_KEY)==="yes",
    resumeProfileSync:async()=>{
