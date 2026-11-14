@@ -211,9 +211,9 @@
   const warmingPortraits = new Map();
   const PORTRAIT_VERSION = "4";
   const EVOLUTION_ART_VERSION = "35";
-  // Every catalog character now has three stage-specific, self-contained
-  // SVG illustrations. Each artwork contains its source portrait plus unique
-  // stage effects; unlock conditions and user ownership remain unchanged.
+  // All catalog characters have stage-specific self-contained SVG paths.
+  // As of v35, 19 stages use newly redrawn embedded art, while 17 retain
+  // legacy source portraits plus effects. Ownership/evolution rules are unchanged.
   const stagedArt = Object.fromEntries(
     ["sprout","paper_messenger","dawn_runner","sunset_scribe",
      "forest","clockkeeper","star_scribe","ninja",
