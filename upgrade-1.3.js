@@ -36,6 +36,10 @@
     ".ch-detail-title{font-weight:900;font-size:20px;line-height:1.3;margin:6px 0}.ch-condition{font-size:12px;color:#6d6d87;padding:9px 0;border-bottom:1px solid #f0eef5}",
     ".ch-condition strong{color:#7665d4}.ch-label{font-size:12px;font-weight:800;margin:16px 0 8px}",
     ".ch-legacy{margin-top:17px;border-radius:15px;background:#f4f4fb;padding:14px;font-size:12px}",
+".ch-art:not(.qdp-failed) svg{display:none}.ch-art.qdp-failed svg{display:block}",
+    ".ch-art img{opacity:0;transition:opacity .12s ease-out}.ch-art.qdp-ready img{opacity:1}",
+    ".ch-art.qdp-loading::before{content:\"✦\";position:absolute;inset:0;display:grid;place-items:center;color:#8778c9;font-size:29px;background:radial-gradient(circle,#f8f4ff 0%,#ede8fcaa 70%);animation:qdpPulse 1.1s ease-in-out infinite alternate}",
+    "@keyframes qdpPulse{from{opacity:.55}to{opacity:1}}",
     "@media(max-width:380px){.ch-hero-main{padding:12px;gap:6px}.ch-hero-visual{min-width:105px;height:134px}.ch-hero-copy h3{font-size:16px}.ch-image-wrap{height:151px}.ch-card-content{padding:10px}.ch-dialog{padding:14px}}"
   ].join("");
   const css = document.createElement("style");
@@ -195,13 +199,77 @@
       propArt(character.id)+extra+'</svg>';
   }
 
+  // Keep already decoded portraits in memory between UI re-renders.
+  // SVG appears only when the PNG genuinely fails (never during loading).
+  const readyPortraits = new Set();
+  const failedPortraits = new Set();
+  const warmingPortraits = new Map();
+  const PORTRAIT_VERSION = "4";
+
+  function notifyPortrait(id, stateName) {
+    document.querySelectorAll(".ch-art[data-qdp-id]").forEach(el => {
+      if(el.dataset.qdpId !== id) return;
+      el.classList.remove("qdp-loading","qdp-ready","qdp-failed");
+      el.classList.add("qdp-"+stateName);
+    });
+  }
+
+  function warmPortrait(id) {
+    if(readyPortraits.has(id) || failedPortraits.has(id) || warmingPortraits.has(id)) return;
+    const image = new Image();
+    warmingPortraits.set(id, image);
+    image.decoding = "async";
+    image.onload = function() {
+      const finish = () => {
+        warmingPortraits.delete(id);
+        readyPortraits.add(id);
+        failedPortraits.delete(id);
+        notifyPortrait(id, "ready");
+      };
+      if (typeof image.decode === "function") image.decode().then(finish, finish);
+      else finish();
+    };
+    image.onerror = function() {
+      warmingPortraits.delete(id);
+      failedPortraits.add(id);
+      notifyPortrait(id, "failed");
+    };
+    image.src = "./art/" + encodeURIComponent(id) + ".png?v=" + PORTRAIT_VERSION;
+  }
+
+  document.addEventListener("load", function(event) {
+    const img = event.target;
+    if(!img || !img.matches || !img.matches("img[data-qdp-portrait]")) return;
+    const id = img.dataset.qdpPortrait;
+    const el = img.parentElement;
+    const mark = () => {
+      if(!img.isConnected) return;
+      if(el){el.classList.remove("qdp-loading","qdp-failed");el.classList.add("qdp-ready");}
+      readyPortraits.add(id);
+    };
+    if (typeof img.decode === "function") img.decode().then(mark, mark);
+    else mark();
+  }, true);
+  document.addEventListener("error", function(event) {
+    const img = event.target;
+    if(!img || !img.matches || !img.matches("img[data-qdp-portrait]")) return;
+    const id = img.dataset.qdpPortrait;
+    failedPortraits.add(id);
+    readyPortraits.delete(id);
+    const el = img.parentElement;
+    if(el){el.classList.remove("qdp-loading","qdp-ready");el.classList.add("qdp-failed");}
+    img.remove();
+  }, true);
+
   function portrait(character) {
-    const id=character.id;
-    const fallback=svgPortrait(character);
-    // Uploaded art assets are optional: the SVG illustration remains visible if an asset is missing.
-    const image='<img loading="lazy" decoding="async" src="./art/'+safe(id)+
-      '.png?v=3" alt="" onload="this.previousElementSibling.style.visibility=\'hidden\'" onerror="this.remove()">';
-    return '<div class="ch-art">'+fallback+image+'</div>';
+    const id = character.id;
+    const status = failedPortraits.has(id) ? "failed" :
+      readyPortraits.has(id) ? "ready" : "loading";
+    const svg = svgPortrait(character);
+    const image = failedPortraits.has(id) ? "" :
+      '<img data-qdp-portrait="'+safe(id)+'" loading="eager" decoding="async" src="./art/'+
+      safe(id)+'.png?v='+PORTRAIT_VERSION+'" alt="">';
+    return '<div class="ch-art qdp-'+status+'" data-qdp-id="'+safe(id)+'">'+svg+image+'</div>';
   }
 
   function cardMarkup(character) {
@@ -446,6 +514,10 @@
       if(!Array.isArray(json.characters)||json.characters.length!==12)throw new Error("Catalog validation failed");
       catalog=json.characters;
       currentRpg();
+      // Preload all twelve lightweight portraits once, so swapping characters does not flash placeholders.
+      const equippedId=state.rpg.equipped==="starter"?"sprout":state.rpg.equipped;
+      warmPortrait(equippedId);
+      catalog.forEach(c=>warmPortrait(c.id));
       render();
     })
     .catch(error=>{
