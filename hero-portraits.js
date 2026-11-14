@@ -23,11 +23,12 @@
     "hero_elin","hero_rohan","hero_eve","hero_baruk","hero_nia",
     "hero_sion","hero_lumi"
   ]);
-  const PAINTED_ART_VERSION = "20261115-11";
+  const PAINTED_ART_VERSION = "20261115-12";
   function paintedPortrait(id,stage){
     if(!paintedRoster.includes(id))return "";
     stage=Math.max(1,Math.min(3,Number(stage)||1));
-    const src="./art/painted/individual/"+id+"-stage"+stage+".webp?v="+PAINTED_ART_VERSION;
+    const ext=(id==="hero_elin" && stage===1)?"svg":"webp";
+    const src="./art/painted/individual/"+id+"-stage"+stage+"."+ext+"?v="+PAINTED_ART_VERSION;
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" '+
       'role="img" aria-label="'+id+' 진화 '+stage+'단계 독립 원화" class="qd-painted-stage" '+
       'data-painted-hero="'+id+'" data-painted-stage="'+stage+'" '+
