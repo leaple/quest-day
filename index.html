@@ -594,11 +594,13 @@ function render() {
   document.getElementById("totalStat").textContent =
     `${state.events.length}개`;
 
+  // Show unfinished quests first without changing the saved task order.
+  // Keep original relative order inside both groups; filters still work.
   const filtered = tasks.filter(task => {
     if (activeFilter === "todo") return !completion(task);
     if (activeFilter === "done") return !!completion(task);
     return true;
-  });
+  }).sort((a, b) => Number(!!completion(a)) - Number(!!completion(b)));
 
   const list = document.getElementById("questList");
   list.innerHTML = filtered.length
