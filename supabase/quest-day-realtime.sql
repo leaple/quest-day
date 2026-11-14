@@ -210,6 +210,10 @@ create or replace function public.qd_remove_my_profile()
 declare me uuid:=auth.uid();
 begin
  if me is null then raise exception 'Sign in first'; end if;
+ -- Notify existing connections of the upcoming deletion via RLS-visible UPDATEs.
+ update public.qd_friend_requests set status='cancelled',updated_at=now()
+   where (sender_id=me or recipient_id=me) and status='pending';
+ update public.qd_friendships set active=false where user_a=me or user_b=me;
  delete from public.qd_friend_requests where sender_id=me or recipient_id=me;
  delete from public.qd_friendships where user_a=me or user_b=me;
  delete from public.qd_invites where user_id=me;
