@@ -37,6 +37,7 @@
    !cfg.publishableKey.includes("service_role")&&!cfg.publishableKey.startsWith("sb_secret_");
  const configured=URL_OK&&KEY_OK;
  const CONSENT_KEY="quest-day-realtime-opt-in-v1";
+ const OFFLINE_KEY="quest-day-realtime-offline-choice-v1";
  let client=null,me=null,invite="",channel=null,started=false,connecting=false,online=false;
  let requests=[],contacts=[],lastSync="",lastPublished="",syncTimer=null,pollTimer=null,refreshTimer=null;
  let sdkPromise=null,operation=false,errorText="",showCode=false,appCode="";
@@ -71,6 +72,15 @@
     '<p>실시간 친구 신청과 자동 기록 갱신은 Supabase 프로젝트를 설정하면 활성화돼요. '+
     '설정 안내는 GitHub의 <strong>supabase/SETUP.md</strong>에 있어요.</p>';
    root.prepend(node);
+ }
+ function offlineBanner(){
+   if(root.querySelector("#rt16OfflineBanner"))return;
+   const banner=document.createElement("div");
+   banner.id="rt16OfflineBanner";banner.className="rt16-top";
+   banner.innerHTML='<h3>🌐 실시간 친구 기능 사용 가능</h3>'+
+     '<p>지금은 기존 친구 카드 모드예요. 친구 신청·수락과 자동 갱신을 사용하려면 실시간 모드를 켜세요.</p>'+
+     action("실시간 친구 기능 켜기","enable");
+   root.prepend(banner);
  }
  function beforeStart(){
    root.innerHTML='<div class="rt16-top"><h3>🌐 실시간 친구 시작하기</h3>'+
@@ -185,9 +195,12 @@
    if(!client||!me)return;
    if(channel)client.removeChannel(channel);
    channel=client.channel("qd-friends-"+me.id)
-    .on("postgres_changes",{event:"*",schema:"public",table:"qd_profiles"},refreshSoon)
-    .on("postgres_changes",{event:"*",schema:"public",table:"qd_friend_requests"},refreshSoon)
-    .on("postgres_changes",{event:"*",schema:"public",table:"qd_friendships"},refreshSoon)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"qd_profiles"},refreshSoon)
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"qd_profiles"},refreshSoon)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"qd_friend_requests"},refreshSoon)
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"qd_friend_requests"},refreshSoon)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"qd_friendships"},refreshSoon)
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"qd_friendships"},refreshSoon)
     .subscribe(status=>{
       online=status==="SUBSCRIBED";
       if(root.classList.contains("active"))drawLive();
@@ -307,15 +320,15 @@
      if(action==="retry"){await start();return;}
      if(action==="enable"){
        if(!confirm("내 닉네임·캐릭터·XP·퀘스트 완료 횟수·연속 기록을 실시간 친구 서버에 저장할까요?"))return;
+       localStorage.removeItem(OFFLINE_KEY);
        localStorage.setItem(CONSENT_KEY,"yes");
        await start();return;
      }
      if(action==="offline"){
-       const offlineTab=tab;
        localStorage.removeItem(CONSENT_KEY);
-       // Refresh the legacy offline view without opting in to server sync.
-       const localRender=render;
-       localRender();
+       localStorage.setItem(OFFLINE_KEY,"yes");
+       tab.onclick();
+       offlineBanner();
        return;
      }
      if(!started||!client)return;
@@ -362,6 +375,7 @@
  // The 1.5 legacy button draws its offline view first; this handler shows live mode above it.
  tab.addEventListener("click",()=>{
    if(!configured){setupBanner();return;}
+   if(!started && !connecting && localStorage.getItem(OFFLINE_KEY)==="yes") { offlineBanner(); return; }
    if(started||connecting||localStorage.getItem(CONSENT_KEY)==="yes"){
      if(!started&&!connecting)start();
      drawLive();
@@ -378,6 +392,7 @@
    if(root.classList.contains("active")){
      if(!configured)setupBanner();
      else if(started||connecting)drawLive();
+     else if(localStorage.getItem(OFFLINE_KEY)==="yes")offlineBanner();
      else if(localStorage.getItem(CONSENT_KEY)!=="yes")beforeStart();
    }
  };
