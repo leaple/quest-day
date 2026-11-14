@@ -53,7 +53,7 @@
  note.className="qd20-settings";
  note.innerHTML='<div><strong>🛡️ 계정 및 로그인</strong><span>로그인 · 회원가입 · 게스트 계정 연결</span></div>'+
   '<button type="button" id="qd20AccountButton">계정 관리</button>';
- SETTINGS?.insertBefore(note,SETTINGS.firstChild?.nextSibling||null);
+ SETTINGS?.insertBefore(note,SETTINGS.querySelector("#qd19Cloud")||SETTINGS.querySelector("#qd18Protection")||null);
  note.querySelector("#qd20AccountButton")?.addEventListener("click",()=>show("account",true));
  const safe=s=>escapeHtml(String(s??""));
  const localHasHistory=()=>{
