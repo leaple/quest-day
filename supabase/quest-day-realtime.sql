@@ -206,7 +206,7 @@ end $$;
 -- The anonymous Supabase Auth user itself remains; it has no active shared profile.
 create or replace function public.qd_remove_my_profile()
  returns boolean language plpgsql security definer set search_path = ''
- as $
+ as $$
 declare me uuid:=auth.uid();
 begin
  if me is null then raise exception 'Sign in first'; end if;
@@ -219,7 +219,7 @@ begin
  delete from public.qd_invites where user_id=me;
  delete from public.qd_profiles where user_id=me;
  return true;
-end $;
+end $$;
 
 revoke all on function public.qd_bootstrap() from public;
 revoke all on function public.qd_rotate_invite() from public;
