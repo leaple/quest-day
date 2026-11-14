@@ -35,7 +35,7 @@
   function userClient(){return bridge.getClient();}
   function isReady(){return bridge.isReady()&&!!userClient();}
   function status(){
-    if(!isReady())return "아직 실시간 친구에 연결하지 않았어요. 먼저 친구 탭에서 실시간 기능을 켜 주세요.";
+    if(!isReady())return "서버에 자동 연결하고 있어요. 연결이 계속 실패하면 인터넷과 Supabase 설정을 확인해 주세요.";
     if(!currentUser)return "계정 상태를 확인할 수 있어요.";
     if(currentUser.email && currentUser.email_confirmed_at){
       return "이메일 인증 완료: "+currentUser.email+
@@ -134,6 +134,7 @@
         const email=fields.loginEmail.toLowerCase();
         if(!validEmail(email)||!fields.loginPassword)throw Error("이메일과 비밀번호를 확인해 주세요.");
         if(!confirm("이 기기에서 기존 QUEST DAY 계정으로 로그인할까요?\n\n기기의 게임 기록은 먼저 유지하고, 서버 기록과 비교한 뒤 안전하게 동기화할게요."))return;
+        await bridge.waitForIdentity?.();
         const oldId=bridge.getUser()?.id;
         const result=await userClient().auth.signInWithPassword({
           email,password:fields.loginPassword
