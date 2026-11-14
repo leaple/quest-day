@@ -10,6 +10,7 @@
   cheers:[],unreads:[],blocked:[],chat:[],ready:false,working:false,
   fetching:false,needsRefresh:false,error:"",chatLoading:false,chatScroll:0,scrollToBottom:false};
  let host=null,channel=null,poll=null,refreshTimer=null,subscribed=false;
+ let renderedView="",renderedPeer="",chatSequence=0;
  const icons={spark:"✨ 힘내!",cheer:"🔥 계속 가자!",win:"🏆 멋져!"};
  const esc=v=>escapeHtml(String(v??""));
  const current=()=>bridge.getUser()?.id||"";
@@ -39,7 +40,9 @@
  ".s17-buttonrow{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0}",
  ".s17-btn{background:#7566e8;color:white;font-size:11px;font-weight:800;border:0;border-radius:10px;padding:10px 11px;cursor:pointer}",
  ".s17-btn.alt{background:#efecff;color:#6957c8}.s17-btn.danger{background:#fff0f1;color:#ab556e}",
- ".s17-btn:disabled{opacity:.55;cursor:default}.s17-input,.s17-select,.s17-textarea{border:1px solid #e1dfef;border-radius:10px;padding:11px;background:white;color:#35314d;font:inherit;font-size:12px;min-width:0;box-sizing:border-box}",
+ ".s17-btn:disabled{opacity:.55;cursor:default}.s17-btn{min-height:42px;touch-action:manipulation}.s17-tab{min-height:43px}",
+ ".s17-chat{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}",
+ ".s17-textarea{font-size:16px;line-height:1.5}.s17-input,.s17-select,.s17-textarea{border:1px solid #e1dfef;border-radius:10px;padding:11px;background:white;color:#35314d;font:inherit;font-size:12px;min-width:0;box-sizing:border-box}",
  ".s17-input,.s17-select{flex:1}.s17-textarea{width:100%;resize:vertical;min-height:62px;line-height:1.5}",
  ".s17-progress{height:9px;background:#edeaf9;border-radius:9px;margin:12px 0 4px;overflow:hidden}",
  ".s17-progress > div{height:100%;background:linear-gradient(90deg,#8170ed,#53d0b3);border-radius:9px}",
@@ -131,6 +134,18 @@
     '<div class="s17-muted">'+esc(date(c.created_at))+'</div></div>').join(""):
     '<div class="s17-empty">아직 받은 응원이 없어요.</div>');
  }
+ function chatMessagesHtml(){
+  if(st.chatLoading && !st.chat.length)
+    return '<div class="s17-empty">대화 불러오는 중...</div>';
+  if(!st.chat.length)return '<div class="s17-empty">아직 메시지가 없어요. 인사를 건네 보세요!</div>';
+  return st.chat.map(m=>{
+    const mine=m.sender_id===current();
+    return '<div class="s17-bubble'+(mine?' mine':'')+'"><div class="s17-message">'+esc(m.body)+'</div>'+
+      '<div class="s17-caption">'+esc(date(m.created_at))+
+      (!mine?'<button type="button" data-s17="report" data-id="'+esc(m.id)+'">신고</button>':"")+
+      '</div></div>';
+  }).join("");
+ }
  function chatsView(){
   const available=friends();
   const totalUnread=st.unreads.reduce((a,u)=>a+Number(u.unread_count||0),0);
@@ -148,14 +163,7 @@
    basicButton("대화 닫기","chatClose","","alt")+
    basicButton("차단","block",'data-id="'+esc(peer)+'"',"danger")+'</div>'+
    '<div class="s17-chat" id="s17ChatLog">'+
-     (st.chatLoading?'<div class="s17-empty">대화 불러오는 중...</div>':
-     st.chat.length?st.chat.map(m=>{
-       const mine=m.sender_id===current();
-       return '<div class="s17-bubble'+(mine?' mine':'')+'"><div class="s17-message">'+esc(m.body)+'</div>'+
-       '<div class="s17-caption">'+esc(date(m.created_at))+
-       (!mine?'<button type="button" data-s17="report" data-id="'+esc(m.id)+'">신고</button>':"")+
-       '</div></div>';
-     }).join(""):'<div class="s17-empty">아직 메시지가 없어요. 인사를 건네 보세요!</div>')+
+     chatMessagesHtml()+
    '</div><textarea class="s17-textarea" id="s17Message" maxlength="500" rows="2" placeholder="친구에게 보낼 메시지 (최대 500자)"></textarea>'+
    '<div class="s17-buttonrow">'+basicButton("메시지 보내기","chatSend")+'</div></div>':
    '<div class="s17-empty">위에서 친구를 선택하면 1:1 채팅을 시작할 수 있어요.</div>')+
@@ -181,8 +189,27 @@
    st.parties.filter(p=>p.status==="pending"&&p.direction==="received").length+
    st.unreads.reduce((v,x)=>v+Number(x.unread_count||0),0);
   const menu=[["ranking","🏆 랭킹"],["party","⚔️ 파티"],["notifications","🔔 알림"],["chat","💬 채팅"]];
+  // In an open chat only update the message list. Replacing the composer DOM on
+  // every realtime tick closes the iOS keyboard and loses selection/focus.
+  if(st.view==="chat" && renderedView==="chat" && renderedPeer===st.peer && !st.error){
+    const log=host.querySelector("#s17ChatLog");
+    if(log){
+      const nearBottom=log.scrollHeight-log.scrollTop-log.clientHeight<85;
+      const next=chatMessagesHtml();
+      if(log.innerHTML!==next){
+        log.innerHTML=next;
+        if(nearBottom||st.scrollToBottom)log.scrollTop=log.scrollHeight;
+      }
+      const counter=host.querySelector("#s17NewsCount");
+      if(counter)counter.textContent=counts?"새 소식 "+counts+"개":"친구 전용";
+      st.scrollToBottom=false;
+      return;
+    }
+  }
+  renderedView=st.view;
+  renderedPeer=st.peer;
   host.innerHTML='<div class="s17-top"><div class="s17-heading">QUEST DAY · 함께하는 모험</div>'+
-   (counts?'<span class="s17-pill">새 소식 '+counts+'개</span>':'<span class="s17-pill">친구 전용</span>')+'</div>'+
+   '<span id="s17NewsCount" class="s17-pill">'+(counts?'새 소식 '+counts+'개':'친구 전용')+'</span>'+'</div>'+
    '<div class="s17-tabs">'+menu.map(([id,name])=>
     '<button class="s17-tab'+(st.view===id?' active':'')+'" type="button" data-s17="view" data-view="'+id+'">'+name+'</button>').join("")+'</div>'+
    (st.working?'<div class="s17-muted">작업을 처리하고 있어요...</div>':"")+
@@ -234,6 +261,7 @@
  async function fetchChat(){
   if(!st.peer||!isFriend(st.peer)||!current())return;
   const peer=st.peer,me=current();
+  const seq=++chatSequence;
   st.chatLoading=true;mount();
   try{
    const query="and(sender_id.eq."+me+",recipient_id.eq."+peer+
@@ -242,13 +270,18 @@
     .select("id,sender_id,recipient_id,body,created_at").or(query)
     .order("created_at",{ascending:false}).limit(60);
    if(result.error)throw result.error;
-   if(st.peer!==peer)return;
+   if(st.peer!==peer||seq!==chatSequence)return;
    st.chat=(result.data||[]).slice().reverse();
    await runRPC("qd_mark_chat_read",{friend_id:peer});
    st.unreads=st.unreads.filter(u=>u.partner_id!==peer);
    st.scrollToBottom=true;
   }catch(e){st.error=e.message||"채팅을 불러오지 못했어요.";}
-  finally{st.chatLoading=false;mount();}
+  finally{
+   if(seq===chatSequence){
+     st.chatLoading=false;
+     mount();
+   }
+  }
  }
  function toast(message){
   const element=document.createElement("div");
@@ -313,12 +346,14 @@
    captureDraft();
    const previousInput=document.getElementById("s17Message");
    if(previousInput)previousInput.value="";
+   chatSequence++;
    st.view="chat";st.peer=id;st.draft="";st.chat=[];
    st.chatScroll=0;mount();await fetchChat();return;
   }
   if(action==="chatClose"){
    const previousInput=document.getElementById("s17Message");
    if(previousInput)previousInput.value="";
+   chatSequence++;
    st.peer="";st.chat=[];st.draft="";mount();return;
   }
   st.working=true;mount();
@@ -399,7 +434,8 @@
  window.addEventListener("qd:realtime-stopped",()=>{
   if(channel&&client())client().removeChannel(channel);
   channel=null;subscribed=false;clearInterval(poll);poll=null;
-  st.ready=false;st.peer="";st.chat=[];st.draft="";host=null;
+  st.ready=false;chatSequence++;st.peer="";st.chat=[];st.draft="";
+  renderedView="";renderedPeer="";host=null;
  });
  document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState==="visible"&&bridge.isReady()){
