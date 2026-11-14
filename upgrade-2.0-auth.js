@@ -56,14 +56,49 @@
  SETTINGS?.insertBefore(note,SETTINGS.querySelector("#qd19Cloud")||SETTINGS.querySelector("#qd18Protection")||null);
  note.querySelector("#qd20AccountButton")?.addEventListener("click",()=>show("account",true));
  const safe=s=>escapeHtml(String(s??""));
- const localHasHistory=()=>{
+ // Prior versions automatically saved initial RPG and offline friend objects on
+ // the very first visit. The existence of quest-day-mvp-v1 is NOT evidence that
+ // a person has played: checking it alone hides onboarding in private browsing.
+ function hasRealProgress(raw){
+  if(!raw)return false;
   try{
-   if(localStorage.getItem("quest-day-mvp-v1"))return true;
-   if(localStorage.getItem(CONSENT)==="yes")return true;
-   if(localStorage.getItem("quest-day-realtime-offline-choice-v1")==="yes")return true;
+   const data=JSON.parse(raw);
+   if(!data || !Array.isArray(data.tasks) || !Array.isArray(data.events))return true;
+   if(data.events.length)return true;
+   const starter=[
+    ["demo1","책 10페이지 읽기","공부","daily",20],
+    ["demo2","방 정리하기","일상","daily",10],
+    ["demo3","중요한 일 하나 끝내기","자기계발","once",30]
+   ];
+   if(data.tasks.length!==starter.length)return true;
+   const expected=new Map(starter.map(x=>[x[0],x]));
+   if(data.tasks.some(t=>{
+    const base=expected.get(t?.id);
+    return !base||t.name!==base[1]||t.category!==base[2]||
+      t.frequency!==base[3]||Number(t.xp)!==base[4];
+   }))return true;
+   if(data.dailyGoal!==undefined && Number(data.dailyGoal)!==3)return true;
+   const rpg=data.rpg||{};
+   if((rpg.purchases?.length||0)>0 || Object.keys(rpg.claimed||{}).length>0)return true;
+   if(rpg.equipped&&rpg.equipped!=="starter"&&rpg.equipped!=="sprout")return true;
+   if(Number(rpg.createdQuestCount||0)>0 || Object.keys(rpg.goalDays||{}).length>0)return true;
+   const friends=data.friends||{};
+   if((friends.contacts?.length||0)>0)return true;
+   if(friends.profile?.nickname&&friends.profile.nickname!=="모험가")return true;
+   return false;
+  }catch(e){
+   // A damaged or unknown save is still treated as user data, never discarded.
+   return true;
+  }
+ }
+ const localHasHistory=()=>{
+  if(localStorage.getItem(CONSENT)==="yes")return true;
+  if(localStorage.getItem("quest-day-realtime-offline-choice-v1")==="yes")return true;
+  try{
    const meta=JSON.parse(localStorage.getItem("qd19-game-cloud-meta-v1")||"null");
-   return !!meta?.userId;
-  }catch(e){return !!localStorage.getItem("quest-day-mvp-v1");}
+   if(meta?.userId)return true;
+  }catch(e){return true;}
+  return hasRealProgress(localStorage.getItem("quest-day-mvp-v1"));
  };
  let mode="welcome",settingsOpen=false,busy=false,error="",noticeText="",emailDraft="",flow="",requestId=0;
  const body=document.body;
@@ -301,6 +336,10 @@
  // New users see onboarding. Existing local data or realtime clients are never
  // forced through an irreversible registration screen after an update.
  const legacy=localHasHistory();
+ // Repair the v2.0 first-release false positive ("existing" was set merely
+ // because automatic starter data had been saved). Never reset guest/account.
+ if(localStorage.getItem(DONE)==="existing"&&!legacy)
+  localStorage.removeItem(DONE);
  if(!localStorage.getItem(DONE)&&legacy)localStorage.setItem(DONE,"existing");
  // Also finish a signup email callback when the user started from guest mode.
  // This is intentionally scoped to an Auth callback: ordinary returning guests
