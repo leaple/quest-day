@@ -561,7 +561,20 @@
   fetch("./characters-1.3.json",{cache:"no-cache"})
     .then(res=>{if(!res.ok)throw new Error("Catalog HTTP "+res.status);return res.json();})
     .then(json=>{
-      if(!Array.isArray(json.characters)||json.characters.length!==12)throw new Error("Catalog validation failed");
+      // Catalog is extensible: the original 12 are retained, and additional
+      // character collections may be appended without breaking older records.
+      if(!Array.isArray(json.characters) || json.characters.length<12) {
+        throw new Error("Catalog validation failed: expected at least 12 characters");
+      }
+      const ids = json.characters.map(c=>c&&c.id);
+      if(ids.some(id=>typeof id!=="string" || !id) || new Set(ids).size!==ids.length) {
+        throw new Error("Catalog validation failed: missing or duplicate character IDs");
+      }
+      const baseIds = ["sprout","paper_messenger","dawn_runner","sunset_scribe",
+        "forest","clockkeeper","star_scribe","ninja","mage","knight","dream_whale","time_guardian"];
+      if(!baseIds.every(id=>ids.includes(id))) {
+        throw new Error("Catalog validation failed: an original guardian is missing");
+      }
       catalog=json.characters;
       currentRpg();
       // Preload all twelve lightweight portraits once, so swapping characters does not flash placeholders.
