@@ -304,6 +304,53 @@
     return o;
   }
 
+
+  // Fine engraved highlights make the armor, robes and class crests legible
+  // even at the smaller collection-card size.
+  function fineIllustrationDetails(id,c,stage){
+    const tint=c.trim,energy=c.aura,dark=c.dark;
+    let v=path("M209 239Q255 222 296 241","none",tint,2,'opacity=".76"');
+    v+=path("M214 253Q236 268 254 275Q277 267 293 250","none",tint,2,'opacity=".64"');
+    v+=path("M213 351Q252 369 295 351","none",tint,2,'opacity=".6"');
+    v+=path("M198 393L217 411M300 391L319 407","none",tint,2,'opacity=".51"');
+    for(let side of [-1,1]){
+      v+='<g transform="translate(255 0) scale('+side+' 1) translate(-255 0)">';
+      v+=path("M175 254Q184 249 197 249L193 263M160 313L171 331","none",tint,2,'opacity=".84"');
+      if(stage>=2)v+=path("M168 274L181 267L189 276","none",energy,2,'opacity=".74"');
+      v+='</g>';
+    }
+    switch(id){
+      case "hero_aren":case "hero_baruk":
+        v+=path("M242 287L255 297L268 287M244 312L255 320L265 312","none",tint,3);
+        break;
+      case "hero_lyra":case "hero_sion":
+        v+=sparkle(214,288,5,energy)+sparkle(293,307,6,tint);
+        break;
+      case "hero_kyle":case "hero_lumi":case "hero_elin":
+        v+=ellipse(236,322,4,9,energy,'transform="rotate(-35 236 322)"')+ellipse(276,322,4,9,energy,'transform="rotate(35 276 322)"');
+        break;
+      case "hero_sera":case "hero_nia":
+        v+=circ(255,300,8,"none",tint,3)+sparkle(255,287,8,energy);
+        break;
+      case "hero_zed":case "hero_eve":
+        v+=path("M207 310L235 329M275 329L303 310","none",energy,3);
+        break;
+      case "hero_rohan":
+        v+=circ(255,299,10,"none",energy,3)+path("M245 299H265M255 289V309","none",tint,2);
+        break;
+    }
+    if(stage>=2){
+      v+=path("M188 350L171 381M320 351L339 382","none",energy,3,'opacity=".7"');
+      v+=sparkle(253,287,stage===3?11:6,tint);
+    }
+    if(stage===3){
+      v+=path("M202 236Q256 215 307 235","none",energy,4,'opacity=".82"');
+      v+=sparkle(196,256,7,energy)+sparkle(312,260,7,energy);
+      v+=path("M218 371Q255 379 294 372","none","#fff8d1",2,'opacity=".78"');
+    }
+    return v;
+  }
+
   function draw(id,stage){
     if(!styles[id])return "";
     stage=Math.max(1,Math.min(3,Number(stage)||1));
@@ -323,7 +370,7 @@
       '</defs>'+
       '<g>'+aura(c,stage,t)+specialtyBack(id,c,stage)+headRing+'</g>'+
       '<g transform="rotate('+c.pose+' 255 288)">'+
-        costume(c,stage,t)+face(c,stage,t)+crown(c,stage,t)+accessory(c,stage,t)+specialtyFront(id,c,stage)+
+        costume(c,stage,t)+face(c,stage,t)+crown(c,stage,t)+accessory(c,stage,t)+specialtyFront(id,c,stage)+fineIllustrationDetails(id,c,stage)+
       '</g>'+
       (stage===3?sparkle(397,89,15,c.trim)+sparkle(75,310,11,c.aura):"")+
       '</svg>';
