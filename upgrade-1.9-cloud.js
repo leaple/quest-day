@@ -99,7 +99,7 @@
    ready?(dirty||writing?"변경 사항을 저장하는 중…":"☁️ 계정과 자동 동기화 중"):
    "서버 연결을 확인하는 중…";
   const opts=connected&&blocked?
-   '<button data-qd19="remote">클라우드 기록 사용</button>'+
+   (remotePending?.exists?'<button data-qd19="remote">클라우드 기록 사용</button>':"")+
    '<button data-qd19="local" class="alt">이 기기 기록 사용</button>':
    connected&&!enabled?
    '<button data-qd19="enable">내 모든 기록 클라우드 동기화 시작</button>':
@@ -126,13 +126,15 @@
    const key=safetyPrefix+user;
    const record={savedAt:new Date().toISOString(),label,data};
    localStorage.setItem(key,JSON.stringify(record));
-  }catch(e){console.warn("Local recovery copy unavailable",e);}
+   return true;
+  }catch(e){console.warn("Local recovery copy unavailable",e);return false;}
  }
  function applyRemote(obj,saveRecovery=true){
   if(!valid(obj))throw Error("클라우드 기록의 구조가 올바르지 않아요.");
   if(bytes(obj)>MAX_BYTES)throw Error("클라우드 기록이 너무 커요.");
   const old=clone(state);
-  if(saveRecovery&&!same(old,obj))safetyCopy(old,"cloud import");
+  if(saveRecovery&&!same(old,obj)&&!safetyCopy(old,"cloud import"))
+   throw Error("기존 기기 기록의 안전 보관 공간이 부족해서 가져오기를 중단했어요. 기기 저장 공간을 확인해 주세요.");
   const snapshot=clone(obj);
   state=snapshot;
   // Existing save wrappers keep local evolution / RPG render behavior.
@@ -313,14 +315,18 @@
  }
  async function resolve(useRemote){
   if(!blocked||!remotePending)return;
-  const snapshot=remotePending,local=clone(localConflict);
+  const snapshot=remotePending,local=clone(state);
   blocked=false;loading=true;draw();
   try{
    if(useRemote&&snapshot.exists){
-    applyRemote(snapshot.data,true);
-    markSynced(snapshot.data,snapshot.revision);
+    // Pull the latest snapshot again so a cloud choice isn't stale.
+    const latest=await rpc("qd_cloud_load");
+    if(!latest.exists||!valid(latest.data))throw Error("최신 클라우드 저장본을 읽지 못했어요.");
+    applyRemote(latest.data,true);
+    markSynced(latest.data,latest.revision);
    }else{
-    if(snapshot.exists)safetyCopy(snapshot.data,"replaced cloud save");
+    if(snapshot.exists&&!safetyCopy(snapshot.data,"replaced cloud save"))
+     throw Error("이전 클라우드 기록의 안전 보관 공간이 부족해서 덮어쓰지 않았어요.");
     // If server changed since we displayed the dialog, CAS rejects the overwrite.
     const ok=await writeExact(local,snapshot.revision);
     if(ok){blocked=false;ready=true;}
