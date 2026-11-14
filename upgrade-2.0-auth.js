@@ -409,7 +409,7 @@
   error=callbackError.slice(0,210);
   noticeText="인증 링크가 만료됐거나 Supabase의 URL 설정이 맞지 않을 수 있어요. Authentication → URL Configuration에서 Site URL과 Redirect URLs을 확인하고 새 인증 메일을 요청해 주세요.";
   render();
- }else if(!localStorage.getItem(DONE)||hasAuthCallback){
+ }else if(!localStorage.getItem(DONE)||hasAuthCallback||pendingRead()?.type==="link"){
   if(!localStorage.getItem(DONE))show("welcome");
   const ticket=++requestId;
   (async()=>{
