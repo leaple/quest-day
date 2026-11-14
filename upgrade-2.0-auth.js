@@ -104,7 +104,7 @@
   }catch(e){return true;}
   return hasRealProgress(localStorage.getItem("quest-day-mvp-v1"));
  };
- let mode="welcome",settingsOpen=false,busy=false,error="",noticeText="",emailDraft="",flow="",requestId=0;
+ let mode="welcome",settingsOpen=false,busy=false,error="",noticeText="",emailDraft="",passwordDraft="",codeDraft="",flow="",requestId=0;
  const body=document.body;
  let oldOverflow="",appInert=[],lastFocus=null;
  function holdInterface(){
@@ -133,10 +133,11 @@
   if(mode==="login")return ["다시 만나서 반가워요!","계정으로 로그인하면 저장된 모험을 이어갈 수 있어요."];
   if(mode==="signup")return ["새로운 모험 시작하기","이메일 계정을 만들면 여러 기기에서 기록을 이어갈 수 있어요."];
   if(mode==="link")return ["게스트 기록을 지키세요","현재 익명 계정을 그대로 이메일과 연결해 친구·게임 기록을 유지해요."];
-  if(mode==="verifyLink")return ["이메일 확인","받은 인증 코드로 기존 계정을 확인해 주세요."];
+  if(mode==="verifyLink")return ["이메일 확인","메일의 확인 링크를 누른 다음 앱으로 돌아와 인증을 확인하세요."];
   if(mode==="finishLink")return ["계정 비밀번호 설정","인증한 계정에 비밀번호를 등록해 다른 기기에서도 로그인하세요."];
-  if(mode==="verifySignup")return ["메일함을 확인해 주세요","인증 메일을 받았다면 링크를 열거나 인증 코드를 입력하세요."];
+  if(mode==="verifySignup")return ["메일함을 확인해 주세요","메일의 Confirm Email 링크를 열어 이메일을 인증해 주세요."];
   if(mode==="account")return ["계정 관리","현재 기록을 유지하면서 계정을 연결하거나 전환할 수 있어요."];
+  if(mode==="authError")return ["이메일 인증 문제","인증 링크에 문제가 있어요. 아래 설명을 확인해 주세요."];
   return ["오늘의 모험을 시작하세요","작은 퀘스트를 달성하며 나만의 캐릭터를 성장시켜요."];
  }
  function field(id,label,type,placeholder,autocomplete,extra=""){
@@ -159,11 +160,15 @@
     (mode==="signup"?field("qd20Password","새 비밀번호 (12자 이상)","password","12자 이상","new-password",'minlength="12" maxlength="128"'):"")+
     button(mode==="link"?"기존 계정에 이메일 연결":"가입하고 인증 메일 받기","submitSignup")+
     button("뒤로","back","ghost");
-  if(mode==="verifySignup"||mode==="verifyLink")return '<div class="qd20-notice">'+safe(emailDraft)+' 주소로 인증을 요청했어요. 메일을 확인해 주세요.</div>'+
-    field("qd20Code","인증 코드가 있는 경우","text","이메일의 숫자 코드","one-time-code",'maxlength="8" inputmode="numeric"')+
-    button("인증 코드 확인","verify")+
-    button("메일 인증 완료 후 로그인","login","alt")+
+  if(mode==="verifySignup"||mode==="verifyLink")return '<div class="qd20-notice">'+safe(emailDraft)+
+    ' 주소로 확인 메일을 요청했어요. <strong>Supabase 기본 메일은 숫자 코드 대신 Confirm Email 링크를 보냅니다.</strong> 링크를 누른 뒤 아래에서 인증을 확인해 주세요.</div>'+
+    button("메일 링크 인증 완료 확인","checkVerification")+
+    field("qd20Code","메일에 숫자 코드가 별도로 있는 경우에만 입력 (선택)","text","코드가 없다면 비워 두세요","one-time-code",'maxlength="8" inputmode="numeric"')+
+    button("숫자 코드로 확인","verify","alt")+
     button("이전 화면","back","ghost");
+  if(mode==="authError")return button("인증 다시 시도","signup")+
+    button("기존 계정 로그인","login","alt")+
+    button("게스트로 돌아가기","guest","ghost");
   if(mode==="finishLink")return field("qd20Password","새 비밀번호 (12자 이상)","password","비밀번호 설정","new-password",'minlength="12" maxlength="128"')+
     button("비밀번호 저장하고 시작","savePassword")+
     button("나중에 설정 (다른 기기 로그인은 아직 불가)","finishLinked","ghost");
@@ -189,11 +194,16 @@
    '게스트 기록은 계정 연결 전까지 다른 기기에서 복구할 수 없어요.</p></div>';
   if(document.getElementById("qd20Email")&&emailDraft)
    document.getElementById("qd20Email").value=emailDraft;
+  if(document.getElementById("qd20Password")&&passwordDraft)
+   document.getElementById("qd20Password").value=passwordDraft;
+  if(document.getElementById("qd20Code")&&codeDraft)
+   document.getElementById("qd20Code").value=codeDraft;
  }
  function show(next,fromSettings=false){
   if(busy)return;
   if(fromSettings){settingsOpen=true;holdInterface();}
   else holdInterface();
+  if(mode!==next){passwordDraft="";codeDraft="";}
   mode=next;error="";noticeText="";render();
  }
  function getInputs(){
@@ -251,9 +261,10 @@
   }
   if(u?.is_anonymous){
    // Converting in place preserves friend and cloud ownership under the same user id.
-   const result=await sup.auth.updateUser({email:values.email});
+   const returnUrl=window.location.origin+window.location.pathname;
+   const result=await sup.auth.updateUser({email:values.email},{emailRedirectTo:returnUrl});
    if(result.error)throw result.error;
-   flow="link";mode="verifyLink";noticeText="기존 게스트 계정의 친구·게임 데이터를 유지하면서 이메일을 연결해요.";
+   flow="link";mode="verifyLink";noticeText="기존 게스트 계정의 친구·게임 기록을 유지해요. 메일의 Confirm Email 링크를 열고, 이 화면에서 인증 상태를 확인하세요.";
    render();return;
   }
   if(!guardPass(values.password))throw Error("비밀번호는 12~128자로 입력해 주세요.");
@@ -267,7 +278,7 @@
    await activate(result.data.session.user.id,null);
   }else{
    flow="signup";mode="verifySignup";
-   noticeText="인증 메일을 보냈다면 안내에 따라 인증해 주세요. 이미 가입된 이메일일 수도 있으니 확인되지 않은 계정 생성으로 안내하지 않아요.";
+   noticeText="메일의 Confirm Email 링크를 눌러 인증해 주세요. 기본 메일은 숫자 코드를 제공하지 않아요. 링크가 잘못된 사이트로 이동하면 Supabase의 Site URL과 Redirect URLs을 확인해 주세요.";
    render();
   }
  }
@@ -286,6 +297,25 @@
    await activate(result.data.session.user.id,null);
   }else{
    mode="login";noticeText="메일 인증을 완료했어요. 이메일과 비밀번호로 로그인해 주세요.";render();
+  }
+ }
+ async function checkVerification(){
+  const sup=await client();
+  const response=await sup.auth.getUser();
+  const u=response.data?.user;
+  const confirmed=!!(u?.email&&u.email_confirmed_at);
+  if(flow==="link"){
+   if(!confirmed || u.email.toLowerCase()!==emailDraft)
+    throw Error("아직 이메일 인증이 확인되지 않았어요. 메일의 Confirm Email 링크를 열고 다시 확인해 주세요.");
+   mode="finishLink";noticeText="이메일 인증 완료! 이제 비밀번호를 설정하면 다른 기기에서도 같은 계정을 사용할 수 있어요.";
+   passwordDraft="";render();return;
+  }
+  if(confirmed&&!u.is_anonymous&&u.email.toLowerCase()===emailDraft)
+   await activate(u.id,bridge.getUser()?.id||null);
+  else{
+   mode="login";passwordDraft="";
+   noticeText="링크를 열어 이메일 인증을 마쳤다면 가입할 때 사용한 이메일과 비밀번호로 로그인해 주세요.";
+   render();
   }
  }
  async function savePassword(values){
@@ -317,11 +347,16 @@
    if(user?.id)await activate(user.id,user.id);
    return;
   }
+  // Preserve form input before the busy-state refresh.
+  if(values.email)emailDraft=values.email;
+  if(values.password)passwordDraft=values.password;
+  if(values.code)codeDraft=values.code;
   busy=true;error="";noticeText="";render();
   try{
    if(action==="submitLogin")await submitLogin(values);
    else if(action==="submitSignup")await submitSignup(values);
    else if(action==="verify")await verify(values);
+   else if(action==="checkVerification")await checkVerification();
    else if(action==="savePassword")await savePassword(values);
   }catch(e){fail(e);}
   finally{busy=false;if(!root.hidden)render();}
