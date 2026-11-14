@@ -414,32 +414,6 @@
     }finally {restoreFile.value="";}
   };
 
-  const settings=document.querySelector("#settings .card");
-  const automaticRestore=document.createElement("button");
-  automaticRestore.className="setting-btn";
-  automaticRestore.textContent="↶ 기기 내 자동 보관본 복원";
-  if(settings)settings.appendChild(automaticRestore);
-  automaticRestore.addEventListener("click",function(){
-    try{
-      const raw=localStorage.getItem(backupKey);
-      if(!raw)return alert("복원할 자동 보관본이 아직 없어요.");
-      const parsed=JSON.parse(raw);
-      const restored=parseBackup(parsed);
-      if(!confirm("자동 보관 날짜: "+(parsed.createdAt||"알 수 없음")+
-        "\n현재 기록을 이전 보관본으로 교체할까요?"))return;
-      const currentState=state;
-      state=restored;
-      try{saveState();render();alert("자동 보관본으로 복원했어요.");}
-      catch(error){state=currentState;throw error;}
-    }catch(error){
-      alert("복원할 수 없어요: "+(error?.message||"보관본 오류"));
-    }
-  });
-  const backupNotice=document.createElement("p");
-  backupNotice.className="note";
-  backupNotice.textContent="자동 보관본은 현재 기기의 브라우저에만 저장되므로, 브라우저 데이터를 지우면 함께 사라질 수 있어요. 안전을 위해 JSON 파일을 별도로 백업하세요.";
-  if(settings)settings.appendChild(backupNotice);
-
   const evoDialog=document.createElement("div");
   evoDialog.className="qd14-overlay";
   evoDialog.setAttribute("role","dialog");
