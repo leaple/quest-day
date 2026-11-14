@@ -34,6 +34,7 @@
     ".ch-progress{background:#eeedf7;border-radius:8px;overflow:hidden;height:6px;margin:9px 0}.ch-progress i{display:block;height:100%;background:#9d8bff;border-radius:8px}",
     ".ch-growth-panel{background:white;border-radius:18px;padding:16px;margin:13px 0;border:1px solid #e9e6f5}",
     ".ch-growth-flex{display:flex;align-items:center;gap:15px}.ch-growth-flex .ch-art{width:120px;min-width:120px;height:136px}",
+    ".ch-growth-portrait{width:120px;min-width:120px;height:136px;position:relative}.ch-growth-portrait>.ch-art{width:100%;height:100%}",
     ".ch-modal{position:fixed;inset:0;z-index:55;display:none;align-items:flex-end;justify-content:center;background:#161932aa;padding:10px}.ch-modal.open{display:flex}",
     ".ch-dialog{width:100%;max-width:500px;max-height:94vh;overflow:auto;background:#fff;border-radius:24px;padding:19px;box-shadow:0 20px 55px #10102448}",
     ".ch-detail-header{display:flex;align-items:center;gap:15px}.ch-detail-art{height:180px;width:46%;flex:0 0 46%;border-radius:15px;background:#f4f0ff}",
@@ -209,6 +210,7 @@
   const failedPortraits = new Set();
   const warmingPortraits = new Map();
   const PORTRAIT_VERSION = "4";
+  const EVOLUTION_ART_VERSION = "35";
   // Every catalog character now has three stage-specific, self-contained
   // SVG illustrations. Each artwork contains its source portrait plus unique
   // stage effects; unlock conditions and user ownership remain unchanged.
@@ -223,16 +225,19 @@
     return c?evolutionStage(c):1;
   }
   function portraitKey(id) {return id+":"+portraitStage(id);}
+  function fallbackPortraitSrc(id) {
+    return "./art/"+encodeURIComponent(id)+".png?v="+PORTRAIT_VERSION;
+  }
   function portraitSrc(id) {
     const stage=portraitStage(id);
     if(stagedArt[id]?.has(stage))
-      return "./art/evolution/"+encodeURIComponent(id)+"-stage"+stage+".svg?v=34";
-    return "./art/"+encodeURIComponent(id)+".png?v="+PORTRAIT_VERSION;
+      return "./art/evolution/"+encodeURIComponent(id)+"-stage"+stage+".svg?v="+EVOLUTION_ART_VERSION;
+    return fallbackPortraitSrc(id);
   }
 
   function notifyPortrait(id, stateName) {
     document.querySelectorAll(".ch-art[data-qdp-id]").forEach(el => {
-      if(el.dataset.qdpId !== id) return;
+      if(el.dataset.qdpId !== id || el.dataset.qdpStage !== String(portraitStage(id))) return;
       el.classList.remove("qdp-loading","qdp-ready","qdp-failed");
       el.classList.add("qdp-"+stateName);
     });
@@ -255,6 +260,11 @@
       else finish();
     };
     image.onerror = function() {
+      const backup = fallbackPortraitSrc(id);
+      if (image.src !== new URL(backup, document.baseURI).href) {
+        image.src = backup;
+        return;
+      }
       warmingPortraits.delete(key);
       failedPortraits.add(key);
       notifyPortrait(id, "failed");
@@ -280,6 +290,11 @@
     const img = event.target;
     if(!img || !img.matches || !img.matches("img[data-qdp-portrait]")) return;
     const key = img.dataset.qdpPortrait;
+    const backup = img.dataset.qdpFallback;
+    if (backup && img.src !== new URL(backup, document.baseURI).href) {
+      img.src = backup;
+      return;
+    }
     failedPortraits.add(key);
     readyPortraits.delete(key);
     const el = img.parentElement;
@@ -292,7 +307,7 @@
     const status=failedPortraits.has(key)?"failed":readyPortraits.has(key)?"ready":"loading";
     const svg=svgPortrait(character);
     const source=portraitSrc(id);
-    const image=failedPortraits.has(key)?"":'<img data-qdp-portrait="'+safe(key)+'" loading="eager" decoding="async" src="'+safe(source)+'" alt="">';
+    const image=failedPortraits.has(key)?"":'<img data-qdp-portrait="'+safe(key)+'" data-qdp-fallback="'+safe(fallbackPortraitSrc(id))+'" loading="eager" decoding="async" src="'+safe(source)+'" alt="">';
     const aura=character.visual?.palette?.[0]||"#b2b5ff";
     return '<div class="ch-art qdp-'+status+'" data-qdp-id="'+safe(id)+'" data-qdp-stage="'+stage+'" style="--qd-aura:'+safe(aura)+'">'+svg+image+'</div>';
   }
@@ -433,7 +448,7 @@
     const progress=character.evolution?.find(e=>e.stage===stage+1)?.requirement;
     const progression=progress ? Math.min(100,Math.round(metric(progress.metric)/progress.min*100)) : 100;
     if(growArt)growArt.innerHTML='<div class="ch-growth-panel"><div class="ch-growth-flex">'+
-      '<div class="ch-art" style="width:120px;min-width:120px;height:136px">'+
+      '<div class="ch-growth-portrait">'+
       portrait(character)+'</div><div><span class="ch-pill '+character.rarity+'">'+rarity[character.rarity]+'</span>'+
       '<h3 style="font-size:18px;margin:8px 0">'+safe(name)+'</h3>'+
       '<p class="ch-note">'+gradeName(lv)+' · 진화 '+stage+'/3</p>'+
