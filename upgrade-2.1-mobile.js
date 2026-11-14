@@ -16,7 +16,7 @@ style.textContent=[
 ".app .hero h1{font-size:clamp(23px,6vw,30px);line-height:1.23;overflow-wrap:anywhere}",
 ".stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}",
 ".stat{min-width:0;padding:13px 10px}.stat strong{font-size:clamp(17px,5vw,21px);overflow-wrap:anywhere}",
-".quest-list{gap:8px}.quest{min-width:0;min-height:64px;padding:9px 10px;gap:8px}",
+".quest-list{gap:6px}.quest{min-width:0;min-height:56px;padding:6px 9px;gap:7px}",
 ".quest-info{min-width:0}.quest-name{font-size:13px;line-height:1.35}.quest-meta{margin-top:4px;font-size:10px}",
 ".quest .check{width:44px;height:44px;min-width:44px;display:grid;place-items:center;border-radius:11px;font-size:16px;touch-action:manipulation}",
 ".quest .delete{min-width:40px;min-height:44px;display:grid;place-items:center;border-radius:11px;touch-action:manipulation}",
@@ -35,7 +35,7 @@ style.textContent=[
 ".qd14-dialog{max-height:87dvh;overscroll-behavior:contain}",
 ".ch-card,.rpg-item,.fr-panel,.s17-wrap,.qd14-card{min-width:0}",
 ".quest .reward{font-size:10px;padding:6px;border-radius:8px}",
-"@media(max-width:390px){.app{padding-left:11px;padding-right:11px}.quest{gap:7px;padding:8px}.quest .reward{padding:5px;font-size:10px}.section-title{gap:7px;flex-wrap:wrap}.section-title h2{font-size:17px}nav{gap:2px;padding-left:4px;padding-right:4px}nav button{font-size:10px;min-width:0;flex:1 1 0}nav button b{font-size:20px}.dialog .actions{gap:8px}}",
+"@media(max-width:390px){.app{padding-left:11px;padding-right:11px}.quest{gap:6px;padding:5px 7px}.quest .reward{padding:5px;font-size:10px}.section-title{gap:7px;flex-wrap:wrap}.section-title h2{font-size:17px}nav{gap:2px;padding-left:4px;padding-right:4px}nav button{font-size:10px;min-width:0;flex:1 1 0}nav button b{font-size:20px}.dialog .actions{gap:8px}}",
 "@media(min-width:700px){.app{padding-bottom:104px}nav{width:min(100% - 24px,580px);border:1px solid #e6e4f1;border-bottom:0;border-radius:19px 19px 0 0;padding-left:15px;padding-right:15px}.modal{align-items:center}.modal .dialog{border-radius:24px}}",
 "@media(prefers-reduced-motion:reduce){nav button,.app .progress div{transition:none!important}nav button:active{transform:none}}"
 ].join("");
