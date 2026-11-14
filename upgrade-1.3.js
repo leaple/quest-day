@@ -9,7 +9,11 @@
     ".ch-hero-copy{min-width:0;flex:1}.ch-hero-copy h3{font-size:19px;line-height:1.28;margin:6px 0 8px;color:#252341}.ch-hero-copy p{font-size:12px;color:#77748d;margin:6px 0;line-height:1.5}",
     ".ch-hero-footer{padding:11px 17px;background:#ffffff94;display:flex;gap:10px;align-items:center;justify-content:space-between}",
     ".ch-art{position:relative;width:100%;height:100%;display:grid;place-items:center;overflow:hidden}.ch-art svg{height:100%;width:100%;max-height:220px}",
-    ".ch-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 7px 9px #48418917)}",
+    ".ch-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;transform:scale(.93);filter:drop-shadow(0 7px 9px #48418917)}",
+    ".ch-art{isolation:isolate}.ch-art[data-qdp-stage='2']::after,.ch-art[data-qdp-stage='3']::after{content:'';pointer-events:none;position:absolute;z-index:3;inset:5%;border-radius:50%;mix-blend-mode:screen}",
+    ".ch-art[data-qdp-stage='2']::after{box-shadow:inset 0 0 15px var(--qd-aura,#b2b5ff),0 0 8px #b0d3ff88;opacity:.43}",
+    ".ch-art[data-qdp-stage='3']::after{box-shadow:inset 0 0 20px var(--qd-aura,#b2b5ff),0 0 17px var(--qd-aura,#b2b5ff);opacity:.7}",
+    ".ch-image-wrap{overflow:visible}.ch-image-wrap .ch-art{overflow:hidden;border-radius:12px}",
     ".ch-pill{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:850;border-radius:30px;padding:6px 9px;display:inline-block;background:#fff;color:#594db4}",
     ".ch-pill.common{color:#2c946e;background:#e4f7ed}.ch-pill.rare{color:#386bb1;background:#e6f1ff}.ch-pill.epic{color:#8352bf;background:#f0e7ff}.ch-pill.legendary{color:#956a19;background:#fff4d3}",
     ".ch-btn{border:0;border-radius:11px;padding:10px 12px;background:#7566e8;color:white;font-size:12px;font-weight:800;cursor:pointer}",
@@ -205,6 +209,25 @@
   const failedPortraits = new Set();
   const warmingPortraits = new Map();
   const PORTRAIT_VERSION = "4";
+  // Ten self-contained evolution illustrations: four corrected base portraits
+  // plus stage 2/3 designs for three featured characters.
+  const stagedArt = {
+    knight:new Set([1,2,3]),
+    mage:new Set([1,2,3]),
+    dream_whale:new Set([1,2,3]),
+    time_guardian:new Set([1])
+  };
+  function portraitStage(id) {
+    const c=findCharacter(id);
+    return c?evolutionStage(c):1;
+  }
+  function portraitKey(id) {return id+":"+portraitStage(id);}
+  function portraitSrc(id) {
+    const stage=portraitStage(id);
+    if(stagedArt[id]?.has(stage))
+      return "./art/evolution/"+encodeURIComponent(id)+"-stage"+stage+".svg?v=32";
+    return "./art/"+encodeURIComponent(id)+".png?v="+PORTRAIT_VERSION;
+  }
 
   function notifyPortrait(id, stateName) {
     document.querySelectorAll(".ch-art[data-qdp-id]").forEach(el => {
@@ -215,37 +238,39 @@
   }
 
   function warmPortrait(id) {
-    if(readyPortraits.has(id) || failedPortraits.has(id) || warmingPortraits.has(id)) return;
+    const key=portraitKey(id);
+    if(readyPortraits.has(key) || failedPortraits.has(key) || warmingPortraits.has(key)) return;
     const image = new Image();
-    warmingPortraits.set(id, image);
+    warmingPortraits.set(key, image);
     image.decoding = "async";
     image.onload = function() {
       const finish = () => {
-        warmingPortraits.delete(id);
-        readyPortraits.add(id);
-        failedPortraits.delete(id);
+        warmingPortraits.delete(key);
+        readyPortraits.add(key);
+        failedPortraits.delete(key);
         notifyPortrait(id, "ready");
       };
       if (typeof image.decode === "function") image.decode().then(finish, finish);
       else finish();
     };
     image.onerror = function() {
-      warmingPortraits.delete(id);
-      failedPortraits.add(id);
+      warmingPortraits.delete(key);
+      failedPortraits.add(key);
       notifyPortrait(id, "failed");
     };
-    image.src = "./art/" + encodeURIComponent(id) + ".png?v=" + PORTRAIT_VERSION;
+    image.src = portraitSrc(id);
   }
 
   document.addEventListener("load", function(event) {
     const img = event.target;
     if(!img || !img.matches || !img.matches("img[data-qdp-portrait]")) return;
-    const id = img.dataset.qdpPortrait;
+    const key = img.dataset.qdpPortrait;
     const el = img.parentElement;
     const mark = () => {
       if(!img.isConnected) return;
       if(el){el.classList.remove("qdp-loading","qdp-failed");el.classList.add("qdp-ready");}
-      readyPortraits.add(id);
+      readyPortraits.add(key);
+      failedPortraits.delete(key);
     };
     if (typeof img.decode === "function") img.decode().then(mark, mark);
     else mark();
@@ -253,23 +278,22 @@
   document.addEventListener("error", function(event) {
     const img = event.target;
     if(!img || !img.matches || !img.matches("img[data-qdp-portrait]")) return;
-    const id = img.dataset.qdpPortrait;
-    failedPortraits.add(id);
-    readyPortraits.delete(id);
+    const key = img.dataset.qdpPortrait;
+    failedPortraits.add(key);
+    readyPortraits.delete(key);
     const el = img.parentElement;
     if(el){el.classList.remove("qdp-loading","qdp-ready");el.classList.add("qdp-failed");}
     img.remove();
   }, true);
 
   function portrait(character) {
-    const id = character.id;
-    const status = failedPortraits.has(id) ? "failed" :
-      readyPortraits.has(id) ? "ready" : "loading";
-    const svg = svgPortrait(character);
-    const image = failedPortraits.has(id) ? "" :
-      '<img data-qdp-portrait="'+safe(id)+'" loading="eager" decoding="async" src="./art/'+
-      safe(id)+'.png?v='+PORTRAIT_VERSION+'" alt="">';
-    return '<div class="ch-art qdp-'+status+'" data-qdp-id="'+safe(id)+'">'+svg+image+'</div>';
+    const id=character.id,key=portraitKey(id),stage=portraitStage(id);
+    const status=failedPortraits.has(key)?"failed":readyPortraits.has(key)?"ready":"loading";
+    const svg=svgPortrait(character);
+    const source=portraitSrc(id);
+    const image=failedPortraits.has(key)?"":'<img data-qdp-portrait="'+safe(key)+'" loading="eager" decoding="async" src="'+safe(source)+'" alt="">';
+    const aura=character.visual?.palette?.[0]||"#b2b5ff";
+    return '<div class="ch-art qdp-'+status+'" data-qdp-id="'+safe(id)+'" data-qdp-stage="'+stage+'" style="--qd-aura:'+safe(aura)+'">'+svg+image+'</div>';
   }
 
   function cardMarkup(character) {
