@@ -11,6 +11,7 @@
  const AUTO_FLAG="qd21-realtime-autoconnect-v1";
  const CLOUD="qd19-game-cloud-consent-v1:";
  const HOLD="qd18-remote-profile-sync-hold-v1";
+ const PENDING="qd20-email-confirmation-pending-v1";
  const SETTINGS=document.getElementById("settings");
  const root=document.createElement("div");
  root.id="qd20Entry";
@@ -126,8 +127,16 @@
  }
  function finish(kind){
   localStorage.setItem(DONE,kind);
+  localStorage.removeItem(PENDING);
+  passwordDraft="";codeDraft="";
   requestId++;
   releaseInterface();
+ }
+ function pendingRead(){
+  try{
+   const pending=JSON.parse(localStorage.getItem(PENDING)||"null");
+   return pending&&Date.now()-pending.ts<86400000?pending:null;
+  }catch(e){return null;}
  }
  function heading(){
   if(mode==="login")return ["다시 만나서 반가워요!","계정으로 로그인하면 저장된 모험을 이어갈 수 있어요."];
@@ -264,6 +273,7 @@
    const returnUrl=window.location.origin+window.location.pathname;
    const result=await sup.auth.updateUser({email:values.email},{emailRedirectTo:returnUrl});
    if(result.error)throw result.error;
+   localStorage.setItem(PENDING,JSON.stringify({type:"link",userId:u.id,ts:Date.now()}));
    flow="link";mode="verifyLink";noticeText="기존 게스트 계정의 친구·게임 기록을 유지해요. 메일의 Confirm Email 링크를 열고, 이 화면에서 인증 상태를 확인하세요.";
    render();return;
   }
@@ -277,6 +287,7 @@
   if(result.data?.session?.user?.id){
    await activate(result.data.session.user.id,null);
   }else{
+   localStorage.setItem(PENDING,JSON.stringify({type:"signup",ts:Date.now()}));
    flow="signup";mode="verifySignup";
    noticeText="메일의 Confirm Email 링크를 눌러 인증해 주세요. 기본 메일은 숫자 코드를 제공하지 않아요. 링크가 잘못된 사이트로 이동하면 Supabase의 Site URL과 Redirect URLs을 확인해 주세요.";
    render();
@@ -384,12 +395,21 @@
  if(localStorage.getItem(DONE)==="existing"&&!legacy)
   localStorage.removeItem(DONE);
  if(!localStorage.getItem(DONE)&&legacy)localStorage.setItem(DONE,"existing");
- // Also finish a signup email callback when the user started from guest mode.
- // This is intentionally scoped to an Auth callback: ordinary returning guests
- // are never silently converted into a different account.
- const hasAuthCallback=/(?:^|[?&#])(?:code|access_token|token_hash)=/.test(
+ // Email confirmation opens this page with an access token, auth code,
+ // or a URL error. Show an actionable result, never silently hide failures.
+ const qp=new URLSearchParams(window.location.search||"");
+ const hp=new URLSearchParams((window.location.hash||"").replace(/^#/,""));
+ const callbackError=qp.get("error_description")||hp.get("error_description")||
+  qp.get("error")||hp.get("error")||"";
+ const callbackType=qp.get("type")||hp.get("type")||"";
+ const hasAuthCallback=/(?:^|[?&#])(?:code|access_token|token_hash|error|error_code)=/.test(
   window.location.search+window.location.hash);
- if(!localStorage.getItem(DONE)||hasAuthCallback){
+ if(callbackError){
+  show("authError");
+  error=callbackError.slice(0,210);
+  noticeText="인증 링크가 만료됐거나 Supabase의 URL 설정이 맞지 않을 수 있어요. Authentication → URL Configuration에서 Site URL과 Redirect URLs을 확인하고 새 인증 메일을 요청해 주세요.";
+  render();
+ }else if(!localStorage.getItem(DONE)||hasAuthCallback){
   if(!localStorage.getItem(DONE))show("welcome");
   const ticket=++requestId;
   (async()=>{
@@ -398,13 +418,23 @@
     await bridge.waitForIdentity?.();
     const session=await sup.auth.getSession();
     if(ticket!==requestId)return;
-    const id=session.data?.session?.user?.id;
-    if(id&&!session.data.session.user.is_anonymous){
-     await activate(id,bridge.getUser()?.id||null);
+    const user=session.data?.session?.user;
+    if(!user?.id)return;
+    const pending=pendingRead();
+    const isLinkConfirmation=user.email&&user.email_confirmed_at&&
+     ((pending?.type==="link"&&pending.userId===user.id) ||
+       (hasAuthCallback&&callbackType==="email_change"));
+    if(isLinkConfirmation){
+     flow="link";passwordDraft="";
+     show("finishLink");
+     noticeText="이메일 인증이 완료됐어요! 계정 복구를 위해 새 비밀번호를 설정해 주세요.";
+     render();
+    }else if(!user.is_anonymous){
+     await activate(user.id,bridge.getUser()?.id||null);
     }
    }catch(e){
-    // Guest play remains available offline or if the auth CDN cannot load.
-    console.info("QUEST DAY optional session check:",e?.message||e);
+    console.info("QUEST DAY email confirmation check:",e?.message||e);
+    if(hasAuthCallback){show("authError");error="이메일 인증 결과를 확인하지 못했어요. 앱을 다시 열어 인증 상태를 확인해 주세요.";render();}
    }
   })();
  }
