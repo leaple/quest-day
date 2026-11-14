@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QUEST DAY · 진화 일러스트 36종 점검</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#151726;color:#f3f2ff}
+main{max-width:1200px;margin:0 auto;padding:24px 16px 80px}
+a{color:#c6b5ff}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+h1{font-size:clamp(22px,3vw,32px);margin:0 0 8px}
+p{color:#a9abc6;font-size:14px;line-height:1.6;margin:7px 0}
+.tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 22px}
+button{font:inherit;color:#f1eeff;background:#343154;border:1px solid #514c79;border-radius:10px;padding:9px 13px;cursor:pointer}
+button.active{background:#7054b5}
+.group{margin-bottom:20px;background:#202137;border:1px solid #363850;border-radius:20px;padding:16px}
+.group h2{font-size:17px;margin:0 0 12px}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cell{background:radial-gradient(circle at 50% 46%,#3f3b64,#28283e 65%,#22243b);border-radius:15px;border:1px solid #444360;overflow:hidden;min-width:0}
+.cell.light{background:#f3f4f8;color:#26243a}
+.art{aspect-ratio:1/1;display:grid;place-items:center;padding:5px;cursor:zoom-in}
+.art img{max-width:100%;width:100%;height:100%;object-fit:contain;display:block}
+.info{padding:9px 10px 12px;border-top:1px solid #56516c33}
+.info strong{display:block;font-size:12px}
+.info p{font-size:11px;margin:6px 0 0;color:inherit;opacity:.7}
+.error{font-size:12px;color:#ffb8b8;padding:8px}
+#zoom{position:fixed;inset:0;background:#0a0a13ed;z-index:40;display:none;place-items:center;padding:24px}
+#zoom[open]{display:grid}#zoom img{max-width:95vw;max-height:86vh;object-fit:contain}
+#closeZoom{position:fixed;right:20px;top:20px}
+@media(max-width:650px){.gallery{gap:5px}.group{padding:10px}.info{padding:7px}.info strong{font-size:10px}.info p{display:none}}
+</style>
+</head>
+<body>
+<main>
+<header><div><h1>QUEST DAY · 진화 일러스트 점검</h1><p>12명 × 3단계 = 36개 · 단계별 구도·여백·빛 효과 비교용</p><p>현재 적용된 SVG는 기존 캐릭터에 효과를 합성한 이미지이며, 완전히 다시 그린 원화는 아닙니다.</p></div><a href="../../index.html">← 게임으로 돌아가기</a></header>
+<div class="tools"><button id="light">밝은 배경 보기</button><button id="dark" class="active">어두운 배경 보기</button><span id="counter" aria-live="polite">확인 중…</span></div>
+<div id="gallery"></div>
+</main>
+<div id="zoom" role="dialog" aria-label="확대 일러스트" aria-modal="true"><button id="closeZoom">닫기 ✕</button><img id="zoomImg" alt="확대 일러스트"></div>
+<script>
+(async function(){
+const names={sprout:'새싹 모험가',paper_messenger:'종이비행기 메신저',dawn_runner:'새벽 러너',sunset_scribe:'저녁 기록가',forest:'숲의 연금술사',clockkeeper:'시계탑 관리자',star_scribe:'별조각 서기',ninja:'그림자 러너',mage:'별빛 마법사',knight:'달빛 기사',dream_whale:'꿈고래 소환사',time_guardian:'시간의 수호자'};
+const items=Object.entries(names).map(([id,name])=>({id,name,evolution:[]}));
+try{const r=await fetch('../../characters-1.3.json',{cache:'no-store'});if(r.ok){const json=await r.json();for(const c of json.characters||[]){const target=items.find(x=>x.id===c.id);if(target)target.evolution=c.evolution||[];}}}catch(e){console.warn('단계 설명 불러오기 실패',e)}
+const box=document.getElementById('gallery'),zoom=document.getElementById('zoom'),zoomImg=document.getElementById('zoomImg');
+let done=0,failed=0;
+function counter(){document.getElementById('counter').textContent=`확인됨 ${done}/36 · 로드 오류 ${failed}개`}
+for(const c of items){const section=document.createElement('section');section.className='group';const title=document.createElement('h2');title.textContent=c.name;section.appendChild(title);const row=document.createElement('div');row.className='gallery';
+for(let i=1;i<=3;i++){const cell=document.createElement('div');cell.className='cell';const art=document.createElement('div');art.className='art';const img=document.createElement('img');img.loading='lazy';img.alt=`${c.name} 진화 ${i}단계`;img.src=`./${c.id}-stage${i}.svg?v=34`;img.onload=()=>{done++;counter()};img.onerror=()=>{done++;failed++;counter();const e=document.createElement('div');e.className='error';e.textContent='이미지 로드 실패';art.appendChild(e)};art.appendChild(img);art.addEventListener('click',()=>{zoomImg.src=img.src;zoom.setAttribute('open','');});const inf=document.createElement('div');inf.className='info';const b=document.createElement('strong');b.textContent=`진화 ${i}/3`;const p=document.createElement('p');p.textContent=c.evolution[i-1]?.visualChange||'현재 단계 일러스트';inf.append(b,p);cell.append(art,inf);row.appendChild(cell)}section.appendChild(row);box.appendChild(section)}
+counter();document.getElementById('light').onclick=()=>setTheme('light');document.getElementById('dark').onclick=()=>setTheme('dark');function setTheme(mode){document.querySelectorAll('.cell').forEach(x=>x.classList.toggle('light',mode==='light'));document.getElementById('light').classList.toggle('active',mode==='light');document.getElementById('dark').classList.toggle('active',mode==='dark')}
+document.getElementById('closeZoom').onclick=()=>zoom.removeAttribute('open');zoom.onclick=e=>{if(e.target===zoom)zoom.removeAttribute('open')};document.addEventListener('keydown',e=>{if(e.key==='Escape')zoom.removeAttribute('open')});
+})().catch(console.error);
+</script>
+</body>
+</html>
