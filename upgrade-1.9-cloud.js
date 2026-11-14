@@ -153,6 +153,8 @@
   if(dirty)schedulePush();
   if(bridge.isProfileSyncHeld?.()){
    bridge.resumeProfileSync().catch(e=>{issue=explain(e);draw();});
+  }else{
+   bridge.syncProfile?.().catch(e=>console.warn("Cloud profile summary sync failed",e));
   }
   draw();
  }
