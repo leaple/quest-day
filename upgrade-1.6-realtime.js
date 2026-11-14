@@ -102,7 +102,7 @@
    if(sdkPromise)return sdkPromise;
    sdkPromise=new Promise((resolve,reject)=>{
      const script=document.createElement("script");
-     script.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
+     script.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
      script.async=true;
      script.onload=()=>window.supabase?.createClient?resolve(window.supabase):reject(new Error("실시간 라이브러리가 준비되지 않았어요."));
      script.onerror=()=>reject(new Error("실시간 라이브러리를 다운로드하지 못했어요. 네트워크를 확인해 주세요."));
