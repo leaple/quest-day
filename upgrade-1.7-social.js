@@ -291,7 +291,7 @@
    if(bridge.isReady()&&document.visibilityState==="visible")refresh();
   },45000);
  }
- async function perform(action,id,button){
+ async function perform(action,id,button,snapshots={}){
   if(st.working)return;
   if(action==="view"){
    captureDraft();st.view=button.dataset.view||"ranking";st.chatScroll=0;
@@ -312,16 +312,16 @@
   st.working=true;mount();
   try{
    if(action==="cheerSend"){
-    const friend=document.getElementById("s17CheerFriend")?.value;
-    const kind=document.getElementById("s17CheerKind")?.value;
+    const friend=snapshots.cheerFriend||document.getElementById("s17CheerFriend")?.value;
+    const kind=snapshots.cheerKind||document.getElementById("s17CheerKind")?.value;
     if(!friend||!isFriend(friend))throw Error("응원할 친구를 선택해 주세요.");
     await runRPC("qd_send_cheer",{friend_id:friend,cheer_kind:kind});
     toast("응원을 보냈어요!");
    }else if(action==="cheerRead"){
     await runRPC("qd_mark_cheers_seen");
    }else if(action==="partyCreate"){
-    const friend=document.getElementById("s17PartyFriend")?.value;
-    const goal=Number(document.getElementById("s17Goal")?.value);
+    const friend=snapshots.partyFriend||document.getElementById("s17PartyFriend")?.value;
+    const goal=Number(snapshots.goal||document.getElementById("s17Goal")?.value);
     if(!friend||!isFriend(friend))throw Error("초대할 친구를 선택해 주세요.");
     await runRPC("qd_create_party",{friend_id:friend,goal});
     toast("파티 초대를 보냈어요.");
@@ -332,7 +332,7 @@
     await runRPC("qd_cancel_party",{party_id:id});
    }else if(action==="chatSend"){
     if(!st.peer||!isFriend(st.peer))throw Error("대화할 친구를 선택해 주세요.");
-    const text=(document.getElementById("s17Message")?.value||st.draft).trim();
+    const text=(st.draft||document.getElementById("s17Message")?.value||"").trim();
     if(!text||text.length>500)throw Error("메시지는 1~500자로 작성해 주세요.");
     await runRPC("qd_send_message",{friend_id:st.peer,message_body:text});
     st.draft="";st.chatScroll=999999;
