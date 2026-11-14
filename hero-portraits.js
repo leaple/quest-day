@@ -186,6 +186,124 @@
     }
     return out;
   }
+
+  // 12 distinctive vanguard silhouettes, evolved clothing and class magic.
+  function specialtyBack(id,c,st){
+    if(st<2)return "";
+    let o="",a=c.aura,g=c.trim;
+    const loop=(n,fn)=>{for(let i=0;i<n;i++)o+=fn(i)};
+    switch(id){
+      case "hero_aren": case "hero_baruk":
+        o+=circ(255,250,st===3?192:155,"none",g,st===3?8:4,'stroke-dasharray="25 8 4 12" opacity=".75"');
+        loop(st===3?15:7,i=>{const v=i*6.28318/(st===3?15:7);return sparkle(Math.round(255+Math.cos(v)*(st===3?193:156)),Math.round(250+Math.sin(v)*(st===3?193:156)),st===3?8:5,g)});
+        if(st===3&&id==="hero_aren")o+=wing(0,c,3)+wing(1,c,3);
+        break;
+      case "hero_lyra": case "hero_sion":
+        o+=circ(255,227,st===3?185:148,"none",a,4,'stroke-dasharray="8 15"');
+        o+=poly("255,42 423,324 86,324","none",g,st===3?5:3);
+        if(st===3)o+=poly("255,53 427,334 80,334","none",a,2)+circ(255,223,138,"none",g,2);
+        if(id==="hero_sion")o+=circ(255,134,st===3?108:78,"#211c38",a,st===3?9:5);
+        break;
+      case "hero_kyle": case "hero_elin": case "hero_lumi":
+        loop(st===3?17:9,i=>{const v=i*2.399,x=Math.round(255+Math.cos(v)*174),y=Math.round(264+Math.sin(v)*179);return ellipse(x,y,7+i%4,15+i%7,i%2?g:a,'transform="rotate('+(i*31)+' '+x+' '+y+')" opacity=".67"')});
+        if(st===3)o+=path("M80 381Q170 61 415 167M92 404Q270 83 419 293","none",a,5,'opacity=".75"');
+        break;
+      case "hero_sera":
+        o+=circ(255,122,st===3?116:91,"none",g,st===3?10:5,'opacity=".75"');
+        if(st===3)o+=wing(0,c,3)+wing(1,c,3);
+        break;
+      case "hero_zed": case "hero_eve":
+        o+=path("M48 389Q221 136 441 268M65 425Q250 175 449 347","none",a,st===3?18:9,'filter="url(#soft)" opacity=".7"');
+        if(st===3)o+=path("M52 390Q234 131 447 273","none",g,5);
+        break;
+      case "hero_rohan":
+        o+=path("M90 375Q37 231 148 138Q76 247 194 290M404 377Q473 243 385 142Q436 274 318 295","none",a,st===3?26:14,'filter="url(#soft)" opacity=".6"');
+        break;
+      case "hero_nia":
+        loop(st===3?10:5,i=>{const v=i*2.399,x=255+Math.cos(v)*170,y=247+Math.sin(v)*169;return sparkle(Math.round(x),Math.round(y),st===3?10:6,i%2?g:a)});
+        if(st===3)o+=circ(255,245,173,"none",g,4,'stroke-dasharray="7 12"');
+        break;
+    }
+    return o;
+  }
+  function specialtyFront(id,c,st){
+    let o="",g=c.trim,a=c.aura,d=c.dark;
+    const advanced=st>=2,final=st===3;
+    const stroke=final?8:5;
+    switch(id){
+      case "hero_aren":
+        o+=poly("208,244 172,223 127,258 164,300 209,279","url(#armor)",d,6);
+        o+=poly("304,244 339,222 383,260 347,302 304,279","url(#armor)",d,6);
+        o+=path("M220 331L250 362L284 332","none",g,advanced?9:4);
+        if(final)o+=path("M184 326L146 426M316 326L356 426","none",a,11);
+        break;
+      case "hero_lyra":
+        o+=path(advanced?"M166 128Q204 70 250 48Q315 76 344 128L318 143Q247 111 185 145Z":"M178 131Q211 89 248 79Q298 93 327 131Z","url(#outfit)",g,6);
+        o+=ellipse(251,138,advanced?118:94,15,"url(#outfit)",'stroke="'+g+'" stroke-width="5"');
+        o+=sparkle(271,111,advanced?20:10,a);
+        if(final)o+=path("M183 366Q125 428 91 464M322 362Q377 429 405 457","none",g,7);
+        break;
+      case "hero_kyle":
+        o+=path("M193 164Q166 105 215 94L235 124L204 159Z","url(#outfit)",g,5);
+        o+=path("M181 237L147 252L129 310L183 319L212 284Z","url(#armor)",d,5);
+        if(final)o+=path("M90 372Q50 243 134 146","none",a,16,'opacity=".82"');
+        break;
+      case "hero_sera":
+        o+=path("M219 278L252 303L284 276L285 327L256 350L223 326Z","url(#armor)",g,5);
+        o+=path("M189 355Q169 399 122 445M323 356Q346 401 385 443","none",g,advanced?9:5);
+        if(final)o+=circ(255,83,55,"none",a,7);
+        break;
+      case "hero_zed":
+        o+=path("M182 176Q161 98 224 81Q289 69 335 137L306 177L281 130L225 158L192 212Z","url(#cape)",d,7);
+        o+=path("M326 279Q393 292 419 333Q371 334 319 305","none",a,advanced?13:6);
+        if(final)o+=path("M160 327Q92 381 62 459","none",a,15);
+        break;
+      case "hero_elin":
+        o+=path("M188 118L170 80L219 107M312 118L335 78L289 105","none",g,advanced?12:6);
+        o+=path("M212 287Q249 315 297 286","none",a,8);
+        if(final)o+=path("M175 349Q118 409 108 449M332 348Q388 403 407 455","none",g,11);
+        break;
+      case "hero_rohan":
+        o+=path("M198 261L160 291L138 422L191 449M311 258L347 292L365 426L312 454","none",g,advanced?8:4);
+        o+=ellipse(379,308,advanced?49:30,advanced?43:26,"none",'stroke="'+a+'" stroke-width="6"');
+        if(final)o+=path("M422 258Q462 307 419 364","none",a,13);
+        break;
+      case "hero_eve":
+        o+=path("M175 106Q146 178 167 269M319 106Q349 176 334 282","none",c.hair,advanced?26:18);
+        o+=path("M216 262L252 303L296 266M218 338L255 366L292 339","none",g,advanced?8:4);
+        if(final)o+=path("M165 381L104 470M345 382L408 473","none",a,12);
+        break;
+      case "hero_baruk":
+        o+=poly("191,240 153,218 108,277 163,322 201,285","url(#armor)",g,7);
+        o+=poly("315,243 359,217 401,281 346,326 305,283","url(#armor)",g,7);
+        if(advanced)o+=path("M209 368L190 423L246 447M298 365L317 426L266 448","none",g,8);
+        if(final)o+=sparkle(255,298,29,a);
+        break;
+      case "hero_nia":
+        o+=path("M187 141L164 62L222 108M307 141L345 62L288 107","url(#outfit)",g,5);
+        o+=path("M195 342Q119 417 101 443M315 340Q387 416 413 444","none",advanced?a:g,advanced?13:6);
+        if(final)o+=circ(372,148,32,"url(#gem)",g,4)+sparkle(395,113,16,a);
+        break;
+      case "hero_sion":
+        o+=path("M197 250Q146 316 120 449L201 421M303 248Q357 319 388 453L302 423","none",g,advanced?10:5);
+        if(advanced)for(let i=0;i<4;i++)o+=sparkle(201+i*34,339+i%2*12,10,a);
+        if(final)o+=circ(386,157,31,"url(#gem)",g,5);
+        break;
+      case "hero_lumi":
+        o+=path("M192 126L164 65M192 126L209 47M312 127L342 64M312 126L298 45","none",g,advanced?13:8);
+        o+=path("M212 294Q255 328 299 295","none",g,9);
+        if(final)o+=path("M177 350Q135 419 112 454M320 351Q358 409 385 455","none",a,12);
+        break;
+    }
+    if(advanced){
+      // Evolved armor embroidery and a new silhouette emblem.
+      o+=path("M200 329Q252 361 306 327","none",g,stroke,'opacity=".7"');
+      o+=poly("253,278 270,301 253,326 237,300","url(#gem)",g,4);
+    }
+    if(final){o+=sparkle(253,299,14,"#ffffff");o+=sparkle(390,104,12,a);}
+    return o;
+  }
+
   function draw(id,stage){
     if(!styles[id])return "";
     stage=Math.max(1,Math.min(3,Number(stage)||1));
@@ -203,14 +321,18 @@
         '<linearGradient id="feather" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset=".5" stop-color="'+c.aura+'"/><stop offset="1" stop-color="'+c.main+'"/></linearGradient>'+
         '<filter id="soft" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="7"/></filter>'+
       '</defs>'+
-      '<g>'+aura(c,stage,t)+headRing+'</g>'+
+      '<g>'+aura(c,stage,t)+specialtyBack(id,c,stage)+headRing+'</g>'+
       '<g transform="rotate('+c.pose+' 255 288)">'+
-        costume(c,stage,t)+face(c,stage,t)+crown(c,stage,t)+accessory(c,stage,t)+
+        costume(c,stage,t)+face(c,stage,t)+crown(c,stage,t)+accessory(c,stage,t)+specialtyFront(id,c,stage)+
       '</g>'+
       (stage===3?sparkle(397,89,15,c.trim)+sparkle(75,310,11,c.aura):"")+
       '</svg>';
-    cache.set(key,svg);
-    return svg;
+    // Avoid gradient collisions when 24 character cards coexist on one page.
+    const prefix=id+"-s"+stage+"-";
+    const scoped=svg.replace(/\bid="([^"]+)"/g,(_,v)=>'id="'+prefix+v+'"')
+      .replace(/url\(#([\w-]+)\)/g,(_,v)=>'url(#'+prefix+v+')');
+    cache.set(key,scoped);
+    return scoped;
   }
   window.QuestDayHeroArt = Object.freeze({draw,has(id){return !!styles[id]}});
 })();
