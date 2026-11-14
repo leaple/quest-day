@@ -1,5 +1,5 @@
 /* QUEST DAY 1.1 — network first, offline fallback */
-const CACHE_NAME = "quest-day-cache-v28";
+const CACHE_NAME = "quest-day-cache-v29";
 const FILES = [
   "./",
   "./index.html",
