@@ -1,7 +1,7 @@
-/* QUEST DAY 1.9 — opt-in complete game-state cloud sync.
- * Existing localStorage key, tasks, events, RPG, gold and achievements stay intact.
- * Cloud SQL must be installed; RLS + CAS protect account data.
- * First cloud import and ambiguous conflicts never silently discard local progress.
+/* QUEST DAY 2.0 — automatic full-game cloud sync for verified email accounts.
+ * Guests remain local unless they had already explicitly enabled cloud saves.
+ * Existing localStorage key, tasks, RPG and achievements remain untouched.
+ * The server copy is always read before writes; CAS and conflict choice protect progress.
  */
 (function(){
  "use strict";
@@ -33,6 +33,8 @@
  let user="",enabled=false,ready=false,loading=false,writing=false,blocked=false,base=null;
  let rev=0,dirty=false,issue="",remotePending=null,localConflict=null,pushTimer=null,pullTimer=null;
  let poll=null,channel=null,epoch=0,lastSuccessful="";
+ let accountType="checking"; // guest | member | checking | error
+ const AUTO_MARKER="qd26-account-cloud-auto-v1:";
  const esc=x=>escapeHtml(String(x??""));
  const localJSON=()=>JSON.stringify(state);
  const clone=x=>JSON.parse(JSON.stringify(x));
@@ -92,17 +94,24 @@
  function status(msg){issue=msg;draw();}
  function draw(){
   const connected=bridge.isReady()&&!!myID();
-  const statusText=!connected?"실시간 계정에 연결되면 클라우드 동기화를 사용할 수 있어요.":
-   loading?"계정의 게임 기록을 확인하고 있어요…":
+  const statusText=!connected?"서버에 연결되면 계정의 게임 기록 상태를 확인해요.":
+   accountType==="checking"?"게임 계정을 확인하는 중…":
+   accountType==="error"?"계정 인증 상태를 확인할 수 없어요. 게임 기록은 기기에 안전하게 남아 있어요.":
    blocked?"서로 다른 기록이 감지됐어요. 두 기록을 보존하고 선택을 기다리고 있어요.":
-   !enabled?"모든 게임 기록을 계정에 연결하려면 한 번 동의해 주세요.":
-   ready?(dirty||writing?"변경 사항을 저장하는 중…":"☁️ 계정과 자동 동기화 중"):
+   accountType==="guest"&&!enabled?"👤 게스트 모드 · 게임 기록은 이 기기에만 저장돼요. 이메일 계정 연결 후 자동 백업을 시작해요.":
+   loading?"계정의 게임 기록을 확인하고 있어요…":
+   !enabled?"자동 클라우드 연결을 확인하는 중…":
+   ready?(dirty||writing?"변경 사항을 저장하는 중…":"☁️ 이메일 계정과 자동 동기화 중"):
    "서버 연결을 확인하는 중…";
   const opts=connected&&blocked?
    (remotePending?.exists?'<button data-qd19="remote">클라우드 기록 사용</button>':"")+
    '<button data-qd19="local" class="alt">이 기기 기록 사용</button>':
+   connected&&accountType==="guest"&&!enabled?
+   '<button data-qd19="account" class="alt">이메일 계정 연결하기</button>':
+   connected&&accountType==="error"?
+   '<button data-qd19="retry" class="alt">계정 연결 다시 확인</button>':
    connected&&!enabled?
-   '<button data-qd19="enable">내 모든 기록 클라우드 동기화 시작</button>':
+   '<button data-qd19="retry" class="alt">자동 동기화 다시 확인</button>':
    connected&&ready?
    '<button data-qd19="sync" class="alt">지금 동기화</button>':
    connected&&enabled&&!loading?
@@ -117,9 +126,10 @@
    opts+
    (blocked?'<p>안전하게 비교할 수 없는 변경이 있어 자동 덮어쓰기를 중지했어요. '+
    '두 기록 중 하나를 선택하면 다른 쪽 기록은 이 기기의 내부 안전 보관본으로 남겨요.</p>':"")+
-   '<small>계정이 익명 상태라면 다른 기기에서 같은 계정에 로그인할 수 없어요. '+
-   '다른 기기로 옮기려면 아래에서 이메일 인증과 비밀번호 설정을 먼저 마쳐 주세요. '+
-   '서버 연결이 끊긴 동안에는 기기에 저장하고, 연결되면 다시 동기화를 시도해요.</small>';
+   '<small>이메일 인증이 완료된 계정은 로그인 후 자동으로 백업돼요. '+
+   '게스트는 기기 저장을 유지하며, 이전에 직접 클라우드 저장을 켰던 게스트 계정의 설정은 유지해요. '+
+   '기록이 다르면 임의로 덮어쓰지 않고 두 기록을 선택하게 해요. '+
+   '네트워크가 끊긴 동안에는 기기 기록이 남아 있어요.</small>';
  }
  function safetyCopy(data,label){
   try{
@@ -164,33 +174,70 @@
   return result.data;
  }
  function isDefaultLocal(){
-  const ids=new Set((state.tasks||[]).map(x=>x.id));
-  const standard=["demo1","demo2","demo3"];
-  const r=state.rpg||{};
-  return (state.events||[]).length===0 &&
-   ids.size<=3&&[...ids].every(id=>standard.includes(id)) &&
+  // Treat only the exact shipped starter quests as disposable. Modified or
+  // deleted starter quests are user work and must not be silently replaced.
+  const defaults=new Map([
+   ["demo1",["책 10페이지 읽기","공부","daily",20]],
+   ["demo2",["방 정리하기","일상","daily",10]],
+   ["demo3",["중요한 일 하나 끝내기","자기계발","once",30]]
+  ]);
+  const tasks=state.tasks||[],r=state.rpg||{},friends=state.friends||{};
+  return (state.events||[]).length===0 && tasks.length===defaults.size &&
+   tasks.every(t=>{
+    const def=defaults.get(t?.id);
+    return def && t.name===def[0] && t.category===def[1] &&
+      t.frequency===def[2] && Number(t.xp)===def[3];
+   }) &&
+   (state.dailyGoal===undefined||Number(state.dailyGoal)===3) &&
    (!Array.isArray(r.purchases)||r.purchases.length===0) &&
    (!r.claimed||Object.keys(r.claimed).length===0) &&
-   (!state.friends?.contacts || state.friends.contacts.length===0);
+   (!r.equipped||r.equipped==="starter"||r.equipped==="sprout") &&
+   !Number(r.createdQuestCount||0) && !Object.keys(r.goalDays||{}).length &&
+   (!friends.contacts||friends.contacts.length===0) &&
+   (!friends.profile?.nickname||friends.profile.nickname==="모험가");
  }
  async function bootstrap(){
   if(!bridge.isReady()||!myID())return;
   const uid=myID(),ticket=++epoch;
-  user=uid;enabled=saveConsent(uid);ready=false;blocked=false;
+  user=uid;enabled=false;ready=false;blocked=false;
+  accountType="checking";loading=true;
   rev=0;base=null;remotePending=null;localConflict=null;
   clearTimeout(pushTimer);clearTimeout(pullTimer);
   clearInterval(poll);poll=null;
   if(channel&&c())c().removeChannel(channel);
-  channel=null;issue="";
-  if(!enabled){draw();return;}
-  loading=true;draw();
+  channel=null;issue="";draw();
   try{
+   // Re-validate the current Supabase identity before uploading any private
+   // game data. Anonymous sessions never opt in automatically.
+   const identity=await c().auth.getUser();
+   if(ticket!==epoch||myID()!==uid)return;
+   if(identity.error)throw identity.error;
+   const authUser=identity.data?.user;
+   if(!authUser||authUser.id!==uid)throw Error("현재 계정의 인증 상태를 확인하지 못했어요.");
+   const member=!!(authUser.email&&authUser.email_confirmed_at&&!authUser.is_anonymous);
+   accountType=member?"member":"guest";
+   if(member&&!saveConsent(uid)){
+    // Confirmed email accounts are backed up automatically from the first
+    // successful authentication; the old explicit opt-in is no longer needed.
+    localStorage.setItem(CONSENT+uid,"yes");
+    localStorage.setItem(AUTO_MARKER+uid,"yes");
+   }
+   enabled=saveConsent(uid); // preserve existing explicit guest opt-ins
+   if(!enabled)return;
    const server=await rpc("qd_cloud_load");
    if(ticket!==epoch||myID()!==uid)return;
    await reconcile(server,true);
    if(ready)subscribe();
-  }catch(e){issue=explain(e);ready=false;}
-  finally{if(ticket===epoch){loading=false;if(dirty&&ready)schedulePush();draw();}}
+  }catch(e){
+   if(ticket!==epoch)return;
+   accountType="error";issue=explain(e);ready=false;
+  }finally{
+   if(ticket===epoch){
+    loading=false;
+    if(dirty&&ready)schedulePush();
+    draw();
+   }
+  }
  }
  function explain(e){
   const message=e?.message||String(e||"네트워크 오류");
@@ -315,14 +362,8 @@
    else pull();
   },550);
  }
- async function enable(){
-  if(!bridge.isReady()||!myID())return status("먼저 계정에 로그인해 주세요.");
-  if(!confirm("이 기기의 퀘스트 이름·활동 기록·XP·구매·캐릭터·설정 등 게임 저장 데이터 전체를 내 Supabase 계정에 보관할까요?\n\n계정 보호(이메일 인증)를 하지 않은 익명 계정은 다른 기기에서 복구할 수 없어요."))return;
-  try{
-   localStorage.setItem(CONSENT+myID(),"yes");
-   await bootstrap();
-  }catch(e){status(explain(e));}
- }
+ // Manual cloud activation is no longer necessary for verified email accounts.
+ // Legacy guest opt-ins remain readable but new guests are guided to link email.
  async function resolve(useRemote){
   if(!blocked||!remotePending)return;
   const snapshot=remotePending,local=clone(state);
@@ -373,7 +414,7 @@
   const button=e.target.closest("button[data-qd19]");
   if(!button)return;
   const action=button.dataset.qd19;
-  if(action==="enable")enable();
+  if(action==="account"){window.QuestDayEntry?.open?.();}
   else if(action==="sync"){if(dirty)push();else pull();}
   else if(action==="remote")resolve(true);
   else if(action==="local")resolve(false);
@@ -385,7 +426,7 @@
   syncNow:()=>dirty?push():pull()};
  window.addEventListener("qd:realtime-ready",()=>bootstrap());
  window.addEventListener("qd:realtime-stopped",()=>{
-  epoch++;ready=false;user="";enabled=false;blocked=false;loading=false;
+  epoch++;ready=false;user="";enabled=false;blocked=false;loading=false;accountType="checking";
   clearTimeout(pushTimer);clearTimeout(pullTimer);clearInterval(poll);poll=null;
   if(channel&&c())c().removeChannel(channel);channel=null;draw();
  });
