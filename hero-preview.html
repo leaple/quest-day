@@ -20,6 +20,21 @@ h2{font-size:16px;margin:0}.pill{font-size:10px;color:#f6dea3;border:1px solid #
 #zoom.open{display:flex}#zoom .picture{height:min(87vh,760px);max-width:90vw;aspect-ratio:5/5.6;background:radial-gradient(circle,#585274,#24253c);border-radius:18px}
 #zoom svg{width:100%;height:100%}#exit{position:fixed;right:18px;top:15px;background:#faf5ff;color:#332a49;padding:8px 13px;border:0;border-radius:9px}
 .error{padding:30px;color:#ffbbbb}
+
+.demo-actions{display:flex;gap:7px;margin-top:10px}
+.demo-actions button{flex:1;min-width:0;padding:9px 4px;border-radius:10px;border:1px solid #6e69a5;background:#342e56;color:#f9f4ff;font-size:12px;font-weight:750;cursor:pointer}
+.demo-actions button:hover{background:#4c417d}
+#zoom .picture{position:relative;isolation:isolate;overflow:hidden}
+#zoom .picture.demo-evolving{--demo-aura:#b4a2ff}
+#zoom .picture.demo-evolving::before{content:'';position:absolute;inset:5%;border-radius:50%;background:radial-gradient(circle,var(--demo-aura),transparent 72%);opacity:0;z-index:2;pointer-events:none;animation:qdprev-flare 2.5s both}
+.demo-form{position:absolute;inset:0;display:grid;place-items:center}
+.demo-form.before{animation:qdprev-before 2.4s both}
+.demo-form.after{opacity:0;animation:qdprev-after 2.4s both}
+@keyframes qdprev-before{0%,20%{opacity:1;transform:scale(1)}45%{opacity:.85;transform:scale(.95);filter:brightness(2)}70%,100%{opacity:0;transform:scale(.8)}}
+@keyframes qdprev-after{0%,41%{opacity:0;transform:translateY(12px) scale(.82)}60%{opacity:1;transform:translateY(-8px) scale(1.06);filter:brightness(1.6)}100%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}}
+@keyframes qdprev-flare{0%,28%{opacity:0;transform:scale(.3)}50%{opacity:.7;transform:scale(1)}80%,100%{opacity:0;transform:scale(1.3)}}
+@media(prefers-reduced-motion:reduce){.demo-form,.demo-form.before,.demo-form.after,#zoom .picture.demo-evolving::before{animation:none!important}.demo-form.before{display:none}.demo-form.after{opacity:1!important}#zoom .picture.demo-evolving::before{display:none}}
+
 @media(max-width:650px){#gallery{grid-template-columns:1fr}.hero{padding:10px}.stages{gap:5px}.stage svg{max-height:175px}}
 </style></head><body>
 <main><header><div><h1>⚔️ QUEST DAY — 신규 전투 영웅단</h1>
@@ -47,11 +62,29 @@ try{
   for(let stage=1;stage<=3;stage++){
     const panel=document.createElement('div');panel.className='stage';panel.innerHTML=window.QuestDayHeroArt.draw(c.id,stage);
     const label=document.createElement('span');label.textContent='진화 '+stage+'/3';panel.append(label);
-    panel.onclick=()=>{picture.innerHTML=window.QuestDayHeroArt.draw(c.id,stage);overlay.classList.add('open')};
+    panel.onclick=()=>{picture.className='picture';picture.innerHTML=window.QuestDayHeroArt.draw(c.id,stage);overlay.classList.add('open')};
     stages.append(panel);
   }
   section.append(stages);
-  const note=document.createElement('p');note.className='note';note.textContent=c.tagline;section.append(note);box.append(section);
+  const note=document.createElement('p');note.className='note';note.textContent=c.tagline;section.append(note);
+  const actions=document.createElement('div');actions.className='demo-actions';
+  for(const to of [2,3]){
+    const button=document.createElement('button');button.type='button';button.textContent='진화 '+(to-1)+' → '+to+' 체험';
+    button.onclick=()=>{
+      const before=window.QuestDayHeroArt.draw(c.id,to-1);
+      const after=window.QuestDayHeroArt.draw(c.id,to);
+      picture.style.setProperty('--demo-aura',c.visual?.palette?.[0]||'#b4a2ff');
+      picture.className='picture';
+      picture.innerHTML='<div class="demo-form before">'+before+'</div><div class="demo-form after">'+after+'</div>';
+      // Restart the single-run animation when the same test is opened twice.
+      void picture.offsetWidth;
+      picture.classList.add('demo-evolving');
+      overlay.classList.add('open');
+      document.getElementById('exit').focus();
+    };
+    actions.append(button);
+  }
+  section.append(actions);box.append(section);
  });
 }catch(e){box.innerHTML='<p class="error">캐릭터 표시 오류: '+String(e.message||e)+'</p>';}
 })();
