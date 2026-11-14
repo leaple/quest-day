@@ -16,6 +16,27 @@
     hero_sion: {type:"darkmage",hair:"#dad4ee",skin:"#e5cee6",main:"#7552b9",dark:"#292344",aura:"#b37aff",trim:"#f0d8ff",pose:0},
     hero_lumi: {type:"druid",hair:"#d2c99b",skin:"#f2deca",main:"#83b577",dark:"#41634b",aura:"#d4ff9a",trim:"#f5e6ad",pose:-2}
   };
+  // Hand-painted evolution art, cropped from the four original concept boards.
+  // One 3x3 WebP atlas per group, 360x450 per cell. All original characters
+  // and progression rules remain untouched. Vector portraits remain as fallback.
+  const paintedRoster = Object.freeze({
+    hero_aren:[1,0], hero_lyra:[1,1], hero_kyle:[1,2],
+    hero_sera:[2,0], hero_zed:[2,1], hero_elin:[2,2],
+    hero_rohan:[3,0], hero_eve:[3,1], hero_baruk:[3,2],
+    hero_nia:[4,0], hero_sion:[4,1], hero_lumi:[4,2]
+  });
+  const PAINTED_ART_VERSION = "20261115-7";
+  function paintedPortrait(id,stage){
+    const coords=paintedRoster[id];
+    if(!coords)return "";
+    const x=(stage-1)*360,y=coords[1]*450;
+    const src="./art/painted/heroes-"+coords[0]+".webp?v="+PAINTED_ART_VERSION;
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" '+
+      'role="img" aria-label="진화 '+stage+'단계 원화" class="qd-painted-stage" '+
+      'data-painted-hero="'+id+'" data-painted-stage="'+stage+'">'+
+      '<image href="'+src+'" x="-'+x+'" y="-'+y+'" width="1080" height="1350" '+
+      'preserveAspectRatio="none" /></svg>';
+  }
   const cache = new Map();
   function path(d,fill,stroke,width,extra){
     return '<path d="'+d+'" fill="'+(fill||"none")+'" stroke="'+(stroke||"none")+'" stroke-width="'+(width||0)+'" stroke-linejoin="round" stroke-linecap="round" '+(extra||"")+'/>';
@@ -355,6 +376,8 @@
     if(!styles[id])return "";
     stage=Math.max(1,Math.min(3,Number(stage)||1));
     const key=id+":"+stage;if(cache.has(key))return cache.get(key);
+    const painted=paintedPortrait(id,stage);
+    if(painted){cache.set(key,painted);return painted;}
     const c=styles[id],t=c.type;
     const headRing=stage===3?'<circle cx="255" cy="161" r="104" fill="none" stroke="'+c.aura+'" stroke-width="3" opacity=".27"/>':"";
     const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 560" width="500" height="560" role="img" aria-label="fantasy hero evolution stage '+stage+'">' +
