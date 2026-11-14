@@ -17,11 +17,18 @@
 
 기존 QUEST DAY Supabase 프로젝트의 Authentication 영역에서 **Email** 제공자가 활성화되어 있어야 합니다. 이메일 인증 사용을 권장합니다.
 
-**Authentication → URL Configuration → Redirect URLs**에 배포 주소를 허용해야 이메일 인증 링크가 앱으로 돌아올 수 있습니다.
+**중요: Authentication → URL Configuration에서 두 곳을 반드시 같은 QUEST DAY 앱 주소로 설정하세요.**
 
-- `https://leaple.github.io/quest-day/`
+- **Site URL:** `https://leaple.github.io/quest-day/`
+- **Redirect URLs 목록에 추가:** `https://leaple.github.io/quest-day/`
 
-프로젝트의 사이트 URL도 적절하게 설정해 주세요. GitHub Pages에 Supabase의 secret/service-role key를 넣지 마세요. 앱은 이미 설정된 Publishable key만 사용합니다.
+[QUEST DAY Supabase URL 설정 열기](https://supabase.com/dashboard/project/yivabefhugxvigbsgkts/auth/url-configuration)
+
+Supabase 기본 메일의 **Confirm Email** 링크는 인증 후 프로젝트의 Site URL 또는 허용된 Redirect URL로 돌아옵니다. 앱 코드에서는 회원가입과 이메일 연결 요청 모두 `emailRedirectTo`를 같은 QUEST DAY 주소로 지정합니다. 잘못된 주소로 연결된 이전 인증 메일은 새 메일을 요청하고 테스트하세요.
+
+**Authentication → Emails → Email Templates**의 Confirm sign up / Change email address 템플릿은 기본적으로 `{{ .ConfirmationURL }}` 인증 링크를 포함합니다. 기본 메일에는 별도의 숫자 인증코드가 없을 수 있으며, 코드 입력은 메일에 `{{ .Token }}`이 실제 포함되도록 템플릿을 변경한 경우에만 사용하세요.
+
+GitHub Pages에 Supabase의 secret/service-role key를 넣지 마세요. 앱은 이미 설정된 Publishable key만 사용합니다.
 
 익명(게스트) 계정에 이메일을 **그대로 연결**하려면 Supabase의 **Allow manual linking**도 활성화해야 할 수 있습니다. 이 경우 `auth.updateUser({ email })`을 호출해 같은 Auth 사용자 ID를 유지하고, 이메일 인증 후 비밀번호를 설정합니다.
 
@@ -53,3 +60,14 @@
 - 연결 오류가 발생하면 재접속을 자동으로 시도하며, 서비스가 끊겨도 기기 안의 퀘스트 기록은 사라지지 않습니다.
 - **오프라인 모드**를 명시적으로 선택한 사용자의 선택은 존중합니다. 친구 화면에서 다시 연결할 수 있습니다.
 - 게임 전체의 클라우드 저장 여부는 별도로 관리하므로, 자동 서버 연결 자체가 모든 퀘스트 기록 업로드를 뜻하지는 않습니다.
+
+## 2.0 이메일 인증 오류 수정 (업데이트 v24)
+
+- **입력값 보존:** 계정 관리와 기존 계정 보호 화면에서 인증 메일을 요청해도 이메일 입력값을 지우거나 열린 인증 폼을 닫지 않습니다.
+- **인증 방식:** 기본 메일에서는 숫자 코드 입력 대신 Confirm Email 링크 클릭을 안내합니다. 앱으로 돌아온 뒤 **메일 링크 인증 완료 확인**을 누르면 가입/계정 연결 상태를 확인합니다.
+- **기존 게스트 전환:** 이메일 인증 후 새 비밀번호를 설정할 수 있습니다. 기존 익명 Auth 사용자 ID를 변경하지 않습니다.
+- **인증 링크 오류:** 앱에서 callback 오류를 보여줍니다. Site URL/Redirect URLs을 수정한 다음 *새로 발송된 이메일*로 테스트하세요.
+- 링크를 눌렀는데 다른 브라우저가 열렸다면 **원래 게임을 사용하던 브라우저나 홈 화면 앱**으로 돌아가 '메일 링크 인증 완료 확인' 또는 설정의 '메일 링크 인증 상태 확인'을 누르면 됩니다.
+- 메일 앱이나 보안 필터가 링크를 미리 접속해 인증 토큰이 만료되는 경우가 있습니다. 이 경우 새 메일을 요청하세요.
+
+관련 Supabase 공식 문서: [이메일 템플릿](https://supabase.com/docs/guides/auth/auth-email-templates), [리디렉션 URL](https://supabase.com/docs/guides/auth/redirect-urls), [익명 계정 전환](https://supabase.com/docs/guides/auth/auth-anonymous).
