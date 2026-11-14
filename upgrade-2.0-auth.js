@@ -106,6 +106,7 @@
   return hasRealProgress(localStorage.getItem("quest-day-mvp-v1"));
  };
  let mode="welcome",settingsOpen=false,busy=false,error="",noticeText="",emailDraft="",passwordDraft="",codeDraft="",flow="",requestId=0;
+ let accountUser=null,accountLoading=false,accountTicket=0;
  const body=document.body;
  let oldOverflow="",appInert=[],lastFocus=null;
  function holdInterface(){
@@ -146,6 +147,7 @@
   if(mode==="finishLink")return ["계정 비밀번호 설정","인증한 계정에 비밀번호를 등록해 다른 기기에서도 로그인하세요."];
   if(mode==="verifySignup")return ["메일함을 확인해 주세요","메일의 Confirm Email 링크를 열어 이메일을 인증해 주세요."];
   if(mode==="account")return ["계정 관리","현재 기록을 유지하면서 계정을 연결하거나 전환할 수 있어요."];
+  if(mode==="password")return ["비밀번호 설정·변경","확인된 이메일 계정의 새 비밀번호를 설정해 주세요."];
   if(mode==="authError")return ["이메일 인증 문제","인증 링크에 문제가 있어요. 아래 설명을 확인해 주세요."];
   return ["오늘의 모험을 시작하세요","작은 퀘스트를 달성하며 나만의 캐릭터를 성장시켜요."];
  }
@@ -178,14 +180,27 @@
   if(mode==="authError")return button("인증 다시 시도","signup")+
     button("기존 계정 로그인","login","alt")+
     button("게스트로 돌아가기","guest","ghost");
-  if(mode==="finishLink")return field("qd20Password","새 비밀번호 (12자 이상)","password","비밀번호 설정","new-password",'minlength="12" maxlength="128"')+
-    button("비밀번호 저장하고 시작","savePassword")+
-    button("나중에 설정 (다른 기기 로그인은 아직 불가)","finishLinked","ghost");
-  if(mode==="account")return '<div class="qd20-notice">이미 사용 중인 계정이나 익명 친구 계정은 삭제하지 않아요. '+
-    '다른 계정으로 로그인하면 서버 기록과 이 기기의 기록을 비교한 뒤 안전하게 동기화해요.</div>'+
-    button("기존 계정으로 로그인","login")+
-    button("현재 기록에 계정 연결","signup","alt")+
-    button("닫기","close","ghost");
+  if(mode==="finishLink"||mode==="password")return field("qd20Password","새 비밀번호 (12자 이상)","password","12자 이상","new-password",'minlength="12" maxlength="128"')+
+    button("새 비밀번호 저장","savePassword")+
+    (mode==="finishLink"?button("나중에 설정 (다른 기기 로그인은 아직 불가)","finishLinked","ghost"):button("계정 관리로 돌아가기","back","ghost"));
+  if(mode==="account"){
+    const verified=!!(accountUser?.email&&accountUser.email_confirmed_at&&!accountUser.is_anonymous);
+    const anonymous=!!(accountUser?.is_anonymous||(!accountUser?.email&&!accountLoading));
+    const status=accountLoading?"서버에서 계정 상태 확인 중…":
+     verified?"✅ 이메일 인증 완료 · "+safe(accountUser.email):
+     accountUser?.new_email?"📩 "+safe(accountUser.new_email)+" 주소의 이메일 인증 대기 중":
+     accountUser?.email?"📩 이메일 인증 대기 중 · "+safe(accountUser.email):
+     anonymous?"👤 현재 게스트(익명) 계정":"계정 상태를 다시 확인해 주세요.";
+    return '<div class="qd20-notice">'+status+'</div>'+
+     (verified?button("비밀번호 설정·변경","password","alt"):
+       button("현재 게스트 기록에 이메일 연결","link","alt"))+
+     button("기존 이메일 계정으로 로그인","login")+
+     button("이메일 인증 상태 새로고침","accountRefresh","ghost")+
+     (bridge.isProfileSyncHeld?.()?'<div class="qd20-notice">🔒 계정 전환 후 서버의 성장 기록을 보호하고 있어요. 아래 클라우드 동기화에서 충돌을 해결한 다음 성장 기록을 다시 연결해 주세요.</div>'+
+       button("성장 기록 동기화 복구","resumeProfileSync","alt"):"")+
+     '<div class="qd20-notice">☁️ 퀘스트·골드·캐릭터의 클라우드 저장과 충돌 선택은 설정의 <strong>계정 전체 데이터 동기화</strong>에서 관리해요. 이메일/비밀번호는 게임 로컬 데이터에 저장하지 않아요.</div>'+
+     button("닫기","close","ghost");
+  }
   return button("시작하기","back");
  }
  function render(){
@@ -214,6 +229,28 @@
   else holdInterface();
   if(mode!==next){passwordDraft="";codeDraft="";}
   mode=next;error="";noticeText="";render();
+  if(next==="account")refreshAccount();
+ }
+ async function refreshAccount(){
+  const ticket=++accountTicket;
+  accountLoading=true;
+  if(mode==="account"&&!busy)render();
+  try{
+   const sup=await client();
+   await bridge.waitForIdentity?.();
+   const result=await sup.auth.getUser();
+   if(result.error)throw result.error;
+   if(ticket!==accountTicket)return;
+   accountUser=result.data?.user||null;
+  }catch(e){
+   if(ticket!==accountTicket)return;
+   error=(e?.message||"계정 연결을 확인하지 못했어요.").slice(0,230);
+  }finally{
+   if(ticket===accountTicket){
+    accountLoading=false;
+    if(mode==="account"&&!busy)render();
+   }
+  }
  }
  function getInputs(){
   return {
@@ -273,7 +310,7 @@
    const returnUrl=window.location.origin+window.location.pathname;
    const result=await sup.auth.updateUser({email:values.email},{emailRedirectTo:returnUrl});
    if(result.error)throw result.error;
-   localStorage.setItem(PENDING,JSON.stringify({type:"link",userId:u.id,ts:Date.now()}));
+   localStorage.setItem(PENDING,JSON.stringify({type:"link",userId:u.id,email:values.email,ts:Date.now()}));
    flow="link";mode="verifyLink";noticeText="기존 게스트 계정의 친구·게임 기록을 유지해요. 메일의 Confirm Email 링크를 열고, 이 화면에서 인증 상태를 확인하세요.";
    render();return;
   }
@@ -287,7 +324,7 @@
   if(result.data?.session?.user?.id){
    await activate(result.data.session.user.id,null);
   }else{
-   localStorage.setItem(PENDING,JSON.stringify({type:"signup",ts:Date.now()}));
+   localStorage.setItem(PENDING,JSON.stringify({type:"signup",email:values.email,ts:Date.now()}));
    flow="signup";mode="verifySignup";
    noticeText="메일의 Confirm Email 링크를 눌러 인증해 주세요. 기본 메일은 숫자 코드를 제공하지 않아요. 링크가 잘못된 사이트로 이동하면 Supabase의 Site URL과 Redirect URLs을 확인해 주세요.";
    render();
@@ -316,7 +353,8 @@
   const u=response.data?.user;
   const confirmed=!!(u?.email&&u.email_confirmed_at);
   if(flow==="link"){
-   if(!confirmed || u.email.toLowerCase()!==emailDraft)
+   const expected=emailDraft||pendingRead()?.email||u?.new_email||"";
+   if(!confirmed || u.email.toLowerCase()!==expected.toLowerCase())
     throw Error("아직 이메일 인증이 확인되지 않았어요. 메일의 Confirm Email 링크를 열고 다시 확인해 주세요.");
    mode="finishLink";noticeText="이메일 인증 완료! 이제 비밀번호를 설정하면 다른 기기에서도 같은 계정을 사용할 수 있어요.";
    passwordDraft="";render();return;
@@ -331,12 +369,33 @@
  }
  async function savePassword(values){
   if(!guardPass(values.password))throw Error("비밀번호를 12~128자로 설정해 주세요.");
+  const changing=mode==="password";
   const sup=await client(),userResult=await sup.auth.getUser();
   const u=userResult.data?.user;
   if(!u?.email||!u.email_confirmed_at)throw Error("먼저 이메일 인증을 완료해 주세요.");
   const result=await sup.auth.updateUser({password:values.password});
   if(result.error)throw result.error;
+  passwordDraft="";
+  if(changing){
+   mode="account";noticeText="새 비밀번호를 저장했어요. 기존 게임 기록과 친구 관계는 유지돼요.";
+   accountUser=u;return;
+  }
   await activate(u.id,u.id);
+ }
+ async function resumeProfileSync(){
+  if(!bridge.isProfileSyncHeld?.())return;
+  const uid=bridge.getUser()?.id;
+  if(localStorage.getItem(CLOUD+uid)==="yes"&&!window.QuestDayCloud?.ready)
+   throw Error("클라우드 데이터 확인 또는 충돌 선택을 먼저 완료해 주세요. 저장 기록을 확인하기 전에 성장 기록을 덮어쓰지 않아요.");
+  let remoteXP=null;
+  try{
+   const result=await (await client()).from("qd_profiles").select("xp").eq("user_id",uid).single();
+   if(!result.error&&typeof result.data?.xp==="number")remoteXP=result.data.xp;
+  }catch(e){}
+  const difference=remoteXP===null?"":"서버 XP: "+remoteXP+" · 이 기기 XP: "+totalXp()+"\\n\\n";
+  if(!confirm(difference+"성장 요약(레벨·XP·캐릭터)을 이 기기 기록 기준으로 다시 동기화할까요? 클라우드 기록이 더 최신이라면 먼저 불러오세요."))return;
+  await bridge.resumeProfileSync();
+  noticeText="성장 기록 서버 동기화를 다시 시작했어요.";
  }
  async function handle(action,values){
   if(busy)return;
@@ -345,12 +404,8 @@
   if(action==="back"){
    show(settingsOpen?"account":"welcome");return;
   }
-  if(action==="login"||action==="signup"){
-   if(action==="login")show("login");
-   else{
-    // The user may be an existing guest; handle linking during submitSignup.
-    show("signup");
-   }
+  if(action==="login"||action==="signup"||action==="link"||action==="password"){
+   show(action);
    return;
   }
   if(action==="finishLinked"){
@@ -369,6 +424,8 @@
    else if(action==="verify")await verify(values);
    else if(action==="checkVerification")await checkVerification();
    else if(action==="savePassword")await savePassword(values);
+   else if(action==="accountRefresh")await refreshAccount();
+   else if(action==="resumeProfileSync")await resumeProfileSync();
   }catch(e){fail(e);}
   finally{busy=false;if(!root.hidden)render();}
  }
@@ -383,7 +440,7 @@
   if(event.key==="Enter"&&event.target.matches("input")){
    event.preventDefault();
    const action=mode==="login"?"submitLogin":mode==="signup"||mode==="link"?"submitSignup":
-    mode==="verifyLink"||mode==="verifySignup"?"verify":mode==="finishLink"?"savePassword":"";
+    mode==="verifyLink"||mode==="verifySignup"?"verify":mode==="finishLink"||mode==="password"?"savePassword":"";
    if(action)handle(action,getInputs());
   }
  });
@@ -425,7 +482,7 @@
      ((pending?.type==="link"&&pending.userId===user.id) ||
        (hasAuthCallback&&callbackType==="email_change"));
     if(isLinkConfirmation){
-     flow="link";passwordDraft="";
+     flow="link";emailDraft=pending?.email||user.email||"";passwordDraft="";
      show("finishLink");
      noticeText="이메일 인증이 완료됐어요! 계정 복구를 위해 새 비밀번호를 설정해 주세요.";
      render();
@@ -438,5 +495,8 @@
    }
   })();
  }
+ window.addEventListener("qd:realtime-ready",()=>{
+  if(mode==="account"&&!root.hidden)refreshAccount();
+ });
  window.QuestDayEntry={open:()=>show("account",true)};
 })();
