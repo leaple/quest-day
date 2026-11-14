@@ -511,17 +511,21 @@
       for(const c of catalog)state.rpg.evolutionSeen[c.id]=stage(c);
       try{saveState();}catch(error){console.warn("Evolution initial save unavailable",error);}
     } else {
+      let changed = false;
       for(const c of catalog){
         const current=stage(c);
         const seen=state.rpg.evolutionSeen[c.id];
-        if(!Number.isFinite(seen)){state.rpg.evolutionSeen[c.id]=current;continue;}
+        if(!Number.isFinite(seen)){state.rpg.evolutionSeen[c.id]=current;changed=true;continue;}
         if(current>seen){
           state.rpg.evolutionSeen[c.id]=current;
+          changed=true;
           const equipped=state.rpg.equipped==="starter"?"sprout":state.rpg.equipped;
           if(equipped===c.id && !evoDialog.classList.contains("open"))showEvolution(c,current);
         }
       }
-      try{saveState();}catch(error){console.warn("Evolution progress save unavailable",error);}
+      if(changed){
+        try{saveState();}catch(error){console.warn("Evolution progress save unavailable",error);}
+      }
     }
     const characterId=state.rpg.equipped==="starter"?"sprout":state.rpg.equipped;
     const equipped=catalog.find(c=>c.id===characterId);
@@ -537,6 +541,10 @@
   const priorRender=render;
   render=function(){
     priorRender();
+    const settingsNote = document.querySelector("#settings .note");
+    if(settingsNote && settingsNote.innerHTML.includes("MVP 1.3")){
+      settingsNote.innerHTML = settingsNote.innerHTML.replace("MVP 1.3","MVP 1.4");
+    }
     addEditButtons();
     renderCalendar();
     updateEvolution();
