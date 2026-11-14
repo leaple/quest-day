@@ -401,7 +401,7 @@
        await publish();await reload();
      }else if(action==="stop")await stop();
      else if(action==="delete"){
-       if(!confirm("서버에 저장한 내 프로필·초대 코드·친구 관계·신청 기록을 삭제할까요? 로컬 퀘스트·골드·캐릭터는 그대로 유지돼요."))return;
+       if(!confirm("서버에 저장한 내 친구 정보, 채팅, 응원, 파티, 주간 랭킹 자료를 삭제할까요? 로컬 퀘스트·골드·캐릭터는 그대로 유지돼요."))return;
        await rpc("qd_remove_my_profile");
        await client.auth.signOut();
        lastPublished="";invite="";contacts=[];requests=[];
