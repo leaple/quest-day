@@ -40,6 +40,7 @@
  const SYNC_HOLD_KEY="qd18-remote-profile-sync-hold-v1";
  const OFFLINE_KEY="quest-day-realtime-offline-choice-v1";
  let client=null,me=null,invite="",channel=null,started=false,connecting=false,online=false;
+ let identityInitialization=null,connectionEpoch=0;
  let requests=[],contacts=[],lastSync="",lastPublished="",syncTimer=null,pollTimer=null,refreshTimer=null;
  let sdkPromise=null,operation=false,errorText="",showCode=false,appCode="";
  let reconnectTimer=null,lastResumeAttempt=0,resuming=false;
@@ -120,27 +121,43 @@
    });
    return client;
  }
+ // Serialize automatic anonymous sign-in with explicit email login, so
+ // an in-flight guest session cannot overwrite a newly authenticated account.
+ function ensureIdentity(){
+   if(identityInitialization)return identityInitialization;
+   const work=(async()=>{
+     const sup=await ensureClient();
+     let result=await sup.auth.getUser();
+     if(!result.data?.user){
+       const guest=await sup.auth.signInAnonymously();
+       if(guest.error)throw guest.error;
+       result=await sup.auth.getUser();
+     }
+     if(result.error)throw result.error;
+     if(!result.data?.user?.id)throw new Error("계정 연결을 완료하지 못했어요.");
+     return result.data.user;
+   })();
+   identityInitialization=work;
+   work.finally(()=>{if(identityInitialization===work)identityInitialization=null;}).catch(()=>{});
+   return work;
+ }
  async function start(){
    if(!configured||started||connecting)return;
+   const run=++connectionEpoch;
    connecting=true;errorText="";
    if(root.classList.contains("active"))drawLive();
    try {
-     client=await ensureClient();
-     let result=await client.auth.getUser();
-     if(!result.data?.user){
-       const anonymous=await client.auth.signInAnonymously();
-       if(anonymous.error)throw anonymous.error;
-       result=await client.auth.getUser();
-     }
-     if(result.error)throw result.error;
-     me=result.data.user;
-     if(!me?.id)throw new Error("익명 로그인을 완료하지 못했어요.");
+     me=await ensureIdentity();
+     if(run!==connectionEpoch)return;
      const init=await client.rpc("qd_bootstrap");
+     if(run!==connectionEpoch)return;
      if(init.error)throw init.error;
      invite=init.data||"";
      started=true;
      await publish(true);
+     if(run!==connectionEpoch)return;
      await reload();
+     if(run!==connectionEpoch)return;
      subscribe();
      window.dispatchEvent(new CustomEvent("qd:realtime-ready"));
      clearInterval(pollTimer);
@@ -150,6 +167,7 @@
        reload();
      },45000);
    } catch(e){
+     if(run!==connectionEpoch)return;
      started=false;
      online=false;
      lastPublished="";
@@ -157,8 +175,10 @@
      showError(e);
    }
    finally {
-     connecting=false;
-     if(root.classList.contains("active"))drawLive();
+     if(run===connectionEpoch){
+       connecting=false;
+       if(root.classList.contains("active"))drawLive();
+     }
    }
  }
  async function publish(force=false){
@@ -484,6 +504,8 @@
    }
  };
  async function switchIdentity(){
+   // Invalidate in-flight automatic guest bootstrap after an explicit login.
+   ++connectionEpoch;
    // Supabase auth session was intentionally changed by explicit sign-in.
    // Stop old subscriptions; reload all social data with the new user id.
    clearTimeout(syncTimer);clearTimeout(refreshTimer);clearTimeout(reconnectTimer);
@@ -497,6 +519,7 @@
  window.QuestDayRealtime={
    getClient:()=>client,
    ensureClient,
+   waitForIdentity:()=>identityInitialization||Promise.resolve(),
    getUser:()=>me,
    isReady:()=>started,
    getFriends:()=>contacts.slice(),
