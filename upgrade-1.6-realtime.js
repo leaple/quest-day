@@ -119,7 +119,7 @@
    if(root.classList.contains("active"))drawLive();
    try {
      const lib=await loadSDK();
-     client=lib.createClient(cfg.url.trim().replace(/\/$/,""),cfg.publishableKey.trim(),{
+     client=client||lib.createClient(cfg.url.trim().replace(/\/$/,""),cfg.publishableKey.trim(),{
        auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false},
        realtime:{params:{eventsPerSecond:5}}
      });
@@ -499,8 +499,13 @@
    isProfileSyncHeld:()=>localStorage.getItem(SYNC_HOLD_KEY)==="yes",
    resumeProfileSync:async()=>{
      localStorage.removeItem(SYNC_HOLD_KEY);
-     await publish(true);
-     await reload();
+     try{
+       await publish(true);
+       await reload();
+     }catch(error){
+       localStorage.setItem(SYNC_HOLD_KEY,"yes");
+       throw error;
+     }
    }
  };
  if(configured&&localStorage.getItem(CONSENT_KEY)==="yes")start();
