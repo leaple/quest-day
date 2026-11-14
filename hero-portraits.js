@@ -34,8 +34,9 @@
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" '+
       'role="img" aria-label="진화 '+stage+'단계 원화" class="qd-painted-stage" '+
       'data-painted-hero="'+id+'" data-painted-stage="'+stage+'">'+
-      '<image href="'+src+'" x="-'+x+'" y="-'+y+'" width="1080" height="1350" '+
-      'preserveAspectRatio="none" /></svg>';
+      '<defs><clipPath id="qd-painted-cell"><rect x="0" y="0" width="360" height="450"/></clipPath></defs>'+
+      '<g clip-path="url(#qd-painted-cell)"><image href="'+src+'" x="-'+x+'" y="-'+y+'" width="1080" height="1350" '+
+      'preserveAspectRatio="none" /></g></svg>';
   }
   const cache = new Map();
   function path(d,fill,stroke,width,extra){
