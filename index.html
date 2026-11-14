@@ -1,0 +1,831 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#191b35">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>QUEST DAY</title>
+<style>
+:root {
+  --bg:#f5f6fb;
+  --ink:#22243c;
+  --muted:#898da5;
+  --purple:#7566e8;
+  --line:#e8e9f2;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,sans-serif;
+}
+button,input,select { font:inherit; }
+button { cursor:pointer; border:0; }
+.app {
+  max-width:760px;
+  margin:auto;
+  padding:22px 16px 100px;
+}
+header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:22px;
+}
+.brand {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.logo {
+  width:43px;
+  height:43px;
+  background:var(--purple);
+  color:#fff;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  font-size:24px;
+}
+.avatar {
+  font-size:24px;
+  background:#ebe9ff;
+  padding:9px;
+  border-radius:50%;
+}
+.hero {
+  background:linear-gradient(125deg,#191b35,#424077);
+  color:white;
+  padding:27px;
+  border-radius:25px;
+}
+.hero small { color:#bcb6ff; font-weight:700; }
+.hero h1 { font-size:29px; margin:12px 0; }
+.hero p { color:#c7c8df; font-size:13px; }
+.level {
+  display:inline-block;
+  padding:7px 12px;
+  background:#ffffff20;
+  border-radius:20px;
+  font-size:12px;
+}
+.progress {
+  background:#ffffff30;
+  height:10px;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:12px;
+}
+.progress div {
+  background:linear-gradient(90deg,#a78bfa,#6fe2c0);
+  height:100%;
+  width:0;
+  transition:width .3s;
+}
+.xp-label {
+  margin-top:22px;
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:17px 0 28px;
+}
+.stat,.card,.quest {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:18px;
+}
+.stat { padding:14px; }
+.stat span { font-size:11px; color:var(--muted); }
+.stat strong {
+  display:block;
+  font-size:20px;
+  margin-top:7px;
+}
+.section-title {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin:23px 0 13px;
+}
+h2 { font-size:18px; margin:0; }
+.primary {
+  background:var(--purple);
+  color:white;
+  padding:11px 14px;
+  border-radius:12px;
+  font-weight:750;
+}
+.filter-row {
+  display:flex;
+  gap:8px;
+  margin-bottom:13px;
+}
+.filter {
+  padding:8px 13px;
+  border-radius:20px;
+  background:white;
+  color:var(--muted);
+}
+.filter.active {
+  background:#eae7ff;
+  color:#6555d5;
+  font-weight:800;
+}
+.quest-list { display:grid; gap:10px; }
+.quest {
+  padding:15px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.check {
+  width:27px;
+  height:27px;
+  flex-shrink:0;
+  border:2px solid #d7d8e5;
+  border-radius:9px;
+  background:white;
+}
+.quest.done .check {
+  background:#36c49d;
+  border-color:#36c49d;
+  color:white;
+}
+.quest.done .quest-name {
+  text-decoration:line-through;
+  color:#a0a3b3;
+}
+.quest-info { flex:1; min-width:0; }
+.quest-name {
+  font-size:14px;
+  font-weight:750;
+  overflow-wrap:anywhere;
+}
+.quest-meta {
+  font-size:11px;
+  color:var(--muted);
+  margin-top:6px;
+}
+.reward {
+  color:#6658d7;
+  background:#f0edff;
+  padding:7px;
+  border-radius:9px;
+  font-size:11px;
+  white-space:nowrap;
+  font-weight:800;
+}
+.delete {
+  background:transparent;
+  color:#aaa;
+  font-size:20px;
+}
+.card { padding:18px; margin-top:12px; }
+.achievement {
+  display:flex;
+  gap:14px;
+  align-items:center;
+  padding:13px 0;
+  border-bottom:1px solid var(--line);
+}
+.achievement:last-child { border-bottom:0; }
+.achievement .emoji { font-size:25px; }
+.achievement strong { font-size:13px; }
+.achievement p {
+  margin:4px 0 0;
+  font-size:11px;
+  color:var(--muted);
+}
+.locked { opacity:.4; }
+.page { display:none; }
+.page.active { display:block; }
+.empty {
+  padding:35px 12px;
+  color:var(--muted);
+  text-align:center;
+  background:white;
+  border-radius:15px;
+}
+nav {
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#ffffffed;
+  border-top:1px solid var(--line);
+  display:flex;
+  justify-content:space-around;
+  padding:10px 12px calc(12px + env(safe-area-inset-bottom));
+}
+nav button {
+  background:transparent;
+  color:#9296aa;
+  display:grid;
+  gap:4px;
+  justify-items:center;
+  font-size:11px;
+}
+nav button b { font-size:22px; }
+nav button.active { color:var(--purple); }
+.modal {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#14152b99;
+  z-index:20;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+.modal.show { display:flex; }
+.dialog {
+  width:100%;
+  max-width:420px;
+  background:white;
+  border-radius:22px;
+  padding:23px;
+}
+.dialog input,.dialog select {
+  width:100%;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  margin:6px 0 14px;
+  background:#fafaff;
+}
+.dialog label {
+  font-weight:700;
+  font-size:12px;
+}
+.dialog .actions {
+  display:flex;
+  gap:9px;
+}
+.dialog .actions button { flex:1; }
+.secondary {
+  padding:12px 15px;
+  border-radius:11px;
+  background:#eeeeF8;
+  color:#635d98;
+  font-weight:700;
+}
+.setting-btn {
+  display:block;
+  width:100%;
+  text-align:left;
+  background:#f5f4ff;
+  padding:15px;
+  border-radius:12px;
+  margin:9px 0;
+  font-weight:700;
+}
+.note {
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+}
+@media(min-width:700px) {
+  .app { padding-bottom:35px; }
+  nav {
+    max-width:360px;
+    margin:auto;
+    border-radius:20px 20px 0 0;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">✦</div>
+      <div>QUEST DAY</div>
+    </div>
+    <div class="avatar">🧙</div>
+  </header>
+
+  <section id="home" class="page active">
+    <div class="hero">
+      <small>YOUR DAILY ADVENTURE</small>
+      <h1>오늘의 모험을<br>시작하세요.</h1>
+      <p>작은 퀘스트가 모여 나만의 성장이 됩니다.</p>
+      <span class="level" id="level">LEVEL 1</span>
+      <div class="xp-label">
+        <span>✨ 경험치</span>
+        <span id="xpText">0 / 100 XP</span>
+      </div>
+      <div class="progress"><div id="xpBar"></div></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span>🎯 오늘 완료</span>
+        <strong id="todayStat">0 / 0</strong>
+      </div>
+      <div class="stat">
+        <span>🔥 연속 달성</span>
+        <strong id="streakStat">0일</strong>
+      </div>
+      <div class="stat">
+        <span>🏆 총 완료</span>
+        <strong id="totalStat">0개</strong>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <h2>오늘의 퀘스트</h2>
+      <button class="primary" id="addBtn">+ 퀘스트</button>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter active" data-filter="all">전체</button>
+      <button class="filter" data-filter="todo">진행 중</button>
+      <button class="filter" data-filter="done">완료</button>
+    </div>
+
+    <div class="quest-list" id="questList"></div>
+  </section>
+
+  <section id="growth" class="page">
+    <h2>나의 성장 기록</h2>
+    <div class="card">
+      <div style="font-size:42px">🧙</div>
+      <h2 id="growthLevel">LEVEL 1</h2>
+      <p class="note" id="growthXp">누적 경험치 0 XP</p>
+    </div>
+    <div class="section-title">
+      <h2>업적 컬렉션</h2>
+    </div>
+    <div class="card" id="achievements"></div>
+  </section>
+
+  <section id="settings" class="page">
+    <h2>설정</h2>
+    <div class="card">
+      <h2>데이터 관리</h2>
+      <p class="note">퀘스트와 성장 기록은 현재 기기에 저장됩니다.</p>
+      <button class="setting-btn" id="backupBtn">
+        💾 데이터 백업
+      </button>
+      <button class="setting-btn" id="restoreBtn">
+        📂 백업 복원
+      </button>
+      <button class="setting-btn" id="iconsBtn">
+        🎨 앱 아이콘 PNG 생성
+      </button>
+      <button class="setting-btn" id="resetBtn">
+        🗑️ 전체 초기화
+      </button>
+      <input type="file" id="restoreFile" accept=".json" hidden>
+    </div>
+    <p class="note">
+      QUEST DAY MVP 1.0<br>
+      별도 회원가입 없이 이용할 수 있습니다.
+      브라우저 데이터 삭제 또는 기기 변경 시 기록이
+      사라질 수 있으므로 백업을 권장합니다.
+    </p>
+  </section>
+</div>
+
+<nav>
+  <button class="active" data-page="home"><b>⌂</b>홈</button>
+  <button data-page="growth"><b>♛</b>성장</button>
+  <button data-page="settings"><b>⚙</b>설정</button>
+</nav>
+
+<div class="modal" id="modal">
+  <div class="dialog">
+    <h2>새로운 퀘스트</h2>
+    <p class="note">작은 목표부터 시작해 보세요.</p>
+
+    <label for="taskName">퀘스트 이름</label>
+    <input id="taskName" maxlength="60"
+      placeholder="예: 책 10페이지 읽기">
+
+    <label for="category">카테고리</label>
+    <select id="category">
+      <option>일상</option>
+      <option>공부</option>
+      <option>자기계발</option>
+      <option>건강</option>
+      <option>취미</option>
+    </select>
+
+    <label for="frequency">반복 설정</label>
+    <select id="frequency">
+      <option value="daily">매일 반복</option>
+      <option value="once">한 번만</option>
+    </select>
+
+    <label for="reward">퀘스트 난이도</label>
+    <select id="reward">
+      <option value="10">쉬움 · 10 XP</option>
+      <option value="20" selected>보통 · 20 XP</option>
+      <option value="30">어려움 · 30 XP</option>
+      <option value="50">보스 퀘스트 · 50 XP</option>
+    </select>
+
+    <div class="actions">
+      <button class="secondary" id="cancelBtn">취소</button>
+      <button class="primary" id="saveBtn">생성하기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY = "quest-day-mvp-v1";
+
+function dateKey(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function uid() {
+  return Date.now().toString(36) +
+    Math.random().toString(36).slice(2);
+}
+
+function initialState() {
+  return {
+    tasks: [
+      { id:"demo1", name:"책 10페이지 읽기",
+        category:"공부", frequency:"daily", xp:20 },
+      { id:"demo2", name:"방 정리하기",
+        category:"일상", frequency:"daily", xp:10 },
+      { id:"demo3", name:"중요한 일 하나 끝내기",
+        category:"자기계발", frequency:"once", xp:30 }
+    ],
+    events: []
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return initialState();
+    const value = JSON.parse(raw);
+    if (!Array.isArray(value.tasks) ||
+        !Array.isArray(value.events)) {
+      return initialState();
+    }
+    return value;
+  } catch {
+    return initialState();
+  }
+}
+
+let state = loadState();
+let activeFilter = "all";
+
+function saveState() {
+  localStorage.setItem(KEY, JSON.stringify(state));
+}
+
+function totalXp() {
+  return state.events.reduce((sum, e) => sum + e.xp, 0);
+}
+
+function levelInfo() {
+  let remaining = totalXp();
+  let level = 1;
+  while (remaining >= level * 100) {
+    remaining -= level * 100;
+    level++;
+  }
+  return {
+    level,
+    current: remaining,
+    required: level * 100
+  };
+}
+
+function completion(task) {
+  return state.events.find(e =>
+    e.taskId === task.id &&
+    (task.frequency === "once" || e.day === dateKey())
+  );
+}
+
+function todayEvents() {
+  return state.events.filter(e => e.day === dateKey());
+}
+
+function visibleTasks() {
+  return state.tasks.filter(task => {
+    if (task.frequency === "daily") return true;
+    const event = completion(task);
+    return !event || event.day === dateKey();
+  });
+}
+
+function streakCount() {
+  const days = new Set(state.events.map(e => e.day));
+  const current = new Date();
+  if (!days.has(dateKey(current))) {
+    current.setDate(current.getDate() - 1);
+  }
+  let count = 0;
+  while (days.has(dateKey(current))) {
+    count++;
+    current.setDate(current.getDate() - 1);
+  }
+  return count;
+}
+
+function achievements() {
+  const count = state.events.length;
+  const level = levelInfo().level;
+  return [
+    ["🌟", "첫 발걸음", "퀘스트 1개 완료", count >= 1],
+    ["🔥", "꾸준한 모험가", "3일 연속 달성", streakCount() >= 3],
+    ["🏅", "퀘스트 마스터", "퀘스트 10개 완료", count >= 10],
+    ["👑", "레벨 5", "레벨 5 달성", level >= 5],
+    ["💎", "전설의 시작", "퀘스트 50개 완료", count >= 50]
+  ];
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[char]));
+}
+
+function render() {
+  const tasks = visibleTasks();
+  const done = tasks.filter(task => !!completion(task)).length;
+  const info = levelInfo();
+
+  document.getElementById("level").textContent =
+    `LEVEL ${info.level}`;
+  document.getElementById("growthLevel").textContent =
+    `LEVEL ${info.level}`;
+  document.getElementById("growthXp").textContent =
+    `누적 경험치 ${totalXp()} XP`;
+
+  document.getElementById("xpText").textContent =
+    `${info.current} / ${info.required} XP`;
+  document.getElementById("xpBar").style.width =
+    `${info.current / info.required * 100}%`;
+
+  document.getElementById("todayStat").textContent =
+    `${done} / ${tasks.length}`;
+  document.getElementById("streakStat").textContent =
+    `${streakCount()}일`;
+  document.getElementById("totalStat").textContent =
+    `${state.events.length}개`;
+
+  const filtered = tasks.filter(task => {
+    if (activeFilter === "todo") return !completion(task);
+    if (activeFilter === "done") return !!completion(task);
+    return true;
+  });
+
+  const list = document.getElementById("questList");
+  list.innerHTML = filtered.length
+    ? filtered.map(task => {
+        const checked = !!completion(task);
+        return `
+          <div class="quest ${checked ? "done" : ""}">
+            <button class="check"
+              data-toggle="${escapeHtml(task.id)}"
+              aria-label="퀘스트 완료 전환">
+              ${checked ? "✓" : ""}
+            </button>
+            <div class="quest-info">
+              <div class="quest-name">${escapeHtml(task.name)}</div>
+              <div class="quest-meta">
+                ${escapeHtml(task.category)} ·
+                ${task.frequency === "daily" ? "매일 반복" : "1회"}
+              </div>
+            </div>
+            <span class="reward">+${task.xp} XP</span>
+            <button class="delete"
+              data-delete="${escapeHtml(task.id)}"
+              aria-label="퀘스트 삭제">×</button>
+          </div>`;
+      }).join("")
+    : '<div class="empty">표시할 퀘스트가 없어요.<br>새로운 퀘스트를 만들어 보세요!</div>';
+
+  document.getElementById("achievements").innerHTML =
+    achievements().map(([icon, title, desc, earned]) => `
+      <div class="achievement ${earned ? "" : "locked"}">
+        <span class="emoji">${icon}</span>
+        <div>
+          <strong>${title}</strong>
+          <p>${desc} · ${earned ? "달성!" : "미달성"}</p>
+        </div>
+      </div>
+    `).join("");
+}
+
+function toggleTask(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+
+  const existing = completion(task);
+  if (existing) {
+    state.events = state.events.filter(e => e !== existing);
+  } else {
+    state.events.push({
+      id: uid(),
+      taskId: id,
+      day: dateKey(),
+      xp: task.xp
+    });
+  }
+  saveState();
+  render();
+}
+
+function createTask() {
+  const name = document.getElementById("taskName").value.trim();
+  if (!name) {
+    alert("퀘스트 이름을 입력해 주세요.");
+    return;
+  }
+
+  state.tasks.unshift({
+    id: uid(),
+    name,
+    category: document.getElementById("category").value,
+    frequency: document.getElementById("frequency").value,
+    xp: Number(document.getElementById("reward").value)
+  });
+
+  saveState();
+  closeModal();
+  document.getElementById("taskName").value = "";
+  activeFilter = "all";
+  document.querySelectorAll(".filter").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.filter === "all");
+  });
+  render();
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("show");
+}
+
+document.getElementById("addBtn").onclick = () => {
+  document.getElementById("modal").classList.add("show");
+};
+document.getElementById("cancelBtn").onclick = closeModal;
+document.getElementById("saveBtn").onclick = createTask;
+
+document.getElementById("questList").onclick = e => {
+  const toggle = e.target.closest("[data-toggle]");
+  const remove = e.target.closest("[data-delete]");
+
+  if (toggle) {
+    toggleTask(toggle.dataset.toggle);
+    return;
+  }
+
+  if (remove && confirm("퀘스트를 삭제할까요?")) {
+    state.tasks = state.tasks.filter(
+      t => t.id !== remove.dataset.delete
+    );
+    // 획득했던 경험치는 성장 기록에 유지합니다.
+    saveState();
+    render();
+  }
+};
+
+document.querySelectorAll(".filter").forEach(btn => {
+  btn.onclick = () => {
+    activeFilter = btn.dataset.filter;
+    document.querySelectorAll(".filter").forEach(other => {
+      other.classList.toggle("active", other === btn);
+    });
+    render();
+  };
+});
+
+document.querySelectorAll("nav button").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("nav button").forEach(other => {
+      other.classList.toggle("active", other === btn);
+    });
+    document.querySelectorAll(".page").forEach(page => {
+      page.classList.toggle("active", page.id === btn.dataset.page);
+    });
+    window.scrollTo(0, 0);
+  };
+});
+
+document.getElementById("backupBtn").onclick = () => {
+  const blob = new Blob(
+    [JSON.stringify(state, null, 2)],
+    { type:"application/json" }
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quest-day-backup.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+document.getElementById("restoreBtn").onclick = () => {
+  document.getElementById("restoreFile").click();
+};
+
+document.getElementById("restoreFile").onchange = async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!Array.isArray(data.tasks) ||
+        !Array.isArray(data.events)) throw new Error();
+
+    const validTasks = data.tasks.every(t =>
+      typeof t.id === "string" &&
+      typeof t.name === "string" &&
+      ["daily", "once"].includes(t.frequency) &&
+      Number.isFinite(t.xp) &&
+      t.xp >= 0 && t.xp <= 50
+    );
+    const validEvents = data.events.every(e =>
+      typeof e.id === "string" &&
+      typeof e.taskId === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(e.day) &&
+      Number.isFinite(e.xp) &&
+      e.xp >= 0 && e.xp <= 50
+    );
+    if (!validTasks || !validEvents) throw new Error();
+
+    if (confirm("기존 데이터를 백업 내용으로 교체할까요?")) {
+      state = data;
+      saveState();
+      render();
+      alert("복원이 완료되었습니다.");
+    }
+  } catch {
+    alert("올바른 백업 파일이 아닙니다.");
+  }
+  event.target.value = "";
+};
+
+document.getElementById("resetBtn").onclick = () => {
+  if (!confirm("모든 데이터가 삭제됩니다. 계속할까요?")) return;
+  state = { tasks:[], events:[] };
+  saveState();
+  render();
+};
+
+// 앱 아이콘용 PNG 다운로드
+function downloadIcon(size) {
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#191b35";
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = "#8878ef";
+  ctx.beginPath();
+  ctx.roundRect(size*.1, size*.1,
+    size*.8, size*.8, size*.2);
+  ctx.fill();
+  ctx.fillStyle = "#ffffff";
+  ctx.font = `bold ${size*.53}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("✦", size/2, size/2);
+
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = `icon-${size}.png`;
+  a.click();
+}
+
+document.getElementById("iconsBtn").onclick = () => {
+  downloadIcon(192);
+  setTimeout(() => downloadIcon(512), 400);
+};
+
+if ("serviceWorker" in navigator &&
+    location.protocol === "https:") {
+  navigator.serviceWorker.register("./sw.js").catch(console.error);
+}
+
+render();
+</script>
+</body>
+</html>

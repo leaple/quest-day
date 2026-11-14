@@ -1,0 +1,23 @@
+
+{
+  "name": "QUEST DAY",
+  "short_name": "QUEST DAY",
+  "description": "매일의 할 일을 RPG 퀘스트로 바꾸는 생산성 앱",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f6fb",
+  "theme_color": "#191b35",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
