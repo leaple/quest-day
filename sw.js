@@ -1,5 +1,5 @@
 /* QUEST DAY 1.1 — network first, offline fallback */
-const CACHE_NAME = "quest-day-cache-v3";
+const CACHE_NAME = "quest-day-cache-v4";
 const FILES = [
   "./",
   "./index.html",
@@ -7,7 +7,9 @@ const FILES = [
   "./icon-192.png",
   "./icon-512.png",
   "./upgrade-1.1.js",
-  "./upgrade-1.2.js"
+  "./upgrade-1.2.js",
+  "./upgrade-1.3.js",
+  "./characters-1.3.json"
 ];
 
 self.addEventListener("install", event => {
