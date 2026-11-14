@@ -127,7 +127,7 @@
     button("이전 화면","back","ghost");
   if(mode==="finishLink")return field("qd20Password","새 비밀번호 (12자 이상)","password","비밀번호 설정","new-password",'minlength="12" maxlength="128"')+
     button("비밀번호 저장하고 시작","savePassword")+
-    button("나중에 설정","finishLinked","ghost");
+    button("나중에 설정 (다른 기기 로그인은 아직 불가)","finishLinked","ghost");
   if(mode==="account")return '<div class="qd20-notice">이미 사용 중인 계정이나 익명 친구 계정은 삭제하지 않아요. '+
     '다른 계정으로 로그인하면 서버 기록과 이 기기의 기록을 비교한 뒤 안전하게 동기화해요.</div>'+
     button("기존 계정으로 로그인","login")+
@@ -185,13 +185,12 @@
  async function submitLogin(values){
   if(!guardEmail(values.email)||!values.password)throw Error("이메일과 비밀번호를 입력해 주세요.");
   const sup=await client();
-  const prev=bridge.getUser()?.id;
-  // Never silently abandon an unlinked anonymous social identity.
-  if(prev){
-   const existing=await sup.auth.getUser();
-   if(existing.data?.user?.is_anonymous){
-    if(!confirm("현재 익명 친구 계정에서 다른 계정으로 로그인하면 기존 익명 계정의 친구 관계는 새 계정으로 자동 이전되지 않아요. 이 기기의 게임 기록은 유지되고 새 계정 기록과 충돌하면 선택할 수 있어요. 계속할까요?"))return;
-   }
+  const existing=await sup.auth.getUser();
+  const prev=bridge.getUser()?.id||existing.data?.user?.id||null;
+  // Preserve warnings even if realtime friends were switched off: an anonymous
+  // auth session can still be stored on this device.
+  if(existing.data?.user?.is_anonymous){
+   if(!confirm("현재 익명 친구 계정에서 다른 계정으로 로그인하면 기존 익명 계정의 친구 관계는 새 계정으로 자동 이전되지 않아요. 이 기기의 게임 기록은 유지되고 새 계정 기록과 충돌하면 선택할 수 있어요. 계속할까요?"))return;
   }
   const result=await sup.auth.signInWithPassword({email:values.email,password:values.password});
   if(result.error)throw result.error;
