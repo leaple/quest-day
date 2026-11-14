@@ -170,6 +170,7 @@
   if(mode==="signup"||mode==="link")return field("qd20Email","이메일","email","name@example.com","email",'maxlength="180" inputmode="email"')+
     (mode==="signup"?field("qd20Password","새 비밀번호 (12자 이상)","password","12자 이상","new-password",'minlength="12" maxlength="128"'):"")+
     button(mode==="link"?"기존 계정에 이메일 연결":"가입하고 인증 메일 받기","submitSignup")+
+    button("이미 가입한 이메일로 로그인","login","alt")+
     button("뒤로","back","ghost");
   if(mode==="verifySignup"||mode==="verifyLink")return '<div class="qd20-notice">'+safe(emailDraft)+
     ' 주소로 확인 메일을 요청했어요. <strong>Supabase 기본 메일은 숫자 코드 대신 Confirm Email 링크를 보냅니다.</strong> 링크를 누른 뒤 아래에서 인증을 확인해 주세요.</div>'+
@@ -264,7 +265,15 @@
  async function client(){return bridge.ensureClient();}
  function fail(e){
   const msg=e?.message||String(e||"인증 처리 중 오류가 발생했어요.");
-  error=msg.slice(0,230);noticeText="";render();
+  const emailAlreadyExists=/user with this email address has already been registered|email already (?:registered|exists|in use)|identity_already_exists|email_exists|already been registered/i.test(
+   String(e?.code||"")+" "+msg);
+  if(emailAlreadyExists){
+   error="이미 회원가입된 이메일이에요. 새로 연결하거나 가입할 필요 없이 기존 계정으로 로그인해 주세요.";
+   noticeText="이 기기의 게스트 퀘스트·XP·골드는 로그인 직후 삭제되지 않아요. 기존 계정에 게임 기록이 있으면 클라우드 기록과 비교한 뒤 선택할 수 있어요. 게스트 친구 관계는 기존 계정으로 자동 이전되지 않아요.";
+  }else{
+   error=msg.slice(0,230);noticeText="";
+  }
+  render();
  }
  async function activate(userId,was=null){
   if(!userId)throw Error("로그인 계정 정보를 찾지 못했어요.");
