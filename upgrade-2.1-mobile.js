@@ -35,7 +35,7 @@ style.textContent=[
 ".qd14-dialog{max-height:87dvh;overscroll-behavior:contain}",
 ".ch-card,.rpg-item,.fr-panel,.s17-wrap,.qd14-card{min-width:0}",
 "@media(max-width:390px){.app{padding-left:11px;padding-right:11px}.quest{gap:7px;padding:10px}.quest .reward{padding:6px;font-size:10px}.section-title{gap:7px;flex-wrap:wrap}.section-title h2{font-size:17px}nav{gap:2px;padding-left:4px;padding-right:4px}nav button{font-size:10px;min-width:0;flex:1 1 0}nav button b{font-size:20px}.dialog .actions{gap:8px}}",
-"@media(min-width:700px){.app{padding-bottom:46px}nav{width:min(100% - 24px,580px);border:1px solid #e6e4f1;border-bottom:0;border-radius:19px 19px 0 0;padding-left:15px;padding-right:15px}.modal{align-items:center}.modal .dialog{border-radius:24px}}",
+"@media(min-width:700px){.app{padding-bottom:104px}nav{width:min(100% - 24px,580px);border:1px solid #e6e4f1;border-bottom:0;border-radius:19px 19px 0 0;padding-left:15px;padding-right:15px}.modal{align-items:center}.modal .dialog{border-radius:24px}}",
 "@media(prefers-reduced-motion:reduce){nav button,.app .progress div{transition:none!important}nav button:active{transform:none}}"
 ].join("");
 document.head.appendChild(style);
