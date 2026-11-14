@@ -8,7 +8,7 @@
  if(!bridge||!root)return;
  const st={view:"ranking",peer:"",draft:"",friends:[],ranking:[],parties:[],
   cheers:[],unreads:[],blocked:[],chat:[],ready:false,working:false,
-  fetching:false,needsRefresh:false,error:"",chatLoading:false,chatScroll:0};
+  fetching:false,needsRefresh:false,error:"",chatLoading:false,chatScroll:0,scrollToBottom:false};
  let host=null,channel=null,poll=null,refreshTimer=null,subscribed=false;
  const icons={spark:"✨ 힘내!",cheer:"🔥 계속 가자!",win:"🏆 멋져!"};
  const esc=v=>escapeHtml(String(v??""));
@@ -174,6 +174,7 @@
  }
  function render(){
   if(!host||!bridge.isReady())return;
+  const needBottom=st.scrollToBottom;
   captureDraft();
   const active=document.activeElement?.id||"";
   const counts=st.cheers.filter(c=>!c.seen_at).length+
@@ -193,7 +194,11 @@
   const input=document.getElementById("s17Message");
   if(input){input.value=st.draft;if(active==="s17Message")input.focus();}
   const chatLog=document.getElementById("s17ChatLog");
-  if(chatLog)chatLog.scrollTop=st.chatScroll||chatLog.scrollHeight;
+  if(chatLog){
+   chatLog.scrollTop=needBottom?chatLog.scrollHeight:(st.chatScroll||chatLog.scrollHeight);
+   st.chatScroll=chatLog.scrollTop;
+  }
+  st.scrollToBottom=false;
  }
  async function runRPC(name,args){
   const c=client();if(!c)throw Error("서버 연결이 끊겼어요.");
@@ -241,7 +246,7 @@
    st.chat=(result.data||[]).slice().reverse();
    await runRPC("qd_mark_chat_read",{friend_id:peer});
    st.unreads=st.unreads.filter(u=>u.partner_id!==peer);
-   st.chatScroll=999999;
+   st.scrollToBottom=true;
   }catch(e){st.error=e.message||"채팅을 불러오지 못했어요.";}
   finally{st.chatLoading=false;mount();}
  }
@@ -305,10 +310,17 @@
   }
   if(action==="chatOpen"){
    if(!isFriend(id))return;
-   captureDraft();st.view="chat";st.peer=id;st.draft="";st.chat=[];
+   captureDraft();
+   const previousInput=document.getElementById("s17Message");
+   if(previousInput)previousInput.value="";
+   st.view="chat";st.peer=id;st.draft="";st.chat=[];
    st.chatScroll=0;mount();await fetchChat();return;
   }
-  if(action==="chatClose"){st.peer="";st.chat=[];st.draft="";mount();return;}
+  if(action==="chatClose"){
+   const previousInput=document.getElementById("s17Message");
+   if(previousInput)previousInput.value="";
+   st.peer="";st.chat=[];st.draft="";mount();return;
+  }
   st.working=true;mount();
   try{
    if(action==="cheerSend"){
@@ -335,7 +347,10 @@
     const text=(st.draft||document.getElementById("s17Message")?.value||"").trim();
     if(!text||text.length>500)throw Error("메시지는 1~500자로 작성해 주세요.");
     await runRPC("qd_send_message",{friend_id:st.peer,message_body:text});
-    st.draft="";st.chatScroll=999999;
+    st.draft="";
+    const field=document.getElementById("s17Message");
+    if(field)field.value="";
+    st.scrollToBottom=true;
     await fetchChat();
    }else if(action==="report"){
     const value=prompt("신고 사유를 선택하세요: 1 스팸 / 2 괴롭힘 / 3 유해한 내용 / 4 기타","2");
