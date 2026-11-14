@@ -408,11 +408,11 @@
      else if(action==="delete"){
        if(!confirm("서버에 저장한 내 친구 정보, 채팅, 응원, 파티, 주간 랭킹 자료를 삭제할까요? 로컬 퀘스트·골드·캐릭터는 그대로 유지돼요."))return;
        await rpc("qd_remove_my_profile");
-       await client.auth.signOut();
+       // Do NOT sign out of Supabase Auth here: a game-wide cloud save is
+       // tied to this identity, and signing out an anonymous user can strand it.
        lastPublished="";invite="";contacts=[];requests=[];
        await stop();
-       localStorage.removeItem(SYNC_HOLD_KEY);
-       alert("서버의 공유 정보를 삭제했어요. 로컬 퀘스트는 유지돼요.");
+       alert("친구·채팅 등 서버 공유 정보를 삭제했어요. QUEST DAY 계정 로그인 상태와 게임 클라우드 저장본은 유지돼요. 친구 기능을 다시 사용하려면 실시간 연결을 켜 주세요.");
      }
    }catch(e){showError(e);alert("실시간 기능 오류: "+(e.message||"연결을 확인해 주세요."));}
    finally{operation=false;}
