@@ -53,6 +53,7 @@
  ".s17-caption button{font-size:10px;color:#9c6c89;background:transparent;border:0;padding:0}",
  ".s17-error{color:#af4563;background:#fff0f4;border-radius:12px;padding:12px;font-size:12px;line-height:1.6}",
  ".s17-empty{padding:20px 6px;color:#9993aa;font-size:12px;text-align:center}",
+ "nav button[data-page=frFriends]{position:relative}.s17-navbadge{position:absolute;right:2px;top:-4px;background:#fa5485;border-radius:16px;color:white;min-width:17px;padding:1px 4px;line-height:16px;font-size:10px;box-shadow:0 1px 6px #5a3c6a33}.s17-navbadge[hidden]{display:none}",
  ".s17-toast{position:fixed;top:calc(14px + env(safe-area-inset-top));right:12px;left:12px;max-width:480px;margin:auto;z-index:120;background:#3e346e;color:white;border-radius:13px;padding:13px 17px;font-weight:800;font-size:13px;box-shadow:0 10px 26px #22254a55}",
  ".s17-note{background:#f5f3ff;color:#7b7394;border-radius:11px;padding:10px;font-size:11px;line-height:1.6}",
  "@media(max-width:380px){.s17-wrap{padding:11px}.s17-tab{font-size:10px}.s17-btn{padding:9px 7px}}"
@@ -180,6 +181,19 @@
    '<a href="https://github.com/leaple/quest-day/blob/main/supabase/quest-day-social-1.7.sql" target="_blank" rel="noopener noreferrer">SQL 파일 열기</a>':
    esc(error))+'</div>';
  }
+ function updateTabBadge(counts){
+  const tab=document.querySelector('nav button[data-page="frFriends"]');
+  if(!tab)return;
+  let badge=tab.querySelector(".s17-navbadge");
+  if(!badge){
+   badge=document.createElement("span");
+   badge.className="s17-navbadge";
+   badge.setAttribute("aria-label","읽지 않은 소식");
+   tab.appendChild(badge);
+  }
+  badge.textContent=counts>99?"99+":String(counts);
+  badge.hidden=counts<1;
+ }
  function render(){
   if(!host||!bridge.isReady())return;
   const needBottom=st.scrollToBottom;
@@ -189,6 +203,7 @@
    st.parties.filter(p=>p.status==="pending"&&p.direction==="received").length+
    st.unreads.reduce((v,x)=>v+Number(x.unread_count||0),0);
   const menu=[["ranking","🏆 랭킹"],["party","⚔️ 파티"],["notifications","🔔 알림"],["chat","💬 채팅"]];
+  updateTabBadge(counts);
   // In an open chat only update the message list. Replacing the composer DOM on
   // every realtime tick closes the iOS keyboard and loses selection/focus.
   if(st.view==="chat" && renderedView==="chat" && renderedPeer===st.peer && !st.error){
@@ -285,7 +300,9 @@
  }
  function toast(message){
   const element=document.createElement("div");
-  element.className="s17-toast";element.setAttribute("role","status");
+  element.className="s17-toast";
+  element.setAttribute("role","status");
+  element.setAttribute("aria-live","polite");
   element.textContent=message;document.body.appendChild(element);
   setTimeout(()=>element.remove(),4000);
  }
@@ -334,10 +351,7 @@
   if(action==="view"){
    captureDraft();st.view=button.dataset.view||"ranking";st.chatScroll=0;
    mount();
-   if(st.view==="notifications"){
-    try{await runRPC("qd_mark_cheers_seen");await refresh();}
-    catch(e){st.error=e.message||"읽음 표시 실패";mount();}
-   }
+   // Keep new cheers unread until the user explicitly taps "모두 읽음".
    if(st.view==="chat"&&st.peer)await fetchChat();
    return;
   }
