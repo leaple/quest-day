@@ -1,5 +1,5 @@
 /* QUEST DAY 1.1 — network first, offline fallback */
-const CACHE_NAME = "quest-day-cache-v62";
+const CACHE_NAME = "quest-day-cache-v63";
 const FILES = [
   "./",
   "./index.html",
@@ -22,6 +22,7 @@ const FILES = [
   "./upgrade-2.0-auth.js?v=20261115-1",
   "./account-deletion.js?v=20261115-2",
   "./upgrade-2.1-mobile.js?v=20261114-21",
+  "./upgrade-2.2-native.js?v=20261115-1",
   "./characters-1.3.json",
   "./art/painted/individual/hero_aren-stage1.webp?v=20261115-24",
   "./art/painted/individual/hero_aren-stage2.webp?v=20261115-24",
