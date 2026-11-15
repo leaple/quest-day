@@ -2,5 +2,12 @@
   "appId": "io.github.leaple.questday",
   "appName": "QUEST DAY",
   "webDir": "www",
-  "backgroundColor": "#f5f6fb"
+  "backgroundColor": "#f5f6fb",
+  "plugins": {
+    "Keyboard": {
+      "resize": "native",
+      "resizeOnFullScreen": true,
+      "autoBackdropColor": "auto"
+    }
+  }
 }
