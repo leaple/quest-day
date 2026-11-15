@@ -481,6 +481,27 @@
         '<p class="ch-note" style="margin-top:12px">모든 캐릭터는 앱 안에서만 사용하는 가상 골드로 획득할 수 있어요.</p>';
     }
 
+    // Codex 2.2 is a presentation layer; leave original shop and player data untouched.
+    if(window.QuestDayCodex && typeof window.QuestDayCodex.render==="function"){
+      try{
+        window.QuestDayCodex.render({
+          container:collection,
+          catalog:catalog,
+          gold:g,
+          owned:owned,
+          unlocked:conditionMet,
+          stage:evolutionStage,
+          metric:metric,
+          ruleLabel:ruleLabel,
+          portrait:portrait,
+          equipped:canonicalId(state.rpg.equipped),
+          action:takeAction
+        });
+        return;
+      }catch(error){
+        console.warn("QUEST DAY collectible codex unavailable; displaying original codex.",error);
+      }
+    }
     const tabs=[["all","전체"],["owned","보유"],["original","기존 수호자"],["vanguard","전투 영웅단"],["common","COMMON"],["rare","RARE"],["epic","EPIC"],["legendary","LEGENDARY"]];
     const filtered=catalog.filter(c=>categoryFilter==="all" ||
       (categoryFilter==="owned"?owned(c):categoryFilter==="original"?c.collection!=="vanguard":categoryFilter==="vanguard"?c.collection==="vanguard":c.rarity===categoryFilter));
