@@ -314,13 +314,13 @@
   channel=c.channel("qd-social-"+user)
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"qd_messages"},payload=>{
      if(payload.new?.recipient_id===user){
-       if(document.visibilityState==="visible")toast("💬 친구에게 메시지가 도착했어요.");
+       if(document.visibilityState==="visible"&&!window.QuestDayNotifications)toast("💬 친구에게 메시지가 도착했어요.");
        if(st.view==="chat"&&st.peer===payload.new?.sender_id&&root.classList.contains("active"))fetchChat();
      }
      scheduleRefresh();
    })
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"qd_cheers"},payload=>{
-     if(payload.new?.recipient_id===user&&document.visibilityState==="visible")
+     if(payload.new?.recipient_id===user&&document.visibilityState==="visible"&&!window.QuestDayNotifications)
       toast("✨ 친구의 응원이 도착했어요!");
      scheduleRefresh();
    })
