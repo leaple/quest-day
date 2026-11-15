@@ -148,3 +148,19 @@ GitHub Actions의 `QUEST DAY - iOS simulator build` 워크플로는 `macos-26` /
 Android APK SHA-256: `d777293ea1c29001eb90beb9ed4af972bd569554c7cf6255ef46c86897bddd11`
 
 **주의:** CI 빌드 및 모의 브리지 테스트는 실제 기기 동작을 보장하지 않습니다. APK는 **Play 스토어 배포용 AAB가 아닌 디버그 서명 테스트 빌드**이며 iOS 컴파일 성공은 TestFlight/IPA/실기기 앱 설치를 뜻하지 않습니다.
+
+## 12. 알림 2.3 (2026-11-15)
+
+- [x] 날짜 변경 후 자정 화면 자동 갱신 + 앱 복귀 시 재확인: 기존 `quest-day-mvp-v1` 게임 기록을 초기화하지 않고 UI만 다시 계산
+- [x] 오전 09:00 반복 로컬 알림; 21:00 미완료 로컬 알림 14일 구간 예약·재계산, 완료된 오늘의 알림 취소
+- [x] Capacitor Local Notifications 8.3.1 + Android/iOS 앱 패키징 포함
+- [x] 친구 요청·메시지·응원·파티 초대 앱 연결 중 Realtime 수신, 이벤트 ID·계정별 중복 방지
+- [x] 사용자별 로컬·Supabase 알림 설정 (`qd_notification_prefs`, RLS로 사용자 소유 행만 접근)
+- [x] 휴대폰 알림 권한 명시적 요청 및 기능별 설정 토글
+- [x] Android 시뮬레이션 자동 회귀 테스트와 APK 빌드: https://github.com/leaple/quest-day/actions/runs/43707779762
+- [x] iOS 시뮬레이터 컴파일 및 동일 회귀 테스트: https://github.com/leaple/quest-day/actions/runs/43707787177
+- [ ] 실기기 Android/iPhone 퀘스트 알림 수신·OS 권한 및 장시간 예약 동작 검증
+- [ ] **앱 완전 종료 중 친구 서버 푸시**: FCM/APNs 키·서버 푸시·기기 토큰 관리가 미구현; 현재 실시간 연결 중에만 친구 알림 제공
+- [ ] **다른 기기 진행 상황을 21시 직전에 서버에서 재검증하는 조건부 푸시**: 미구현; 로컬 예약 당시 기록 기준으로 처리됨
+
+세부 운영·기술적 제한 및 QA: [NOTIFICATIONS_2.3.md](./NOTIFICATIONS_2.3.md), [MOBILE_QA_PLAN.md](./MOBILE_QA_PLAN.md).
