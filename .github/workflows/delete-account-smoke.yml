@@ -1,0 +1,28 @@
+name: QUEST DAY - Disposable account deletion smoke test
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/test-account-deletion.mjs
+      - .github/workflows/delete-account-smoke.yml
+permissions:
+  contents: read
+concurrency:
+  group: quest-day-delete-smoke
+  cancel-in-progress: false
+jobs:
+  test-disposable-account-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out QUEST DAY
+        uses: actions/checkout@v4
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Supabase client for CI only
+        run: npm install --no-save --no-package-lock --no-audit --no-fund @supabase/supabase-js@2.95.0
+      - name: Exercise only a new disposable anonymous account
+        run: node scripts/test-account-deletion.mjs
