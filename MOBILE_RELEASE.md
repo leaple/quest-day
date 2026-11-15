@@ -1,6 +1,6 @@
 # QUEST DAY — Android / iOS 출시 준비 (2026-11)
 
-> 상태: **네이티브 프로젝트 구성과 Android 디버그 빌드 자동화 준비**. 아직 Google Play / App Store 등록·심사·실제 출시 완료 상태가 아닙니다.
+> 상태: **Android 테스트 APK 빌드 성공**, iOS 시뮬레이터 CI 추가, 삭제 기능 UI/서버 코드 준비. 아직 Supabase 삭제 함수 미배포·실계정 삭제 미검증이며, Google Play / App Store 등록·심사·실제 출시는 진행하지 않았습니다.
 
 ## 1. 출발점
 
@@ -42,8 +42,8 @@ Xcode에서 본인/테스트 기기를 선택해 실행합니다. iPhone에서 �
 ## 3. 출시 심사 전 남은 필수 작업
 
 - [ ] **개인정보처리방침**: 운영자 식별 및 실제 데이터 수집·보관·공유·삭제 설명과 연락 채널을 확정하고 앱 내/스토어 페이지에 링크 연결
-- [ ] **계정 및 데이터 삭제**: 계정을 만드는 앱이므로 **실제 인증 계정과 Supabase의 연동 데이터를 삭제하는 기능**을 안전하게 구현. '게임 기록 초기화' 또는 '서버 공유 정보 삭제'만으로 충족한다고 간주하지 않음
-- [ ] **앱 외부 계정 삭제 안내 URL**: Google Play 계정 삭제 요건에 맞춰 공개 웹페이지 제공
+- [ ] **계정 및 데이터 삭제**: `account-deletion.js` 화면과 `supabase/functions/qd-delete-account/index.ts` 서버 코드를 작성함. **실제 프로젝트에 Edge Function을 배포하고 테스트 계정으로 삭제 범위 검증이 필수**. '게임 기록 초기화'만으로 충족하지 않음.
+- [x] **앱 외부 삭제 요청 경로 마련**: https://leaple.github.io/quest-day/account-deletion.html → 브라우저에서 계정 로그인·삭제 화면 접근. 다만 서버 배포 전 삭제 실행은 불가
 - [ ] **친구/사용자 생성 콘텐츠**: 신고·차단·관리 기능과 필요시 안전 대응 절차 검증
 - [ ] **모바일 UX**: Android 뒤로가기, 키보드 가림, 안전 영역, 로그인 후 돌아오기, 화면 전환 및 에러 처리 테스트
 - [ ] **앱 아이콘/시작 화면**: 현재 모바일 스토어용 아이콘·스플래시는 별도로 생성/검증 필요
@@ -70,8 +70,27 @@ Xcode에서 본인/테스트 기기를 선택해 실행합니다. iPhone에서 �
 ## 5. 다음 작업 순서
 
 1. GitHub Actions에서 디버그 APK 생성 성공 및 기기 실행 확인
-2. Supabase 실제 **계정 삭제/데이터 삭제** 기능 + 정식 개인정보처리방침
+2. Supabase Edge Function **배포·테스트 계정으로 계정 및 관련 데이터 삭제 확인** + 운영자 정보가 검증된 정식 개인정보처리방침
 3. 네이티브 앱 전용 안전 영역/앱 아이콘/권한 점검
 4. TestFlight/Play 내부 테스트 → 테스트 기록 수집 → 정식 릴리스 AAB/IPA → 스토어 심사
 
 **주의:** 이 문서와 설정 파일은 앱 패키징 시작점입니다. 자동으로 계정이 생성되거나 앱이 스토어에 등록되지는 않습니다.
+
+## 6. 현재 삭제 기능의 배포 절차 (안전 검증 필수)
+
+**코드만 GitHub에 있는 상태는 삭제 기능이 작동하는 상태가 아닙니다.** Edge Function 서버 실행 권한은 Supabase 프로젝트 소유자가 직접 관리해야 합니다.
+
+1. Supabase의 테스트/스테이징 프로젝트를 별도로 만들거나 테스트 계정을 준비합니다. 본인/다른 사용자의 실제 계정으로 먼저 테스트하지 마세요.
+2. `supabase/functions/qd-delete-account/index.ts`를 검토합니다. `withSupabase({ auth: "user" })`와 인증된 사용자 ID 재확인으로 본인 계정만 삭제하도록 설계했습니다.
+3. Supabase CLI에서 연결한 **올바른 프로젝트를 확인**하고 `supabase functions deploy qd-delete-account`로 함수 배포를 진행합니다. JWT 검증을 임의로 해제하거나 **service_role/sb_secret 키를 브라우저/GitHub에 넣지 마세요**.
+4. 테스트 계정으로 로그인해서 설정 → 계정 영구 삭제 → 확인 문구 입력 후 삭제를 진행합니다. 테스트 계정의 `auth.users`, `qd_cloud_saves`, `qd_profiles`, `qd_friendships`, `qd_messages`, `qd_reports` 등 **관련 테이블이 실제로 정리되는지 확인**해야 합니다. 다른 사용자의 데이터는 남아 있어야 합니다.
+5. 게스트 계정도 삭제 시험을 진행하고, 삭제 실패·네트워크 단절·중복 요청 시 안전한지 검증합니다. 앱과 외부 페이지에서 모두 동작해야 합니다.
+
+실제 DB 스키마와 외래 키가 저장소 SQL과 다르면 삭제 동작이 다를 수 있습니다. 서버 배포 권한과 검증 없이 완료로 표시하지 않습니다.
+
+공개 삭제 요청 페이지: https://leaple.github.io/quest-day/account-deletion.html
+개인정보처리방침 작성 초안: [STORE_PRIVACY_DRAFT.md](./STORE_PRIVACY_DRAFT.md) — **아직 공식 방침이 아니며 스토어 제출 불가**
+
+## 7. iOS 컴파일 검증
+
+GitHub Actions의 `QUEST DAY - iOS simulator build` 워크플로는 `macos-26` / Xcode 26 이상에서 `npx cap add ios`, `npx cap sync ios`와 iOS Simulator용 **서명 없는** 빌드를 검사합니다. **성공해도 아이폰 설치용 IPA·TestFlight·App Store 배포가 완료된 것은 아닙니다.** Apple Developer 등록 및 서명 환경, 실기기 테스트, 스토어 심사는 별도 단계입니다.
