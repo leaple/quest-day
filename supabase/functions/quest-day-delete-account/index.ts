@@ -5,28 +5,24 @@ import { createClient } from "npm:@supabase/supabase-js@2.95.0";
 
 const CONFIRMATION = "계정 삭제";
 const SITE = "https://leaple.github.io";
-const responseHeaders: Record<string,string> = {
-  "content-type": "application/json; charset=utf-8",
-  "cache-control": "no-store",
-  "access-control-allow-origin": SITE,
-  "access-control-allow-headers": "authorization, apikey, x-client-info, content-type",
-  "access-control-allow-methods": "POST, OPTIONS",
-  "vary": "Origin",
-};
-const respond = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: responseHeaders });
-
 Deno.serve(async req => {
+  const origin = req.headers.get("origin");
+  // Allow only the public QUEST DAY site and standard Capacitor native origins.
+  // Authentication is enforced separately against the caller's user JWT.
+  const allowed = [SITE,"http://localhost","https://localhost","capacitor://localhost"];
+  const responseHeaders: Record<string,string> = {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+    "access-control-allow-origin": origin && allowed.includes(origin) ? origin : SITE,
+    "access-control-allow-headers": "authorization, apikey, x-client-info, content-type",
+    "access-control-allow-methods": "POST, OPTIONS",
+    "vary": "Origin",
+  };
+  const respond = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), { status, headers: responseHeaders });
+  if (origin && !allowed.includes(origin)) return respond({error:"Origin not allowed"},403);
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: responseHeaders });
   if (req.method !== "POST") return respond({error:"Method not allowed"},405);
-  const origin = req.headers.get("origin");
-  // Capacitor native platforms may use localhost or custom schemes; the user
-  // token is the actual authorization boundary. Reject unexpected web origins.
-  if (origin && origin !== SITE &&
-      origin !== "http://localhost" && origin !== "https://localhost" &&
-      origin !== "capacitor://localhost") {
-    return respond({error:"Origin not allowed"},403);
-  }
   let body: unknown;
   try { body = await req.json(); } catch { return respond({error:"Invalid request"},400); }
   if (!body || typeof body !== "object" ||
