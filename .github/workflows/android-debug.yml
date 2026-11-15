@@ -7,6 +7,14 @@ on:
       - package.json
       - capacitor.config.json
       - scripts/build-mobile-web.mjs
+      - index.html
+      - account-deletion.js
+      - account-deletion.html
+      - privacy.html
+      - upgrade-2.0-auth.js
+      - upgrade-1.9-cloud.js
+      - upgrade-1.6-realtime.js
+      - sw.js
       - .github/workflows/android-debug.yml
 permissions:
   contents: read
@@ -34,6 +42,17 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Bundle the existing website
         run: npm run build:web
+      - name: Verify bundled account and privacy features
+        run: |
+          test -f www/account-deletion.js
+          test -f www/account-deletion.html
+          test -f www/privacy.html
+          test -f www/upgrade-2.0-auth.js
+          test -f www/realtime-config.js
+          grep -q 'quest-day-delete-account' www/account-deletion.js
+          grep -q 'privacy.html' www/index.html
+          node --check www/account-deletion.js
+          node --check www/upgrade-2.0-auth.js
       - name: Create native Android project
         run: npx cap add android
       - name: Sync the website into Android
