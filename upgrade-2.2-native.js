@@ -45,7 +45,7 @@
    return true;
   }
   // The evolution celebration overlay has no ID; its close button distinguishes it.
-  const evolution=document.querySelector(".qd14-overlay.open:has([data-qd14-evo-close])");
+  const evolution=[...document.querySelectorAll(".qd14-overlay.open")].find(el=>el.querySelector("[data-qd14-evo-close]"));
   if(evolution){
    evolution.querySelector("[data-qd14-evo-close]")?.click();
    return true;
