@@ -64,11 +64,12 @@
    (activeUser?.is_anonymous?'<p>이메일 계정을 삭제하려면 먼저 해당 계정으로 로그인해야 합니다.</p>':'')+
    '<label for="qdDeleteConfirmText">삭제에 동의하면 <strong>계정 삭제</strong>를 입력하세요.</label>'+
    '<input id="qdDeleteConfirmText" autocomplete="off" spellcheck="false" placeholder="계정 삭제" aria-label="계정 삭제 확인 문구">'+
+   (activeUser&&!activeUser.is_anonymous?'<label for="qdDeleteCurrentPassword">본인 확인을 위해 현재 비밀번호 입력</label><input id="qdDeleteCurrentPassword" type="password" autocomplete="current-password" placeholder="현재 비밀번호">':'')+
    '<div class="qd-delete-actions"><button type="button" class="cancel" data-qd-delete="cancel">취소</button>'+
    '<button type="button" class="confirm" data-qd-delete="confirm" disabled>영구 삭제</button></div>'+
    (activeUser?.is_anonymous?'<div class="qd-delete-actions"><button type="button" class="cancel" data-qd-delete="login">이메일 계정 로그인</button></div>':'')+
    '<div class="qd-delete-status" role="status" aria-live="polite">삭제는 직접 최종 확인한 경우에만 진행됩니다.</div>'+
-   '<p class="qd-delete-note">서버 삭제 기능을 아직 배포하지 않은 경우 요청은 실패하며 데이터는 변경되지 않습니다.</p></div>';
+   '<p class="qd-delete-note">서버의 삭제 완료 응답이 있기 전에는 데이터를 삭제하지 않습니다.</p></div>';
   const input=shade.querySelector("#qdDeleteConfirmText");
   input?.addEventListener("input",()=>{
    const btn=shade.querySelector('[data-qd-delete="confirm"]');
@@ -112,6 +113,11 @@
  async function confirmDeletion(){
   const input=shade.querySelector("#qdDeleteConfirmText");
   if(busy||input?.value.trim()!=="계정 삭제"||!activeUser)return;
+  const password=shade.querySelector("#qdDeleteCurrentPassword")?.value||"";
+  if(!activeUser.is_anonymous&&!password){
+   alertStatus("현재 로그인 계정의 비밀번호를 입력해 주세요.",true);return;
+  }
+  if(!window.confirm("최종 확인: 계정과 클라우드 게임 기록을 영구 삭제할까요? 되돌릴 수 없습니다."))return;
   busy=true;
   shade.querySelectorAll("button,input").forEach(el=>el.disabled=true);
   alertStatus("서버에서 계정 삭제 요청을 확인하고 있습니다. 창을 닫지 마세요.",false);
@@ -121,11 +127,19 @@
    if(identityError||!identity?.user?.id||identity.user.id!==activeUser.id){
     throw Error("인증 계정이 변경됐어요. 창을 닫고 다시 열어 주세요.");
    }
-   const {data,error}=await client.functions.invoke("qd-delete-account",{
+   if(!activeUser.is_anonymous){
+    const reauth=await client.auth.signInWithPassword({email:activeUser.email,password});
+    if(reauth.error||reauth.data?.user?.id!==activeUser.id){
+     throw Error("비밀번호가 일치하지 않거나 계정이 변경됐습니다.");
+    }
+   }
+   const {data,error}=await client.functions.invoke("quest-day-delete-account",{
     body:{confirmation:"계정 삭제"}
    });
    if(error||data?.deleted!==true){
-    throw Error(error?.message||data?.error||"삭제 서버에서 완료 응답을 받지 못했습니다.");
+    let detail=null;
+    try{detail=await error?.context?.json?.();}catch(_){}
+    throw Error(detail?.error||data?.error||error?.message||"서버에서 삭제 완료 응답을 받지 못했습니다.");
    }
    // Only after the server confirms deletion: disconnect and remove local game data.
    try{await client.auth.signOut({scope:"local"});}catch(_){}
@@ -133,7 +147,7 @@
    window.location.replace("./index.html?account-deleted=1");
   }catch(e){
    alertStatus("삭제가 완료되지 않았습니다. 기기의 데이터는 유지됩니다.\n"+
-    String(e?.message||e)+"\nSupabase 계정 삭제 서버 함수의 배포 여부를 확인해 주세요.",true);
+    String(e?.message||e)+"\n비밀번호 및 인터넷 연결 상태를 확인해 주세요.",true);
   }finally{
    busy=false;
    shade.querySelectorAll('button[data-qd-delete="cancel"],button[data-qd-delete="login"],input').forEach(el=>el.disabled=false);
