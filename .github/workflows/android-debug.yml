@@ -15,6 +15,8 @@ on:
       - upgrade-1.9-cloud.js
       - upgrade-1.6-realtime.js
       - sw.js
+      - upgrade-2.2-native.js
+      - scripts/test-native-navigation.mjs
       - .github/workflows/android-debug.yml
 permissions:
   contents: read
@@ -53,6 +55,10 @@ jobs:
           grep -q 'privacy.html' www/index.html
           node --check www/account-deletion.js
           node --check www/upgrade-2.0-auth.js
+          test -f www/upgrade-2.2-native.js
+          node --check www/upgrade-2.2-native.js
+          npm ls --depth=0 @capacitor/app @capacitor/keyboard
+          node scripts/test-native-navigation.mjs
       - name: Create native Android project
         run: npx cap add android
       - name: Sync the website into Android
