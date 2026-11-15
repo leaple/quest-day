@@ -26,12 +26,10 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Verify Android SDK on GitHub runner
+      - name: Verify Android SDK directory
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "Using preinstalled Android SDK at $ANDROID_HOME"
           test -d "$ANDROID_HOME"
-          command -v sdkmanager
-          sdkmanager --list_installed
       - name: Install Capacitor
         run: npm install --no-audit --no-fund
       - name: Bundle the existing website
