@@ -1,9 +1,10 @@
 /* QUEST DAY 1.1 — network first, offline fallback */
-const CACHE_NAME = "quest-day-cache-v61";
+const CACHE_NAME = "quest-day-cache-v62";
 const FILES = [
   "./",
   "./index.html",
   "./account-deletion.html",
+  "./privacy.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
@@ -19,7 +20,7 @@ const FILES = [
   "./upgrade-1.7-social.js?v=20261114-6",
   "./upgrade-1.9-cloud.js?v=20261114-16",
   "./upgrade-2.0-auth.js?v=20261115-1",
-  "./account-deletion.js?v=20261115-1",
+  "./account-deletion.js?v=20261115-2",
   "./upgrade-2.1-mobile.js?v=20261114-21",
   "./characters-1.3.json",
   "./art/painted/individual/hero_aren-stage1.webp?v=20261115-24",
