@@ -131,3 +131,20 @@ GitHub Actions의 `QUEST DAY - iOS simulator build` 워크플로는 `macos-26` /
 테스트 방법/결과 체크리스트: [MOBILE_QA_PLAN.md](./MOBILE_QA_PLAN.md)
 
 **검증 범위:** 자동화 테스트 계정은 삭제 완료된 임시 게스트 계정이며, 기존 사용자 계정은 삭제하지 않았습니다. GitHub Actions 빌드 성공은 실물 기기 테스트나 앱스토어 심사 통과를 뜻하지 않습니다.
+
+## 11. Native UX 2.2 — Android 뒤로가기 / 키보드 / 화면 안전 영역 (2026-11-15)
+
+- [x] `@capacitor/app@8.1.2` 및 `@capacitor/keyboard@8.0.6` 의존성 고정
+- [x] `upgrade-2.2-native.js` 추가: **Capacitor 네이티브 모드에서만 실행**되고 웹 PWA에는 영향 없음
+- [x] Android 뒤로가기: 계정 삭제(진행 중에는 닫기 금지), 로그인/온보딩, 도감 상세, 진화 연출, 퀘스트 편집, 캐릭터 상세, 퀘스트 생성 팝업을 우선 처리
+- [x] 다른 탭에서 뒤로가기 → 홈, 홈에서 뒤로가기 → Android 백그라운드 이동; 게임 기록 및 인증 세션 초기화 없음
+- [x] 키보드 표시 시 하단 메뉴 숨김, 입력창 스크롤 보조, 안전 영역 여백
+- [x] 모의 네이티브 브리지 단위 테스트: `scripts/test-native-navigation.mjs` 통과 (Android/iOS CI)
+- [x] **최신 Android 디버그 APK 빌드:** https://github.com/leaple/quest-day/actions/runs/43705216473
+- [x] **최신 iOS 시뮬레이터 컴파일:** https://github.com/leaple/quest-day/actions/runs/43705222039
+- [x] Android APK에서 `upgrade-2.2-native.js`, `account-deletion.js`, `privacy.html` 및 `AppPlugin`, `KeyboardPlugin` 포함 확인
+- [ ] 실기기에서 키보드·시스템 뒤로가기·노치/홈 바·계정 재로그인 동작 검증
+
+Android APK SHA-256: `d777293ea1c29001eb90beb9ed4af972bd569554c7cf6255ef46c86897bddd11`
+
+**주의:** CI 빌드 및 모의 브리지 테스트는 실제 기기 동작을 보장하지 않습니다. APK는 **Play 스토어 배포용 AAB가 아닌 디버그 서명 테스트 빌드**이며 iOS 컴파일 성공은 TestFlight/IPA/실기기 앱 설치를 뜻하지 않습니다.
