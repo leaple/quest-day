@@ -23,7 +23,7 @@
     "hero_elin","hero_rohan","hero_eve","hero_baruk","hero_nia",
     "hero_sion","hero_lumi"
   ]);
-  const PAINTED_ART_VERSION = "20261115-23";
+  const PAINTED_ART_VERSION = "20261115-24";
   function paintedPortrait(id,stage){
     if(!paintedRoster.includes(id))return "";
     stage=Math.max(1,Math.min(3,Number(stage)||1));
