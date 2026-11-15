@@ -17,6 +17,9 @@ on:
       - sw.js
       - upgrade-2.2-native.js
       - scripts/test-native-navigation.mjs
+      - upgrade-2.3-notifications.js
+      - upgrade-1.7-social.js
+      - scripts/test-notifications.mjs
       - .github/workflows/android-debug.yml
 permissions:
   contents: read
@@ -57,8 +60,11 @@ jobs:
           node --check www/upgrade-2.0-auth.js
           test -f www/upgrade-2.2-native.js
           node --check www/upgrade-2.2-native.js
-          npm ls --depth=0 @capacitor/app @capacitor/keyboard
+          npm ls --depth=0 @capacitor/app @capacitor/keyboard @capacitor/local-notifications
+          node --check www/upgrade-2.3-notifications.js
+          grep -q "qd23NotificationSettings" www/upgrade-2.3-notifications.js
           node scripts/test-native-navigation.mjs
+          node scripts/test-notifications.mjs
       - name: Create native Android project
         run: npx cap add android
       - name: Sync the website into Android
