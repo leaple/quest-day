@@ -1,11 +1,7 @@
 name: QUEST DAY - Disposable account deletion smoke test
+# Run manually to avoid automatically creating disposable Auth users in production.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - scripts/test-account-deletion.mjs
-      - .github/workflows/delete-account-smoke.yml
 permissions:
   contents: read
 concurrency:
