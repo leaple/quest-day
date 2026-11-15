@@ -126,6 +126,35 @@ assert.equal(notify.countIncomplete(new ClockDate()),1,"Daily task must be incom
 assert.equal(state.events.length,1,"Old completion history must remain untouched");
 console.log("PASS: Local midnight rollover refreshes but preserves historical events");
 
+// A one-time quest stays pending across calendar changes until it is done.
+// Once completed, it must never become unfinished again after midnight.
+state.tasks.push({id:"task-once-finished",name:"One-time completed",frequency:"once",xp:30});
+state.events.push({id:"once-finished-event",taskId:"task-once-finished",day:"2026-11-15",xp:30});
+assert.equal(notify.countIncomplete(new ClockDate()),1,
+ "Previously completed one-time quests must stay completed after midnight");
+
+state.tasks.push({id:"task-once-pending",name:"One-time pending",frequency:"once",xp:30});
+assert.equal(notify.countIncomplete(new ClockDate()),2,
+ "An uncompleted one-time quest must remain unfinished after midnight");
+
+clock=Date.parse("2026-11-17T00:00:03Z");
+notify.refresh();
+assert.equal(notify.countIncomplete(new ClockDate()),2,
+ "An uncompleted one-time quest must remain pending on later days");
+
+state.events.push({id:"once-pending-event",taskId:"task-once-pending",day:"2026-11-17",xp:30});
+assert.equal(notify.countIncomplete(new ClockDate()),1,
+ "Finishing a one-time quest removes it from future incomplete reminders");
+
+clock=Date.parse("2026-11-18T00:00:03Z");
+notify.refresh();
+assert.equal(notify.countIncomplete(new ClockDate()),1,
+ "One-time quests must not reset when another midnight passes");
+assert.equal(state.tasks.length,3,"Calendar changes must never delete quests");
+assert.equal(state.events.length,3,"Calendar changes must never delete completion history");
+console.log("PASS: One-time quests persist until completed and never reset across midnights");
+
+
 const channel=channels.find(c=>c.name==="qd-alarms-user-alpha");
 assert(channel&&channel.handlers.qd_messages,"Per-user realtime channel must exist");
 const event={new:{id:"new-message-1",recipient_id:"user-alpha",sender_id:"friend-one"}};
