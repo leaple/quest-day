@@ -1,6 +1,6 @@
 # QUEST DAY — Android / iOS 출시 준비 (2026-11)
 
-> 상태: **Android 테스트 APK 재빌드 성공 및 빌드 내 삭제 페이지 포함 확인**, **iOS 시뮬레이터 Xcode 빌드 성공**. 삭제 기능 UI/서버 코드는 준비했지만 **Supabase Edge Function 배포 확인·실계정 삭제 미검증**이며, Google Play / App Store 등록·심사·실제 출시는 아직 진행하지 않았습니다.
+> 상태: **Android 테스트 APK 재빌드 성공 및 빌드 내 삭제 페이지 포함 확인**, **iOS 시뮬레이터 Xcode 빌드 성공**. 삭제 기능 UI/서버 코드를 배포하고 **새로운 임시 게스트 계정으로 서버의 생성·삭제·클라우드 연동 기록 정리까지 통합 테스트 성공**했지만 이메일 계정 및 실기기 화면 테스트는 미검증이며, Google Play / App Store 등록·심사·실제 출시는 아직 진행하지 않았습니다.
 
 ## 1. 출발점
 
@@ -42,8 +42,8 @@ Xcode에서 본인/테스트 기기를 선택해 실행합니다. iPhone에서 �
 ## 3. 출시 심사 전 남은 필수 작업
 
 - [ ] **개인정보처리방침**: 운영자 식별 및 실제 데이터 수집·보관·공유·삭제 설명과 연락 채널을 확정하고 앱 내/스토어 페이지에 링크 연결
-- [ ] **계정 및 데이터 삭제**: `account-deletion.js` 화면과 `supabase/functions/quest-day-delete-account/index.ts` 서버 코드를 작성하고 **Quest Day 프로젝트에 Edge Function을 배포하여 ACTIVE 상태를 확인**함. 실제 테스트 계정으로 서버 삭제·로그아웃·다른 사용자 데이터 보존 검증은 아직 필요. '게임 기록 초기화'만으로 충족하지 않음.
-- [x] **앱 외부 삭제 요청 경로 마련**: https://leaple.github.io/quest-day/account-deletion.html → 브라우저에서 계정 로그인·삭제 화면 접근. 삭제 기능은 서버 배포가 완료되었으나 실제 테스트 계정으로 엔드투엔드 검증이 필요
+- [ ] **계정 및 데이터 삭제**: `account-deletion.js` 화면과 `supabase/functions/quest-day-delete-account/index.ts` 서버 코드를 작성하고 **Quest Day 프로젝트에 Edge Function을 배포하여 ACTIVE 상태를 확인**함. 임시 게스트 테스트 계정의 서버 삭제·클라우드 저장 삭제·프로필 삭제를 실검증했고 기존 계정 16개 유지 확인. 이메일 계정 비밀번호 재인증·실기기 UI/로그아웃은 추가 검증 필요. '게임 기록 초기화'만으로 충족하지 않음.
+- [x] **앱 외부 삭제 요청 경로 마련**: https://leaple.github.io/quest-day/account-deletion.html → 브라우저에서 계정 로그인·삭제 화면 접근. 서버 함수는 임시 게스트 계정으로 통합 검증 완료. 앱과 외부 페이지의 실제 로그인·삭제 UI는 별도 기기 테스트 필요
 - [ ] **친구/사용자 생성 콘텐츠**: 신고·차단·관리 기능과 필요시 안전 대응 절차 검증
 - [ ] **모바일 UX**: Android 뒤로가기, 키보드 가림, 안전 영역, 로그인 후 돌아오기, 화면 전환 및 에러 처리 테스트
 - [ ] **앱 아이콘/시작 화면**: 현재 모바일 스토어용 아이콘·스플래시는 별도로 생성/검증 필요
@@ -106,10 +106,12 @@ GitHub Actions의 `QUEST DAY - iOS simulator build` 워크플로는 `macos-26` /
 - [x] 실제 Supabase 프로젝트 식별 및 사용자 데이터 테이블 외래 키 `auth.users(id) ON DELETE CASCADE` 확인
 - [x] 서버 함수 `quest-day-delete-account`의 `ACTIVE` 상태 및 `verify_jwt: true` 확인
 - [x] 화면의 계정 재인증·최종 확인 로직 및 JS 구문 검증
-- [ ] **별도 테스트 계정**을 이용한 실제 삭제 및 해당 계정 관련 레코드 정리 검증
+- [x] **별도 테스트 계정**을 이용한 임시 게스트 계정 생성·프로필/클라우드 저장·인증 실패 차단·최종 삭제 테스트 성공 ([GitHub Actions](https://github.com/leaple/quest-day/actions/runs/43703484059)).
+  삭제 후 SQL로 테스트 계정 Auth, cloud, profiles, invites, social 데이터 0건을 확인했고 기존 계정 16개는 그대로 유지됨. 프로덕션 운영자의 개인 계정을 테스트하지 않음.
+- [ ] 테스트용 이메일 가입 및 비밀번호 재인증 삭제 검증 (이메일 확인 가능한 테스트 메일함 필요)
 - [ ] 정상 계정과 동일 브라우저/모바일 앱에서 로그인·삭제·다시 시작 시나리오 검증
 - [x] `anon` 역할에 열렸던 25개 `SECURITY DEFINER` RPC 실행 권한 회수 및 SQL 검증 ([저장소 SQL](./supabase/quest-day-rpc-permissions-2026-11.sql))
 - [ ] `authenticated` 역할이 호출 가능한 25개 보안 정의자 RPC의 내부 권한 검사와 부작용 보안 검토
 - [ ] 연락처·운영 주체·데이터 보유 기간 확정 후 정식 개인정보처리방침 작성
 
-실제 사용자 계정에 대해 삭제 요청을 실행하지 않았으며 **정식 출시 준비 완료로 표시하지 않습니다.**
+실제 사용자의 기존 계정을 삭제하지 않았으며 **정식 출시 준비 완료로 표시하지 않습니다.** 테스트는 한 번 실행 후, 자동 가입/삭제가 반복 실행되지 않도록 `delete-account-smoke.yml`을 수동 실행 전용으로 변경했습니다.
