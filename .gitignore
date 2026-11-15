@@ -1,0 +1,14 @@
+# Local mobile build artifacts
+node_modules/
+www/
+android/
+ios/
+.gradle/
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+*.provisionprofile
+.env
+.env.*
+.DS_Store
