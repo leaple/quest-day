@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#191b35">
+<title>QUEST DAY | 개인정보 처리 안내 (출시 준비 초안)</title>
+<style>
+*{box-sizing:border-box}
+body{background:#f5f5fb;color:#292740;font:15px/1.75 system-ui,-apple-system,"Noto Sans KR",sans-serif;margin:0}
+main{max-width:780px;margin:28px auto 60px;padding:0 16px}
+header,section{border:1px solid #e6e3f2;background:white;border-radius:20px;padding:22px;margin-bottom:13px}
+h1{font-size:24px;line-height:1.4;margin:0 0 9px}
+h2{font-size:17px;margin:0 0 11px}
+p,li{font-size:13px;color:#5c5874;margin:7px 0}
+ul{padding-left:21px}
+.tag{display:inline-block;background:#eeeafd;color:#6551b9;padding:4px 9px;border-radius:12px;font-size:11px;font-weight:800;margin-bottom:9px}
+.note{background:#fff6df;border:1px solid #efdeae;border-radius:13px;padding:13px;color:#795d2d}
+a{color:#6554ba}
+nav{display:flex;gap:14px;flex-wrap:wrap}
+footer{font-size:12px;color:#9490aa;text-align:center}
+</style>
+</head>
+<body>
+<main>
+<header>
+<span class="tag">출시 준비 단계 · 정책 초안</span>
+<h1>QUEST DAY 개인정보 처리 안내</h1>
+<p class="note"><strong>정식 개인정보처리방침이 아직 아닙니다.</strong> 서비스 운영자·연락처, 위탁 및 국외 이전 사항, 정확한 보유 기간을 확정한 뒤 최종 정책을 공개할 예정입니다. 현재 확인할 수 있는 기술적 처리 내역을 투명하게 안내합니다.</p>
+<p>기준: 2026년 11월 15일 · 웹 서비스 및 Android/iOS 앱 출시 준비</p>
+<nav><a href="./index.html">앱으로 돌아가기</a><a href="./account-deletion.html">계정 및 데이터 삭제 안내</a></nav>
+</header>
+<section>
+<h2>1. 서비스와 처리 목적</h2>
+<p>QUEST DAY는 일상 퀘스트를 게임처럼 관리하는 서비스입니다. 로그인·데이터 동기화, 캐릭터 획득 및 성장, 친구 찾기, 친구 간 메시지·공동 퀘스트·차단·신고 등의 기능을 제공하기 위해 필요한 정보를 처리합니다.</p>
+</section>
+<section>
+<h2>2. 현재 코드 기준 처리되는 정보</h2>
+<ul>
+<li>이메일 가입 시: 이메일 주소, 인증 상태 및 계정 식별자. 비밀번호는 Supabase Auth를 이용하여 처리하며 QUEST DAY 앱 자체 저장소에는 비밀번호를 저장하지 않도록 구현되어 있습니다.</li>
+<li>게스트 사용 시: 익명 계정 식별자 및 기기에 저장되는 진행 기록.</li>
+<li>게임 진행 시: 퀘스트 제목·카테고리·완료 기록, 경험치·골드·캐릭터·업적 등 이용 데이터. 로그인 계정에서는 클라우드 동기화될 수 있습니다.</li>
+<li>친구 기능 사용 시: 닉네임, 캐릭터 외형, 친구 요청 및 관계, 메시지와 읽음 정보, 응원·파티 진행, 차단 및 신고 기록.</li>
+<li>앱 이용 시: 앱 동작에 필요한 브라우저·기기 내 저장 정보 및 Supabase 등의 서비스 처리 로그가 생성될 수 있습니다.</li>
+</ul>
+</section>
+<section>
+<h2>3. 저장 방식과 사용 서비스</h2>
+<p>이 기기의 게임 기록은 로컬 저장소에 저장될 수 있습니다. 이메일 계정으로 클라우드 동기화를 이용하거나 소셜 기능을 사용하면 Supabase 데이터베이스 및 인증 서비스를 이용합니다. 웹앱은 GitHub Pages에서 제공되며, Supabase JavaScript 라이브러리를 내려받기 위해 외부 CDN이 사용됩니다.</p>
+<p>Supabase 프로젝트의 서버 지역은 현재 일본 도쿄(ap-northeast-1)로 설정되어 있습니다. 개인정보 국외 이전 및 외부 서비스 제공에 대한 정식 공지 문구는 출시 전에 별도 검증할 예정입니다.</p>
+</section>
+<section>
+<h2>4. 보관·삭제와 이용자의 선택</h2>
+<p>계정 삭제를 요청하면 해당 계정의 인증 정보와 참조 관계가 설정된 QUEST DAY 클라우드 데이터가 삭제되도록 구현되어 있습니다. <a href="./account-deletion.html">계정 삭제 방법</a>을 확인해 주세요. 게임 기록만 초기화하는 기능과 계정 삭제는 다릅니다.</p>
+<p>다른 기기에 남아 있는 로컬 기록, 서버 백업 및 법률상 보관이 필요한 정보의 정확한 처리 범위·보유 기간은 정식 출시 전 확정되어야 합니다. 삭제가 곧 모든 운영·보안 로그의 즉시 제거를 의미하지는 않습니다.</p>
+</section>
+<section>
+<h2>5. 안전한 서비스 운영</h2>
+<p>계정별 데이터 접근은 인증 및 접근 제한 정책을 기반으로 하며, 계정 삭제 요청에는 재인증과 명확한 확인 절차가 적용됩니다. 서비스 안전 조치를 정기적으로 검토할 계획입니다.</p>
+</section>
+<section>
+<h2>6. 운영자·연락처 및 정책 확정 전 확인 사항</h2>
+<p>현재 이 항목은 출시 전 준비 중입니다. 책임 운영자/사업자 명칭, 개인정보 문의 이메일, 보관 기간 및 국외 이전 세부 사항은 아직 확인되지 않았으므로 기재하지 않았습니다. 정식 공개 및 스토어 심사 신청 전에 반드시 실제 정보로 업데이트해야 합니다.</p>
+</section>
+<footer>QUEST DAY · <a href="./index.html">홈</a></footer>
+</main>
+</body>
+</html>
