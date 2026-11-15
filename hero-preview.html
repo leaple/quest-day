@@ -1,102 +1,206 @@
 <!doctype html>
-<html lang="ko"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#181a2f"><title>QUEST DAY — 전투 영웅단 36종 일러스트</title>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101326">
+<title>QUEST DAY | 전체 캐릭터 24명 · 진화 원화 72종</title>
 <style>
-:root{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color-scheme:dark}
-*{box-sizing:border-box}body{margin:0;background:#141628;color:#f7f4ff}
-main{max-width:1120px;margin:auto;padding:22px 15px 72px}header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}
-h1{font-size:clamp(21px,3vw,30px);margin:0 0 6px}p{margin:5px 0;color:#b6b4cf;font-size:13px;line-height:1.5}a{color:#d3c7ff}
-#gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.hero{padding:13px;background:#22233a;border:1px solid #37395d;border-radius:17px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 1px 9px}
-h2{font-size:16px;margin:0}.pill{font-size:10px;color:#f6dea3;border:1px solid #766c58;padding:5px 9px;border-radius:40px}
-.stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-.stage{border-radius:12px;overflow:hidden;background:radial-gradient(circle at 50% 43%,#56567e,#282944 76%);border:1px solid #484764;padding:6px 2px 4px;text-align:center;cursor:zoom-in}
-.stage svg{width:100%;height:auto;max-height:215px;display:block}
-.stage span{display:block;font-size:12px;color:#d8d3ef;font-weight:650}
-.stage a{display:inline-block;margin:4px 0 2px;color:#dbcaff;font-size:11px;text-decoration:underline;text-underline-offset:3px}
-.note{color:#a9a9bf;font-size:11px;margin-top:7px;min-height:30px}
-#zoom{display:none;position:fixed;inset:0;z-index:90;align-items:center;justify-content:center;background:#10111bec;padding:22px}
-#zoom.open{display:flex}#zoom .picture{height:min(87vh,760px);max-width:90vw;aspect-ratio:5/5.6;background:radial-gradient(circle,#585274,#24253c);border-radius:18px}
-#zoom svg{width:100%;height:100%}#exit{position:fixed;right:18px;top:15px;background:#faf5ff;color:#332a49;padding:8px 13px;border:0;border-radius:9px}
-.error{padding:30px;color:#ffbbbb}
-
-.demo-actions{display:flex;gap:7px;margin-top:10px}
-.demo-actions button{flex:1;min-width:0;padding:9px 4px;border-radius:10px;border:1px solid #6e69a5;background:#342e56;color:#f9f4ff;font-size:12px;font-weight:750;cursor:pointer}
-.demo-actions button:hover{background:#4c417d}
-#zoom .picture{position:relative;isolation:isolate;overflow:hidden}
-#zoom .picture.demo-evolving{--demo-aura:#b4a2ff}
-#zoom .picture.demo-evolving::before{content:'';position:absolute;inset:5%;border-radius:50%;background:radial-gradient(circle,var(--demo-aura),transparent 72%);opacity:0;z-index:2;pointer-events:none;animation:qdprev-flare 2.5s both}
-.demo-form{position:absolute;inset:0;display:grid;place-items:center}
-.demo-form.before{animation:qdprev-before 2.4s both}
-.demo-form.after{opacity:0;animation:qdprev-after 2.4s both}
-@keyframes qdprev-before{0%,20%{opacity:1;transform:scale(1)}45%{opacity:.85;transform:scale(.95);filter:brightness(2)}70%,100%{opacity:0;transform:scale(.8)}}
-@keyframes qdprev-after{0%,41%{opacity:0;transform:translateY(12px) scale(.82)}60%{opacity:1;transform:translateY(-8px) scale(1.06);filter:brightness(1.6)}100%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}}
-@keyframes qdprev-flare{0%,28%{opacity:0;transform:scale(.3)}50%{opacity:.7;transform:scale(1)}80%,100%{opacity:0;transform:scale(1.3)}}
-@media(prefers-reduced-motion:reduce){.demo-form,.demo-form.before,.demo-form.after,#zoom .picture.demo-evolving::before{animation:none!important}.demo-form.before{display:none}.demo-form.after{opacity:1!important}#zoom .picture.demo-evolving::before{display:none}}
-
-@media(max-width:650px){#gallery{grid-template-columns:1fr}.hero{padding:10px}.stages{gap:5px}.stage svg{max-height:175px}}
-</style></head><body>
-<main><header><div><h1>⚔️ QUEST DAY — 신규 전투 영웅단</h1>
-<p>기존 캐릭터 12명 유지 + 신규 캐릭터 12명 추가 · 캐릭터당 3단계</p>
-<p>본 페이지는 게임에 실제 적용된 원화풍 캐릭터 일러스트입니다. 진화 단계별 모습을 눌러 확대할 수 있습니다.</p></div><a href="./index.html">게임으로 돌아가기</a></header>
-<div id="gallery"><p>캐릭터를 불러오는 중...</p></div></main>
-<div id="zoom" role="dialog" aria-modal="true" aria-label="영웅 일러스트 확대 보기"><button id="exit">닫기 ×</button><div class="picture"></div></div>
-<script src="./hero-portraits.js?v=20261115-24"></script>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:#101326;color:#f7f5ff}
+button,input{font:inherit}button,a{touch-action:manipulation}
+main{max-width:1270px;margin:auto;padding:24px 18px 75px}
+header{display:flex;justify-content:space-between;align-items:start;gap:14px;flex-wrap:wrap}
+h1{font-size:clamp(24px,3.2vw,35px);margin:3px 0 8px;letter-spacing:-.04em}
+header p,.hint{margin:0;color:#bbb9d2;font-size:13px;line-height:1.7}
+.back{background:#282747;border:1px solid #55517f;padding:10px 16px;border-radius:12px;color:#f5ebff;text-decoration:none;white-space:nowrap}
+.statline{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0 16px}
+.statline b{padding:8px 12px;border:1px solid #4b486f;background:#22243d;border-radius:999px;font-size:12px;font-weight:700}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filter{border:1px solid #514c7c;background:#25233e;color:#dcd6fa;border-radius:11px;padding:9px 13px;cursor:pointer;font-weight:700;font-size:12px}
+.filter[aria-pressed=true]{background:#7361b8;color:#fff;border-color:#a996f3}
+#search{min-width:190px;max-width:100%;flex:1 1 220px;border:1px solid #514c7c;background:#20223a;border-radius:11px;color:#fff;padding:10px 13px;outline-offset:2px}
+#search::placeholder{color:#aca8c9}
+#gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.category-heading{grid-column:1/-1;padding:20px 1px 1px;margin:0;font-size:22px;letter-spacing:-.02em}
+.category-heading:first-child{padding-top:0}
+.category-heading small{font-size:12px;font-weight:500;color:#b8b4d2;margin-left:12px}
+.hero{background:linear-gradient(145deg,#292b48,#1c2037);border:1px solid #414463;padding:14px;border-radius:17px;min-width:0}
+.hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.hero-top h3{font-size:16px;letter-spacing:-.02em;margin:0}
+.rarity{font-size:10px;color:#ecdca2;border:1px solid #786b4e;border-radius:999px;padding:4px 8px;white-space:nowrap}
+.stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stage{min-width:0;text-align:center;background:radial-gradient(ellipse at 50% 35%,#454963,#262840 76%);border:1px solid #545778;border-radius:12px;padding:7px 5px 9px}
+.stage-image{border:0;width:100%;height:clamp(140px,18vw,235px);background:none;cursor:zoom-in;padding:0;display:flex;align-items:center;justify-content:center}
+.stage-image img{display:block;width:100%;height:100%;object-fit:contain}
+.stage-image:focus-visible,.filter:focus-visible,.back:focus-visible{outline:2px solid #e0caff;outline-offset:3px}
+.stage-name{display:block;font-size:11px;font-weight:800;margin:4px 0}
+.stage-link{font-size:10px;text-decoration:underline;text-underline-offset:2px;color:#cfc4ff;display:inline-block;padding:4px 0}
+.hint{margin:9px 2px 0;min-height:20px}
+.evo-actions{display:flex;gap:7px;margin-top:12px}
+.evo-actions button{flex:1;background:#393154;border:1px solid #615587;color:#f4eaff;border-radius:10px;padding:9px 5px;font-size:12px;font-weight:700;cursor:pointer}
+.evo-actions button:hover,.filter:hover{filter:brightness(1.16)}
+#empty{grid-column:1/-1;padding:24px 12px;color:#cbc3e5;text-align:center}
+footer{margin-top:25px;color:#aba7c4;font-size:12px;line-height:1.7}
+#viewer{position:fixed;inset:0;z-index:30;background:#090916ed;display:none;align-items:center;justify-content:center;padding:60px 20px 70px}
+#viewer.open{display:flex}
+#viewer figure{margin:0;max-width:min(96vw,750px);max-height:calc(100vh - 150px);display:grid;place-items:center}
+#viewer img{width:auto;max-width:100%;max-height:calc(100vh - 190px);height:auto;object-fit:contain;filter:drop-shadow(0 0 20px #aaaaff20)}
+#viewer figcaption{margin-top:9px;font-size:14px;text-align:center;font-weight:700}
+.viewer-controls{position:absolute;top:13px;left:13px;right:13px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.viewer-controls a,.viewer-controls button{padding:9px 13px;background:#292849;border:1px solid #6d5d9e;color:white;border-radius:10px;text-decoration:none;cursor:pointer}
+.viewer-bottom{position:absolute;bottom:14px;display:flex;gap:8px}
+.viewer-bottom button{padding:9px 20px;border:1px solid #62598c;background:#302e55;color:#fff;border-radius:10px;cursor:pointer}
+#viewer .stage-frame{position:relative;max-height:calc(100vh - 190px);display:grid;place-items:center;overflow:hidden}
+.stage-frame img{max-height:calc(100vh - 190px)}
+.stage-frame.effect-active .before{animation:fadebefore 2s both}
+.stage-frame .after{position:absolute;inset:0;opacity:0;max-width:100%;width:100%;height:100%;object-fit:contain}
+.stage-frame.effect-active .after{animation:fadeafter 2s both}
+@keyframes fadebefore{0%,30%{opacity:1;transform:scale(1)}55%,100%{opacity:0;transform:scale(.93)}}
+@keyframes fadeafter{0%,40%{opacity:0;transform:scale(.9)}80%,100%{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.stage-frame.effect-active .before{display:none;animation:none}.stage-frame.effect-active .after{opacity:1;animation:none}}
+@media(max-width:720px){main{padding:18px 12px 55px}#gallery{grid-template-columns:1fr;gap:12px}.category-heading{font-size:19px;padding-top:14px}.hero{padding:10px}.stages{gap:5px}.stage{padding:5px 2px}.stage-image{height:clamp(115px,36vw,198px)}.stage-link{font-size:9px}.hero-top h3{font-size:15px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <h1>⚔️ QUEST DAY 전체 캐릭터 도감</h1>
+    <p>기존 캐릭터 12명 + 신규 영웅 12명 · 모든 진화 단계 비교</p>
+    <p>캐릭터마다 1·2·3단계를 나란히 보고, 그림을 눌러 확대하거나 진화 장면을 체험할 수 있어요.</p>
+  </div>
+  <a class="back" href="./index.html">게임으로 돌아가기</a>
+</header>
+<div class="statline"><b>캐릭터 24명</b><b>진화 원화 72개</b><b>기존 36개 · 신규 36개</b></div>
+<div class="controls">
+  <nav class="filters" aria-label="캐릭터 분류">
+    <button type="button" class="filter" data-filter="all" aria-pressed="true">전체 24명</button>
+    <button type="button" class="filter" data-filter="original" aria-pressed="false">기존 캐릭터 12명</button>
+    <button type="button" class="filter" data-filter="vanguard" aria-pressed="false">신규 영웅 12명</button>
+  </nav>
+  <input id="search" type="search" placeholder="캐릭터 이름 · 직업 검색" aria-label="캐릭터 이름 또는 직업 검색">
+</div>
+<div id="gallery"><p>전체 도감을 불러오는 중...</p></div>
+<footer>현재 게임 저장소의 원화 파일을 그대로 불러옵니다. 기존 캐릭터는 SVG 진화 일러스트, 신규 영웅은 독립 원화풍 WebP(일부 SVG)입니다. 이 페이지는 게임 진행 및 저장 데이터를 변경하지 않습니다.</footer>
+</main>
+<div id="viewer" role="dialog" aria-modal="true" aria-label="캐릭터 원화 확대 보기">
+  <div class="viewer-controls"><a id="open-asset" href="#" target="_blank" rel="noopener noreferrer">원본 이미지 열기</a><button id="close" type="button">닫기 ×</button></div>
+  <figure><div id="stage-frame" class="stage-frame"></div><figcaption id="viewer-title"></figcaption></figure>
+  <div class="viewer-bottom"><button id="previous" type="button" aria-label="이전 진화 단계">← 이전 단계</button><button id="next" type="button" aria-label="다음 진화 단계">다음 단계 →</button></div>
+</div>
 <script>
-(async()=>{
-const box=document.getElementById('gallery'),overlay=document.getElementById('zoom'),picture=overlay.querySelector('.picture');
-try{
- const r=await fetch('./characters-1.3.json',{cache:'no-cache'});
- if(!r.ok)throw new Error('도감 HTTP '+r.status);
- const characters=(await r.json()).characters.filter(c=>c.collection==='vanguard');
- if(!window.QuestDayHeroArt)throw new Error('일러스트 모듈을 찾을 수 없습니다');
- box.textContent='';
- characters.forEach(c=>{
-  const section=document.createElement('section');section.className='hero';
-  const top=document.createElement('div');top.className='top';
-  const title=document.createElement('h2');title.textContent=c.name+' · '+c.role;
-  const rarity=document.createElement('span');rarity.className='pill';rarity.textContent=c.rarity.toUpperCase();
-  top.append(title,rarity);section.append(top);
-  const stages=document.createElement('div');stages.className='stages';
-  for(let stage=1;stage<=3;stage++){
-    const panel=document.createElement('div');panel.className='stage';panel.innerHTML=window.QuestDayHeroArt.draw(c.id,stage);
-    const label=document.createElement('span');label.textContent='진화 '+stage+'/3';panel.append(label);
-    const stageLink=document.createElement('a');
-    stageLink.href='./art/painted/individual/'+c.id+'-stage'+stage+((c.id==='hero_elin' && stage===1)?'.svg':'.webp')+'?v=20261115-24';
-    stageLink.textContent='개별 원화 보기';
-    stageLink.target='_blank';
-    stageLink.rel='noopener';
-    stageLink.onclick=(event)=>event.stopPropagation();
-    panel.append(stageLink);
-    panel.onclick=()=>{picture.className='picture';picture.innerHTML=window.QuestDayHeroArt.draw(c.id,stage);overlay.classList.add('open')};
-    stages.append(panel);
-  }
-  section.append(stages);
-  const note=document.createElement('p');note.className='note';note.textContent=c.tagline;section.append(note);
-  const actions=document.createElement('div');actions.className='demo-actions';
-  for(const to of [2,3]){
-    const button=document.createElement('button');button.type='button';button.textContent='진화 '+(to-1)+' → '+to+' 체험';
-    button.onclick=()=>{
-      const before=window.QuestDayHeroArt.draw(c.id,to-1);
-      const after=window.QuestDayHeroArt.draw(c.id,to);
-      picture.style.setProperty('--demo-aura',c.visual?.palette?.[0]||'#b4a2ff');
-      picture.className='picture';
-      picture.innerHTML='<div class="demo-form before">'+before+'</div><div class="demo-form after">'+after+'</div>';
-      // Restart the single-run animation when the same test is opened twice.
-      void picture.offsetWidth;
-      picture.classList.add('demo-evolving');
-      overlay.classList.add('open');
-      document.getElementById('exit').focus();
-    };
-    actions.append(button);
-  }
-  section.append(actions);box.append(section);
- });
-}catch(e){box.innerHTML='<p class="error">캐릭터 표시 오류: '+String(e.message||e)+'</p>';}
+(function(){
+'use strict';
+const gallery=document.getElementById('gallery');
+const search=document.getElementById('search');
+const viewer=document.getElementById('viewer');
+const frame=document.getElementById('stage-frame');
+const viewerTitle=document.getElementById('viewer-title');
+const openAsset=document.getElementById('open-asset');
+const prev=document.getElementById('previous');
+const next=document.getElementById('next');
+const labels=['','1단계 · 기본','2단계 · 각성','3단계 · 최종'];
+const rarityNames={common:'일반',rare:'희귀',epic:'영웅',legendary:'전설'};
+const newVersion='20261115-24';
+let all=[],filter='all',current=null,lastFocus=null;
+function isNew(c){return c.collection==='vanguard'}
+function imageUrl(c,stage){
+ const id=encodeURIComponent(c.id);
+ if(!isNew(c))return './art/evolution/'+id+'-stage'+stage+'.svg?v=35';
+ const ext=(c.id==='hero_elin'&&stage===1)?'svg':'webp';
+ return './art/painted/individual/'+id+'-stage'+stage+'.'+ext+'?v='+newVersion;
+}
+function makeImage(c,stage,lazy){
+ const img=document.createElement('img');img.src=imageUrl(c,stage);
+ img.alt=c.name+' 진화 '+stage+'단계';
+ img.decoding='async';if(lazy)img.loading='lazy';
+ img.addEventListener('error',()=>{img.alt=c.name+' '+stage+'단계 원화를 불러올 수 없습니다';img.style.opacity='.42'});
+ return img;
+}
+function setStage(c,stage){
+ current={c,stage};
+ frame.replaceChildren(makeImage(c,stage,false));frame.className='stage-frame';
+ viewerTitle.textContent=c.name+' · '+labels[stage];
+ openAsset.href=imageUrl(c,stage);
+ prev.disabled=stage===1;next.disabled=stage===3;
+}
+function show(c,stage){
+ lastFocus=document.activeElement;setStage(c,stage);
+ viewer.classList.add('open');document.body.style.overflow='hidden';
+ document.getElementById('close').focus();
+}
+function close(){viewer.classList.remove('open');document.body.style.overflow='';if(lastFocus&&typeof lastFocus.focus==='function')lastFocus.focus()}
+function evolve(c,from,to){
+ show(c,from);
+ const first=makeImage(c,from,false),second=makeImage(c,to,false);
+ first.className='before';second.className='after';
+ frame.replaceChildren(first,second);frame.className='stage-frame effect-active';
+ current={c,stage:to};
+ viewerTitle.textContent=c.name+' · '+from+' → '+to+' 진화';
+ openAsset.href=imageUrl(c,to);prev.disabled=false;next.disabled=to===3;
+}
+function render(){
+ gallery.replaceChildren();let shown=0;
+ for(const [type,heading] of [['original','기존 캐릭터 12명'],['vanguard','신규 영웅 12명']]){
+  if(filter!=='all'&&filter!==type)continue;
+  const selected=all.filter(c=>(isNew(c)?'vanguard':'original')===type)
+    .filter(c=>(c.name+' '+(c.role||'')+' '+c.id).toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase()));
+  if(!selected.length)continue;
+  const title=document.createElement('h2');title.className='category-heading';title.textContent=heading;
+  const hint=document.createElement('small');hint.textContent=type==='original'?'· 기존 SVG 진화 그림':'· 신규 독립 원화';
+  title.append(hint);gallery.append(title);
+  selected.forEach(c=>{
+    shown++;
+    const card=document.createElement('section');card.className='hero';
+    const top=document.createElement('div');top.className='hero-top';
+    const heading=document.createElement('h3');heading.textContent=c.name+(c.role?' · '+c.role:'');
+    const rarity=document.createElement('span');rarity.className='rarity';rarity.textContent=rarityNames[c.rarity]||c.rarity||'';
+    top.append(heading,rarity);card.append(top);
+    const stages=document.createElement('div');stages.className='stages';
+    for(let stage=1;stage<=3;stage++){
+      const tile=document.createElement('div');tile.className='stage';
+      const btn=document.createElement('button');btn.className='stage-image';btn.type='button';
+      btn.setAttribute('aria-label',c.name+' '+labels[stage]+' 확대 보기');
+      btn.append(makeImage(c,stage,true));btn.addEventListener('click',()=>show(c,stage));
+      const label=document.createElement('span');label.className='stage-name';label.textContent=labels[stage];
+      const link=document.createElement('a');link.className='stage-link';link.href=imageUrl(c,stage);
+      link.target='_blank';link.rel='noopener noreferrer';link.textContent='개별 원화 보기';
+      tile.append(btn,label,link);stages.append(tile);
+    }
+    card.append(stages);
+    if(c.tagline){const note=document.createElement('p');note.className='hint';note.textContent=c.tagline;card.append(note)}
+    const actions=document.createElement('div');actions.className='evo-actions';
+    for(const [from,to] of [[1,2],[2,3]]){
+      const button=document.createElement('button');button.type='button';button.textContent=from+' → '+to+'단계 진화 보기';
+      button.addEventListener('click',()=>evolve(c,from,to));actions.append(button);
+    }
+    card.append(actions);gallery.append(card);
+  });
+ }
+ if(!shown){const el=document.createElement('p');el.id='empty';el.textContent='검색 조건과 일치하는 캐릭터가 없습니다.';gallery.append(el)}
+}
+document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{
+ filter=btn.dataset.filter;
+ document.querySelectorAll('.filter').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
+ render();
+}));
+search.addEventListener('input',render);
+document.getElementById('close').addEventListener('click',close);
+viewer.addEventListener('click',ev=>{if(ev.target===viewer)close()});
+prev.addEventListener('click',()=>{if(current&&current.stage>1)setStage(current.c,current.stage-1)});
+next.addEventListener('click',()=>{if(current&&current.stage<3)setStage(current.c,current.stage+1)});
+document.addEventListener('keydown',ev=>{
+ if(!viewer.classList.contains('open'))return;
+ if(ev.key==='Escape'){ev.preventDefault();close()}
+ if(ev.key==='ArrowLeft'&&current&&current.stage>1){ev.preventDefault();setStage(current.c,current.stage-1)}
+ if(ev.key==='ArrowRight'&&current&&current.stage<3){ev.preventDefault();setStage(current.c,current.stage+1)}
+});
+fetch('./characters-1.3.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()})
+.then(data=>{all=data.characters||[];if(all.length!==24)throw Error('캐릭터 '+all.length+'명만 조회되었습니다');render()})
+.catch(err=>{gallery.replaceChildren();const p=document.createElement('p');p.id='empty';p.textContent='도감 불러오기 실패: '+(err.message||String(err));gallery.append(p)});
 })();
-document.getElementById('exit').onclick=()=>document.getElementById('zoom').classList.remove('open');
-document.getElementById('zoom').onclick=e=>{if(e.target.id==='zoom')e.target.classList.remove('open')};
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('zoom').classList.remove('open')});
-</script></body></html>
+</script>
+</body>
+</html>
