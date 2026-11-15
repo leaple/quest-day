@@ -50,7 +50,7 @@ Xcode에서 본인/테스트 기기를 선택해 실행합니다. iPhone에서 �
 - [ ] **스토어 메타데이터**: 앱 설명·스크린샷·개인정보/data safety·연령등급·지원 연락처·심사용 계정 또는 데모 모드
 - [ ] **실제 릴리스 빌드/서명**: Android AAB 및 Play App Signing, iOS Archive/TestFlight 수행. 서명 키와 비밀번호를 GitHub 저장소에 업로드하지 말 것
 - [ ] **앱 고유 기능과 심사 적합성**: iOS 앱은 단순 웹사이트 포장 이상이어야 함. QUEST DAY의 퀘스트·진화·수집 기능을 앱에서 유용하고 안정적으로 사용할 수 있는지 실기기 검증
-- [ ] **Supabase 보안**: RLS 설정, 권한, 사용자 데이터 접근/삭제, 로그인 이메일 도메인/Redirect URLs, 익명 계정 처리 점검. 보안 어드바이저에서 `SECURITY DEFINER` 함수가 `anon` 역할로 호출 가능하다는 경고가 발견되어 출시 전 검토·수정 필요
+- [ ] **Supabase 보안**: 2026-11-15에 `qd_*` 보안 정의자 함수 25개의 `PUBLIC`/`anon` 실행 권한을 회수하고 인증 계정에만 허용해 **익명 API 역할의 실행 가능 함수 수를 25→0으로 검증**함. 단, 인증 계정에서 호출되는 `SECURITY DEFINER` 함수 25개의 내부 권한 검사 및 RLS/접근 제어 점검, 이메일 Redirect URLs, 익명 인증 처리 및 실제 기기 테스트는 추가 검토 필요. 이 경고는 [Supabase 보안 어드바이저 가이드](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)를 참조
 
 ## 4. 개발자 등록 및 심사 유의사항
 
@@ -108,7 +108,8 @@ GitHub Actions의 `QUEST DAY - iOS simulator build` 워크플로는 `macos-26` /
 - [x] 화면의 계정 재인증·최종 확인 로직 및 JS 구문 검증
 - [ ] **별도 테스트 계정**을 이용한 실제 삭제 및 해당 계정 관련 레코드 정리 검증
 - [ ] 정상 계정과 동일 브라우저/모바일 앱에서 로그인·삭제·다시 시작 시나리오 검증
-- [ ] Supabase 보안 어드바이저 경고 검토 및 해결
+- [x] `anon` 역할에 열렸던 25개 `SECURITY DEFINER` RPC 실행 권한 회수 및 SQL 검증 ([저장소 SQL](./supabase/quest-day-rpc-permissions-2026-11.sql))
+- [ ] `authenticated` 역할이 호출 가능한 25개 보안 정의자 RPC의 내부 권한 검사와 부작용 보안 검토
 - [ ] 연락처·운영 주체·데이터 보유 기간 확정 후 정식 개인정보처리방침 작성
 
 실제 사용자 계정에 대해 삭제 요청을 실행하지 않았으며 **정식 출시 준비 완료로 표시하지 않습니다.**
