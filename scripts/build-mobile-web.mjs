@@ -8,7 +8,7 @@ const out = join(root, 'www');
 const checkOnly = process.argv.includes('--check');
 const rootFiles = await readdir(root);
 const sources = [
-  'index.html', 'manifest.webmanifest', 'sw.js', 'hero-preview.html', 'account-deletion.html',
+  'index.html', 'manifest.webmanifest', 'sw.js', 'hero-preview.html', 'account-deletion.html', 'privacy.html',
   ...rootFiles.filter(name => /^(?:upgrade-[\w.-]+|hero-portraits|codex-[\w.-]+|realtime-config|account-deletion)\.js$/.test(name)),
   ...rootFiles.filter(name => /^(?:characters-[\w.-]+|character-art-direction-[\w.-]+)\.json$/.test(name)),
   ...rootFiles.filter(name => /^icon-\d+\.png$/.test(name))
