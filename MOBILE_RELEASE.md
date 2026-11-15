@@ -1,6 +1,6 @@
 # QUEST DAY — Android / iOS 출시 준비 (2026-11)
 
-> 상태: **Android 테스트 APK 빌드 성공**, iOS 시뮬레이터 CI 추가, 삭제 기능 UI/서버 코드 준비. 아직 Supabase 삭제 함수 미배포·실계정 삭제 미검증이며, Google Play / App Store 등록·심사·실제 출시는 진행하지 않았습니다.
+> 상태: **Android 테스트 APK 재빌드 성공 및 빌드 내 삭제 페이지 포함 확인**, **iOS 시뮬레이터 Xcode 빌드 성공**. 삭제 기능 UI/서버 코드는 준비했지만 **실제 Supabase Edge Function 미배포·실계정 삭제 미검증**이며, Google Play / App Store 등록·심사·실제 출시는 아직 진행하지 않았습니다.
 
 ## 1. 출발점
 
@@ -94,3 +94,9 @@ Xcode에서 본인/테스트 기기를 선택해 실행합니다. iPhone에서 �
 ## 7. iOS 컴파일 검증
 
 GitHub Actions의 `QUEST DAY - iOS simulator build` 워크플로는 `macos-26` / Xcode 26 이상에서 `npx cap add ios`, `npx cap sync ios`와 iOS Simulator용 **서명 없는** 빌드를 검사합니다. **성공해도 아이폰 설치용 IPA·TestFlight·App Store 배포가 완료된 것은 아닙니다.** Apple Developer 등록 및 서명 환경, 실기기 테스트, 스토어 심사는 별도 단계입니다.
+
+## 8. 최신 CI 검증 기록
+
+- Android: [테스트 APK 빌드 성공](https://github.com/leaple/quest-day/actions/runs/43695433801). APK 안에 `index.html`, `account-deletion.js`, `account-deletion.html`, `characters-1.3.json` 포함 여부 검사 완료. **디버그 서명 테스트 APK이며 Play 제출용 AAB 아님**.
+- iOS: [시뮬레이터 컴파일 성공](https://github.com/leaple/quest-day/actions/runs/43695465830). **서명된 iOS 앱/IPA/TestFlight 배포 아님**.
+- 실제 Android/iPhone 기기에서 기능 및 데이터 동기화 테스트는 아직 진행하지 않았습니다.
