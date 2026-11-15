@@ -316,7 +316,12 @@
   }
   if(u?.is_anonymous){
    // Converting in place preserves friend and cloud ownership under the same user id.
-   const returnUrl=window.location.origin+window.location.pathname;
+   // Capacitor's localhost/custom scheme cannot be used as a public Supabase email callback.
+   // On native builds, confirm the email in a browser and then sign in within QUEST DAY.
+   const isNative=!!window.Capacitor?.isNativePlatform?.();
+   const returnUrl=isNative
+     ? "https://leaple.github.io/quest-day/"
+     : window.location.origin+window.location.pathname;
    const result=await sup.auth.updateUser({email:values.email},{emailRedirectTo:returnUrl});
    if(result.error)throw result.error;
    localStorage.setItem(PENDING,JSON.stringify({type:"link",userId:u.id,email:values.email,ts:Date.now()}));
@@ -326,7 +331,9 @@
   if(!guardPass(values.password))throw Error("비밀번호는 10~128자로 입력해 주세요.");
   const result=await sup.auth.signUp({
    email:values.email,password:values.password,
-   options:{emailRedirectTo:window.location.origin+window.location.pathname}
+   options:{emailRedirectTo:window.Capacitor?.isNativePlatform?.()
+      ? "https://leaple.github.io/quest-day/"
+      : window.location.origin+window.location.pathname}
   });
   if(result.error)throw result.error;
   // A project with Email Confirmation enabled returns no session until verification.
