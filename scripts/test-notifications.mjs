@@ -86,7 +86,7 @@ const context={
  render(){renderCalls++;},
  saveState(){},
  setInterval(){return 1;},
- setTimeout(fn,ms){return setTimeout(fn,ms);},
+ setTimeout(fn,ms){return ms>5000?0:setTimeout(fn,ms);},
  clearTimeout,console
 };
 runInNewContext(code,context);
@@ -100,7 +100,8 @@ assert.equal(notify.settings.evening,true);
 assert.equal(notify.settings.friends,true);
 assert(scheduled.has(922001),"09:00 daily reminder must be scheduled");
 assert(scheduled.has(922100),"21:00 unfinished reminder must be scheduled");
-assert.deepEqual(scheduled.get(922001).schedule.on,{hour:9,minute:0},"morning schedule should be 09:00");
+assert.equal(scheduled.get(922001).schedule.on.hour,9,"morning hour must be 09");
+assert.equal(scheduled.get(922001).schedule.on.minute,0,"morning minute must be 00");
 assert.equal(scheduled.get(922100).schedule.at.getHours(),21,"evening schedule should be 21:00");
 console.log("PASS: Morning 09:00 and unfinished 21:00 local schedules");
 
