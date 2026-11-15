@@ -44,7 +44,8 @@
    codex.querySelector("[data-cdx-close]")?.click();
    return true;
   }
-  const evolution=visible("qd14EvoDialog");
+  // The evolution celebration overlay has no ID; its close button distinguishes it.
+  const evolution=document.querySelector(".qd14-overlay.open:has([data-qd14-evo-close])");
   if(evolution){
    evolution.querySelector("[data-qd14-evo-close]")?.click();
    return true;
@@ -120,7 +121,7 @@
  }
  // A conservative fallback on platforms where the event isn't delivered.
  const viewport=window.visualViewport;
- if(viewport){
+ if(viewport&&!keyboard?.addListener){
   viewport.addEventListener("resize",()=>{
    const focused=document.activeElement;
    const editing=focused?.matches?.("input,textarea,select,[contenteditable=true]");
