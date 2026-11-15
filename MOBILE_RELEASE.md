@@ -97,8 +97,8 @@ GitHub Actions의 `QUEST DAY - iOS simulator build` 워크플로는 `macos-26` /
 
 ## 8. 최신 CI 검증 기록
 
-- Android: [테스트 APK 빌드 성공](https://github.com/leaple/quest-day/actions/runs/43695433801). APK 안에 `index.html`, `account-deletion.js`, `account-deletion.html`, `characters-1.3.json` 포함 여부 검사 완료. **디버그 서명 테스트 APK이며 Play 제출용 AAB 아님**.
-- iOS: [시뮬레이터 컴파일 성공](https://github.com/leaple/quest-day/actions/runs/43695465830). **서명된 iOS 앱/IPA/TestFlight 배포 아님**.
+- Android: [테스트 APK 빌드 성공](https://github.com/leaple/quest-day/actions/runs/43703666983). APK 안에 `index.html`, `account-deletion.js`, `account-deletion.html`, `characters-1.3.json` 포함 여부 검사 완료. **디버그 서명 테스트 APK이며 Play 제출용 AAB 아님**.
+- iOS: [시뮬레이터 컴파일 성공](https://github.com/leaple/quest-day/actions/runs/43703672982). **서명된 iOS 앱/IPA/TestFlight 배포 아님**.
 - 실제 Android/iPhone 기기에서 기능 및 데이터 동기화 테스트는 아직 진행하지 않았습니다.
 
 ## 9. 계정 삭제 배포 검증 상태 (2026-11-15)
@@ -115,3 +115,19 @@ GitHub Actions의 `QUEST DAY - iOS simulator build` 워크플로는 `macos-26` /
 - [ ] 연락처·운영 주체·데이터 보유 기간 확정 후 정식 개인정보처리방침 작성
 
 실제 사용자의 기존 계정을 삭제하지 않았으며 **정식 출시 준비 완료로 표시하지 않습니다.** 테스트는 한 번 실행 후, 자동 가입/삭제가 반복 실행되지 않도록 `delete-account-smoke.yml`을 수동 실행 전용으로 변경했습니다.
+
+## 10. 최신 모바일 앱·계정 삭제 검증 결과 (2026-11-15)
+
+- [x] 신규 임시 게스트 하나를 만들고 `qd_profiles`와 `qd_cloud_saves` 테스트 행 생성
+- [x] CORS 사전 요청 허용, 미인증 영구 삭제 요청 HTTP 401 거부, 잘못된 확인 문구 HTTP 400 거부
+- [x] 올바른 확인 문구로 본인 계정만 영구 삭제 및 이후 인증 사용자 조회 차단 확인
+- [x] Supabase SQL에서 테스트 계정 및 연동 Auth/Cloud/Profile/Invites 행 0건 확인
+- [x] 기존 Auth 사용자 수 16개 유지 확인
+- [x] Android APK 최신 빌드 및 계정 삭제/개인정보 안내 번들 파일 확인: https://github.com/leaple/quest-day/actions/runs/43703666983
+- [x] iOS Simulator 최신 빌드 및 같은 파일 검사 통과: https://github.com/leaple/quest-day/actions/runs/43703672982
+- [ ] 실제 Android/iPhone 기기 설치·실행·로그인·클라우드 동기화·앱 화면의 계정 삭제 흐름 확인
+- [ ] 이메일 비밀번호 계정 삭제 테스트, 정식 개인정보처리방침, AAB/서명 iOS 배포 준비
+
+테스트 방법/결과 체크리스트: [MOBILE_QA_PLAN.md](./MOBILE_QA_PLAN.md)
+
+**검증 범위:** 자동화 테스트 계정은 삭제 완료된 임시 게스트 계정이며, 기존 사용자 계정은 삭제하지 않았습니다. GitHub Actions 빌드 성공은 실물 기기 테스트나 앱스토어 심사 통과를 뜻하지 않습니다.
