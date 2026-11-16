@@ -54,7 +54,14 @@ jobs:
           printf %s "$ENCRYPTED_PRIVATE_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/private-key.encrypted.pem"
           openssl pkcs8 -in "$RUNNER_TEMP/private-key.encrypted.pem" -passin env:CSR_KEY_PASSPHRASE -out "$RUNNER_TEMP/private-key.pem"
           openssl x509 -inform DER -in "$RUNNER_TEMP/distribution.cer" -out "$RUNNER_TEMP/distribution.pem"
-          openssl pkcs12 -export -inkey "$RUNNER_TEMP/private-key.pem" -in "$RUNNER_TEMP/distribution.pem" -out "$RUNNER_TEMP/distribution.p12" -passout env:CSR_KEY_PASSPHRASE
+          # Use Apple Security-compatible PKCS#12 encryption and MAC algorithms.
+          openssl pkcs12 -export \
+            -inkey "$RUNNER_TEMP/private-key.pem" \
+            -in "$RUNNER_TEMP/distribution.pem" \
+            -out "$RUNNER_TEMP/distribution.p12" \
+            -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 \
+            -passout env:CSR_KEY_PASSPHRASE
+          openssl pkcs12 -in "$RUNNER_TEMP/distribution.p12" -info -noout -passin env:CSR_KEY_PASSPHRASE
           rm -f "$RUNNER_TEMP/private-key.pem"
           echo "$PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/app.mobileprovision"
           security create-keychain -p "$RUNNER_TEMP" "$RUNNER_TEMP/build.keychain-db"
