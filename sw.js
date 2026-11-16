@@ -1,8 +1,9 @@
 /* QUEST DAY 1.1 — network first, offline fallback */
-const CACHE_NAME = "quest-day-cache-v65";
+const CACHE_NAME = "quest-day-cache-v66";
 const FILES = [
   "./",
   "./index.html",
+  "./dark-mode-2.5.css?v=20261116-1",
   "./account-deletion.html",
   "./privacy.html",
   "./manifest.webmanifest",

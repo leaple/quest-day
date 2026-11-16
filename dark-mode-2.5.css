@@ -1,0 +1,80 @@
+/* QUEST DAY dark-mode surface pass. Scoped to the chosen theme. */
+html.qd24-dark {
+ --qd-surface:#1b1e2c;
+ --qd-soft:#28263f;
+ --qd-surface-raised:#25293a;
+ --qd-surface-sunken:#141722;
+ --qd-input:#151927;
+ --qd-line-strong:#42465f;
+ --qd-text-subtle:#aeb4c9;
+ --qd-accent-soft:#342e54;
+}
+html.qd24-dark body,
+html.qd24-dark .app,
+html.qd24-dark main,
+html.qd24-dark .page,
+html.qd24-dark #settings {background-color:var(--bg);color:var(--ink)}
+html.qd24-dark :is(.card,.stat,.quest,.empty,.dialog,.setting,.settings-card,
+ .ch-card,.ch-dialog,.ch-growth-panel,.ch-hero-footer,.ch-tab-panel,.ch-list-row,
+ .fr-panel,.fr-list-row,.fr-card,.fr-dialog,.fr-profile,.fr-request,
+ .cdx-card,.cdx-detail,.cdx-item,.cdx-section,.cdx-stage,
+ .qd14-dialog,.qd14-card,.qd14-calendar,.qd14-day,.qd14-event,
+ .qd20-settings,.qd20-card,.qd21-quest-first,.qd21-progress-after,
+ .qd24-preferences) {
+ background-color:var(--qd-surface)!important;
+ color:var(--ink)!important;
+ border-color:var(--line)!important;
+}
+html.qd24-dark :is(.qd20-entry,.qd20-shell){color:var(--ink)}
+html.qd24-dark .qd20-entry{background:linear-gradient(150deg,#10121c,#19182b 60%,#25213b)!important}
+html.qd24-dark .qd20-card{background:var(--qd-surface)!important}
+html.qd24-dark .qd20-settings{background:var(--qd-surface)!important}
+html.qd24-dark .qd20-settings :is(strong,span){color:var(--ink)!important}
+html.qd24-dark .qd20-sub,html.qd24-dark .qd20-foot{color:var(--qd-text-subtle)!important}
+html.qd24-dark :is(.qd20-notice,.qd14-note,.ch-note,.fr-muted,
+ .cdx-sub,.quest-meta,.note,.qd21-quest-kicker){
+ background-color:var(--qd-soft);
+ color:var(--qd-text-subtle)!important;
+ border-color:var(--line)!important;
+}
+html.qd24-dark :is(input:not([type=checkbox]):not([type=radio]),
+ textarea,select,.qd20-input,.qd14-dialog input,.qd14-dialog select,
+ .fr-page input,.fr-page textarea,.cdx-shell input,.ch-page input){
+ background-color:var(--qd-input)!important;
+ color:var(--ink)!important;
+ border-color:var(--qd-line-strong)!important;
+}
+html.qd24-dark :is(input,textarea)::placeholder{color:#9099b2!important;opacity:1}
+html.qd24-dark :is(.filter,.ch-tab,.cdx-filter,.cdx-stage-tab,.qd14-arrow,
+ .setting-btn,.secondary,.qd20-settings button){
+ background-color:var(--qd-soft)!important;
+ color:var(--ink)!important;
+ border-color:var(--line)!important;
+}
+html.qd24-dark :is(.filter.active,.ch-tab.active,.cdx-filter.active,
+ .cdx-stage-tab.active,nav button.active){
+ background-color:var(--qd-accent-soft)!important;
+ color:#c5bcff!important;
+}
+html.qd24-dark :is(nav,.cdx-header,.ch-hero,.fr-header){
+ border-color:var(--line)!important;
+}
+html.qd24-dark nav{background:var(--qd-surface)!important}
+html.qd24-dark :is(.qd14-overlay,.cdx-detail-mask,.ch-modal,.modal){
+ background-color:rgba(5,7,16,.78);
+}
+html.qd24-dark :is(.qd14-calendar,.qd14-day,.qd14-event,
+ .cdx-card,.ch-card,.fr-panel,.fr-list-row){box-shadow:0 8px 26px #0003}
+html.qd24-dark :is(.qd20-social,.qd20-btn.qd20-social){
+ background-color:var(--qd-surface-raised)!important;
+ color:var(--ink)!important;
+ border-color:var(--qd-line-strong)!important;
+}
+html.qd24-dark :is(.qd20-btn.ghost,.qd20-btn.alt){color:#e7e3ff!important}
+html.qd24-dark :is(.qd20-btn.alt){background-color:var(--qd-surface-raised)!important}
+html.qd24-dark :is(.qd20-error){background-color:#51283a!important;color:#ffe1e9!important}
+html.qd24-dark :is(.qd20-notice){background-color:#28263f!important;color:#e1dcf5!important}
+html.qd24-dark :is(.ch-card h3,.cdx-card h3,.fr-panel strong,
+ .qd14-dialog h2,.qd20-settings strong){color:var(--ink)!important}
+html.qd24-dark :is(.ch-card p,.cdx-card p,.fr-panel p,
+ .qd14-dialog p,.qd20-settings span){color:var(--qd-text-subtle)!important}
