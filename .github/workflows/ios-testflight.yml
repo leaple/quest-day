@@ -6,7 +6,7 @@ permissions:
 
 jobs:
   testflight:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
     env:
       APP_BUNDLE_ID: io.github.leaple.questday
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check required signing secrets
+      - name: Verify Xcode 26 SDK\n        run: |\n          xcodebuild -version\n          xcrun --sdk iphoneos --show-sdk-version\n          test \"$(xcrun --sdk iphoneos --show-sdk-version | cut -d. -f1)\" -ge 26\n      - name: Check required signing secrets
         env:
           CERTIFICATE_CER_BASE64: ${{ secrets.IOS_DISTRIBUTION_CER_BASE64 }}
           ENCRYPTED_PRIVATE_KEY_BASE64: ${{ secrets.IOS_ENCRYPTED_PRIVATE_KEY_BASE64 }}
