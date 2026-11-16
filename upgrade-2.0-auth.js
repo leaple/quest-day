@@ -445,7 +445,8 @@
  }
  async function handle(action,values){
   if(busy)return;
-  if(action==="close"){releaseInterface();return;}\n  if(action.startsWith("social:")){busy=true;error="";render();try{await socialLogin(action.slice(7));}catch(e){fail(e);}finally{busy=false;if(!root.hidden)render();}return;}
+  if(action==="close"){releaseInterface();return;}
+  if(action.startsWith("social:")){busy=true;error="";render();try{await socialLogin(action.slice(7));}catch(e){fail(e);}finally{busy=false;if(!root.hidden)render();}return;}
   if(action==="guest"){finish("guest");return;}
   if(action==="back"){
    show(settingsOpen?"account":"welcome");return;
