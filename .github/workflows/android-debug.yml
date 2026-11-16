@@ -1,6 +1,13 @@
 name: QUEST DAY - Android test APK
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'upgrade-2.4-ui.js'
+      - 'sw.js'
+      - 'scripts/test-ui-2.4.mjs'
+      - '.github/workflows/android-debug.yml'
   push:
     branches: [main]
     paths:
@@ -65,6 +72,8 @@ jobs:
           grep -q "qd23NotificationSettings" www/upgrade-2.3-notifications.js
           node scripts/test-native-navigation.mjs
           node scripts/test-notifications.mjs
+      - name: Validate new UI 2.4
+        run: node scripts/test-ui-2.4.mjs
       - name: Create native Android project
         run: npx cap add android
       - name: Sync the website into Android
