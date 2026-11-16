@@ -186,7 +186,7 @@
   // profile is never silently overwritten after a new identity is returned.
   if(previous)localStorage.setItem("qd20-social-return-v1",JSON.stringify({previous,ts:Date.now()}));
   const result=await sup.auth.signInWithOAuth({provider,options:{redirectTo}});
-  if(result.error)throw result.error;
+  if(result.error){localStorage.removeItem("qd20-social-return-v1");throw result.error;}
  }
  function content(){
   if(mode==="welcome")return button("로그인","login")+
@@ -494,14 +494,6 @@
  // New users see onboarding. Existing local data or realtime clients are never
  // forced through an irreversible registration screen after an update.
  const socialReturn=(()=>{try{return JSON.parse(localStorage.getItem("qd20-social-return-v1")||"null");}catch(e){return null;}})();
- if(socialReturn){
-  localStorage.removeItem("qd20-social-return-v1");
-  if(Date.now()-socialReturn.ts<600000&&socialReturn.previous){
-   localStorage.setItem(HOLD,"yes");
-   // OAuth redirects can replace the auth session before the old identity
-   // has been compared. Require an explicit cloud conflict resolution.
-  }
- }
  const legacy=localHasHistory();
  // Repair the v2.0 first-release false positive ("existing" was set merely
  // because automatic starter data had been saved). Never reset guest/account.
@@ -518,11 +510,12 @@
  const hasAuthCallback=/(?:^|[?&#])(?:code|access_token|token_hash|error|error_code)=/.test(
   window.location.search+window.location.hash);
  if(callbackError){
+  localStorage.removeItem("qd20-social-return-v1");
   show("authError");
   error=callbackError.slice(0,210);
   noticeText="인증 링크가 만료됐거나 Supabase의 URL 설정이 맞지 않을 수 있어요. Authentication → URL Configuration에서 Site URL과 Redirect URLs을 확인하고 새 인증 메일을 요청해 주세요.";
   render();
- }else if(!localStorage.getItem(DONE)||hasAuthCallback||pendingRead()?.type==="link"){
+ }else if(!localStorage.getItem(DONE)||hasAuthCallback||pendingRead()?.type==="link"||socialReturn){
   if(!localStorage.getItem(DONE))show("welcome");
   const ticket=++requestId;
   (async()=>{
@@ -533,6 +526,12 @@
     if(ticket!==requestId)return;
     const user=session.data?.session?.user;
     if(!user?.id)return;
+    if(socialReturn){
+     localStorage.removeItem("qd20-social-return-v1");
+     if(Date.now()-socialReturn.ts<600000&&socialReturn.previous!==user.id){
+      localStorage.setItem(HOLD,"yes");
+     }
+    }
     const pending=pendingRead();
     const isLinkConfirmation=user.email&&user.email_confirmed_at&&
      ((pending?.type==="link"&&pending.userId===user.id) ||
