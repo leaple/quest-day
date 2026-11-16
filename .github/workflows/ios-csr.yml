@@ -1,0 +1,47 @@
+name: QUEST DAY - Generate Apple Distribution CSR
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  csr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CSR_KEY_PASSPHRASE: ${{ secrets.CSR_KEY_PASSPHRASE }}
+    steps:
+      - name: Require encryption passphrase
+        run: |
+          if [ -z "$CSR_KEY_PASSPHRASE" ]; then
+            echo "::error::Set CSR_KEY_PASSPHRASE in repository Actions secrets first."
+            exit 1
+          fi
+          if [ "${#CSR_KEY_PASSPHRASE}" -lt 20 ]; then
+            echo "::error::Use a passphrase of at least 20 characters."
+            exit 1
+          fi
+        shell: bash
+      - name: Create CSR and encrypted private key
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/questday-csr"
+          cd "$RUNNER_TEMP/questday-csr"
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out private-unencrypted.pem 2>/dev/null
+          openssl req -new -sha256 -key private-unencrypted.pem -out QUEST_DAY.certSigningRequest \
+            -subj "/CN=QUEST DAY Apple Distribution/O=QUEST DAY"
+          openssl pkcs8 -topk8 -v2 aes-256-cbc -iter 200000 \
+            -in private-unencrypted.pem -out QUEST_DAY.private-key.encrypted.pem \
+            -passout env:CSR_KEY_PASSPHRASE
+          shred -u private-unencrypted.pem || rm -f private-unencrypted.pem
+          openssl req -in QUEST_DAY.certSigningRequest -noout -verify
+      - name: Download CSR and encrypted private key
+        uses: actions/upload-artifact@v4
+        with:
+          name: quest-day-csr-and-encrypted-key
+          path: |
+            ${{ runner.temp }}/questday-csr/QUEST_DAY.certSigningRequest
+            ${{ runner.temp }}/questday-csr/QUEST_DAY.private-key.encrypted.pem
+          retention-days: 7
+          if-no-files-found: error
