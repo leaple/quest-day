@@ -1,0 +1,31 @@
+name: QUEST DAY - UI 2.4 validation
+on:
+  pull_request:
+    paths:
+      - 'upgrade-2.4-ui.js'
+      - 'index.html'
+      - 'sw.js'
+      - 'scripts/test-ui-2.4.mjs'
+      - '.github/workflows/ui-2.4-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ui-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate UI JavaScript syntax
+        run: node --check upgrade-2.4-ui.js
+      - name: Run UI regression checks
+        run: node scripts/test-ui-2.4.mjs
+      - name: Verify all mobile web assets
+        run: node scripts/build-mobile-web.mjs --check
+      - name: Existing native navigation regression
+        run: node scripts/test-native-navigation.mjs
+      - name: Existing notifications regression
+        run: node scripts/test-notifications.mjs

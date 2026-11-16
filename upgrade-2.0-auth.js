@@ -51,7 +51,7 @@
  "@media(max-width:359px){.qd20-card{padding:14px}.qd20-title{font-size:25px}.qd20-logo{width:64px;height:64px;font-size:31px}}"
  ].join("");
  document.head.appendChild(css);
- const note=document.createElement("div");
+ css.textContent+=".qd20-social-divider{display:flex;align-items:center;justify-content:center;margin:20px 0 10px;font-size:12px;color:#d0c9ec}.qd20-social-list{display:grid;gap:8px}.qd20-btn.qd20-social{margin:0;background:#fff;color:#292841;border:1px solid #e4e0ef;font-weight:800}.qd20-btn.qd20-social:active{transform:scale(.99)}";\n const note=document.createElement("div");
  note.className="qd20-settings";
  note.innerHTML='<div><strong>🛡️ 계정 및 로그인</strong><span>로그인 · 회원가입 · 게스트 계정 연결</span></div>'+
   '<button type="button" id="qd20AccountButton">계정 관리</button>';
@@ -158,15 +158,45 @@
  function button(label,action,variant=""){
   return '<button type="button" class="qd20-btn '+variant+'" data-qd20="'+action+'"'+(busy?' disabled':'')+'>'+label+'</button>';
  }
+ function socialButtons(){
+  const options=[["google","Google"],["apple","Apple"],["kakao","카카오"]];
+  return '<div class="qd20-social-divider">또는 소셜 계정으로 계속하기</div>'+
+   '<div class="qd20-social-list">'+options.map(([provider,label])=>
+    '<button type="button" class="qd20-btn qd20-social" data-qd20="social:'+provider+'"'+
+    (busy?' disabled':'')+'>'+label+' 계정으로 계속하기</button>').join("")+'</div>';
+ }
+ async function socialLogin(provider){
+  if(!["google","apple","kakao"].includes(provider))throw Error("지원하지 않는 로그인 방식이에요.");
+  // OAuth browser callbacks cannot be safely consumed by the Capacitor WebView
+  // without an explicitly registered universal/deep link and native listener.
+  if(window.Capacitor?.isNativePlatform?.()){
+   throw Error("iOS/Android 소셜 로그인은 앱 복귀 링크 설정 후 제공돼요. 현재는 웹에서 이용해 주세요.");
+  }
+  const sup=await client();
+  await bridge.waitForIdentity?.();
+  const existing=await sup.auth.getUser();
+  const previous=bridge.getUser()?.id||existing.data?.user?.id||null;
+  if(existing.data?.user?.is_anonymous){
+   if(!confirm("다른 소셜 계정으로 로그인하면 게스트 친구 관계가 자동 이전되지 않을 수 있어요. 기기의 게임 기록은 유지되지만 클라우드 기록은 충돌 확인이 필요해요. 계속할까요?"))return;
+  }else if(previous){
+   if(!confirm("현재 로그인한 계정과 다른 계정으로 전환하면 친구·클라우드 기록이 자동 병합되지 않아요. 계속할까요?"))return;
+  }
+  const redirectTo=window.location.origin+window.location.pathname;
+  // Mark pending account switch before leaving for OAuth, so the existing
+  // profile is never silently overwritten after a new identity is returned.
+  if(previous)localStorage.setItem("qd20-social-return-v1",JSON.stringify({previous,ts:Date.now()}));
+  const result=await sup.auth.signInWithOAuth({provider,options:{redirectTo}});
+  if(result.error){localStorage.removeItem("qd20-social-return-v1");throw result.error;}
+ }
  function content(){
   if(mode==="welcome")return button("로그인","login")+
     button("회원가입하고 시작","signup","alt")+
-    button("게스트로 시작하기","guest","ghost");
+    button("게스트로 시작하기","guest","ghost")+socialButtons();
   if(mode==="login")return field("qd20Email","이메일","email","name@example.com","username",'maxlength="180" inputmode="email"')+
     field("qd20Password","비밀번호","password","비밀번호","current-password",'maxlength="128"')+
     button("로그인","submitLogin")+
     button("회원가입","signup","alt")+
-    button("이전 화면","back","ghost");
+    button("이전 화면","back","ghost")+socialButtons();
   if(mode==="signup"||mode==="link")return field("qd20Email","이메일","email","name@example.com","email",'maxlength="180" inputmode="email"')+
     (mode==="signup"?field("qd20Password","새 비밀번호 (10자 이상)","password","10자 이상","new-password",'minlength="10" maxlength="128"'):"")+
     button(mode==="link"?"기존 계정에 이메일 연결":"가입하고 인증 메일 받기","submitSignup")+
@@ -200,7 +230,7 @@
      (bridge.isProfileSyncHeld?.()?'<div class="qd20-notice">🔒 계정 전환 후 서버의 성장 기록을 보호하고 있어요. 아래 클라우드 동기화에서 충돌을 해결한 다음 성장 기록을 다시 연결해 주세요.</div>'+
        button("성장 기록 동기화 복구","resumeProfileSync","alt"):"")+
      '<div class="qd20-notice">☁️ 퀘스트·골드·캐릭터의 클라우드 저장과 충돌 선택은 설정의 <strong>계정 전체 데이터 동기화</strong>에서 관리해요. 이메일/비밀번호는 게임 로컬 데이터에 저장하지 않아요.</div>'+
-     button("닫기","close","ghost");
+     socialButtons()+button("닫기","close","ghost");
   }
   return button("시작하기","back");
  }
@@ -416,6 +446,7 @@
  async function handle(action,values){
   if(busy)return;
   if(action==="close"){releaseInterface();return;}
+  if(action.startsWith("social:")){busy=true;error="";render();try{await socialLogin(action.slice(7));}catch(e){fail(e);}finally{busy=false;if(!root.hidden)render();}return;}
   if(action==="guest"){finish("guest");return;}
   if(action==="back"){
    show(settingsOpen?"account":"welcome");return;
@@ -462,6 +493,7 @@
  });
  // New users see onboarding. Existing local data or realtime clients are never
  // forced through an irreversible registration screen after an update.
+ const socialReturn=(()=>{try{return JSON.parse(localStorage.getItem("qd20-social-return-v1")||"null");}catch(e){return null;}})();
  const legacy=localHasHistory();
  // Repair the v2.0 first-release false positive ("existing" was set merely
  // because automatic starter data had been saved). Never reset guest/account.
@@ -478,11 +510,12 @@
  const hasAuthCallback=/(?:^|[?&#])(?:code|access_token|token_hash|error|error_code)=/.test(
   window.location.search+window.location.hash);
  if(callbackError){
+  localStorage.removeItem("qd20-social-return-v1");
   show("authError");
   error=callbackError.slice(0,210);
   noticeText="인증 링크가 만료됐거나 Supabase의 URL 설정이 맞지 않을 수 있어요. Authentication → URL Configuration에서 Site URL과 Redirect URLs을 확인하고 새 인증 메일을 요청해 주세요.";
   render();
- }else if(!localStorage.getItem(DONE)||hasAuthCallback||pendingRead()?.type==="link"){
+ }else if(!localStorage.getItem(DONE)||hasAuthCallback||pendingRead()?.type==="link"||socialReturn){
   if(!localStorage.getItem(DONE))show("welcome");
   const ticket=++requestId;
   (async()=>{
@@ -493,6 +526,12 @@
     if(ticket!==requestId)return;
     const user=session.data?.session?.user;
     if(!user?.id)return;
+    if(socialReturn){
+     localStorage.removeItem("qd20-social-return-v1");
+     if(Date.now()-socialReturn.ts<600000&&socialReturn.previous!==user.id){
+      localStorage.setItem(HOLD,"yes");
+     }
+    }
     const pending=pendingRead();
     const isLinkConfirmation=user.email&&user.email_confirmed_at&&
      ((pending?.type==="link"&&pending.userId===user.id) ||
