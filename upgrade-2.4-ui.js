@@ -381,6 +381,80 @@
     html.qd24-dark body nav{bottom:0!important;margin-bottom:0!important;
       padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))!important}
 
+
+    /* 2.7: target actual v1.1 growth and v1.2 RPG markup (not generic .card). */
+    html.qd24-dark :is(.qd-panel,.rpg-panel,.rpg-item,.qd14-card){
+      background:#1b1e2c!important;color:#f3f2fc!important;border-color:#34384e!important;
+    }
+    html.qd24-dark :is(.qd-panel,.rpg-panel,.rpg-item) :is(h2,h3,h4,strong,.rpg-challenge-detail strong){
+      color:#f3f2fc!important;
+    }
+    html.qd24-dark :is(.qd-sub,.rpg-muted,.qd-day small,.qd-category,.rpg-challenge-detail .rpg-muted){
+      color:#b4b9d0!important;
+    }
+    html.qd24-dark :is(.qd-metric,.qd-daybox,.qd-tag,.rpg-item-icon,.rpg-detail span,.rpg-badge,.rpg-period,.rpg-action:disabled){
+      background:#282c41!important;color:#dce0f5!important;border-color:#40455e!important;
+    }
+    html.qd24-dark .qd-metric strong{color:#b5a7ff!important}
+    html.qd24-dark .qd-day b{color:#e0e1f2!important}
+    html.qd24-dark .qd-selector,html.qd24-dark .rpg-period{
+      background:#151825!important;color:#eeeaff!important;border-color:#444a65!important;
+    }
+    html.qd24-dark .qd-track{background:#363952!important}
+    html.qd24-dark .rpg-challenge{border-color:#363a51!important}
+    html.qd24-dark .rpg-challenge-detail strong{color:#f3f2fc!important}
+    html.qd24-dark .rpg-action:disabled{color:#b7bbd2!important;opacity:1}
+    html.qd24-dark .qd-tag{color:#c8bdff!important}
+    /* Collection header: earlier broad rules painted only some of its descendants. */
+    html.qd24-dark :is(.cdx-header,.cdx-next-goal,.cdx-toolbar,.cdx-detail,.cdx-card){
+      background:#24243a!important;color:#f4f1ff!important;border-color:#393b58!important;
+    }
+    html.qd24-dark .cdx-header{background:linear-gradient(135deg,#29263f,#1c2030)!important}
+    html.qd24-dark .cdx-ring-inner{background:#202337!important}
+    html.qd24-dark .cdx-ring-inner strong{color:#b9aaff!important}
+    html.qd24-dark .cdx-ring-inner span{color:#c0bed8!important}
+    html.qd24-dark .cdx-stat{background:#2b2d43!important;border-color:#41445d!important}
+    html.qd24-dark .cdx-stat strong{color:#f2efff!important}
+    html.qd24-dark .cdx-stat span{color:#c5c4db!important}
+    html.qd24-dark :is(.cdx-header h2,.cdx-next-name,.cdx-list-head h3,.cdx-card-body h4,.cdx-detail-heading,.cdx-detail-progress h4){
+      color:#f5f2ff!important;
+    }
+    html.qd24-dark :is(.cdx-sub,.cdx-next-hint,.cdx-next-eyebrow,.cdx-milestone-top,.cdx-checkpoints span,.cdx-dropdowns label,.cdx-list-head span,.cdx-card-body small,.cdx-detail-sub){
+      color:#bcbad1!important;
+    }
+    html.qd24-dark .cdx-milestone-top b{color:#b7a4ff!important}
+    html.qd24-dark :is(.cdx-next-goal,.cdx-searchbar,.cdx-next-portrait,.cdx-detail-progress,.cdx-stage-tab,.cdx-detail-image){
+      background-color:#292b43!important;border-color:#42455f!important;
+    }
+    html.qd24-dark .cdx-searchbar{background:#151827!important}
+    html.qd24-dark .cdx-searchbar input{background:transparent!important;color:#f3f2fc!important}
+    html.qd24-dark .cdx-next-open{background:#393255!important;color:#e3d8ff!important;border-color:#6a5b9e!important}
+    html.qd24-dark .cdx-card-body h4{color:#f3f2fc!important}
+    html.qd24-dark .cdx-card-body small{color:#bcbad1!important}
+    html.qd24-dark .cdx-cta{background:#2c2b46!important;color:#c4b5ff!important;border-color:#41445e!important}
+    html.qd24-dark .cdx-figure{background:radial-gradient(ellipse at 50% 30%,#34334e,#1c2030)!important}
+    /* Social profile metric tiles: restore contrast for figures AND labels. */
+    html.qd24-dark #frFriends :is(.s17-card,.s17-wrap,.s17-stat,.s17-metric,.fr-panel){
+      background:#1b1e2c!important;color:#f4f2ff!important;border-color:#373b52!important;
+    }
+    html.qd24-dark #frFriends :is(.s17-card,.s17-wrap,.fr-panel) :is(strong,b,.s17-strong,.s17-title,.s17-heading){
+      color:#f4f2ff!important;
+    }
+    html.qd24-dark #frFriends :is(.s17-card,.s17-wrap,.fr-panel) :is(.s17-muted,.s17-caption,small){
+      color:#b8bed4!important;
+    }
+    html.qd24-dark #frFriends :is(.s17-stat,.s17-metric,.fr-stat,.fr-metric,.fr-profile-stat,.s17-card.soft){
+      background:#292d43!important;color:#f4f2ff!important;border-color:#41465e!important;
+    }
+    html.qd24-dark #frFriends :is(.s17-stat,.s17-metric,.fr-stat,.fr-metric,.fr-profile-stat) :is(strong,b,span,div){
+      color:#f4f2ff!important;
+    }
+    /* A generic light background on an inline style should not leave unreadable text. */
+    html.qd24-dark #frFriends [style*="background:#f"],
+    html.qd24-dark #frFriends [style*="background: #f"]{
+      background-color:#292d43!important;color:#f4f2ff!important;
+    }
+
     @media(max-width:350px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-hero-visual{flex-basis:100%;max-width:170px}.ch-hero-copy{flex-basis:100%}nav button{font-size:9px}}
     @media(max-width:390px){.cdx-grid,.ch-grid{gap:8px}.ch-hero-main{gap:9px;padding:12px}.ch-hero-visual{min-width:95px}}
     @media(max-width:430px){.qd24-setting-row{gap:8px}.qd24-setting-row select{max-width:130px}.stats{gap:7px}}
