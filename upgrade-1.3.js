@@ -619,3 +619,93 @@
       console.warn("QUEST DAY 1.3 catalog could not load; keeping the 1.2 interface.",error);
     });
 })();
+
+
+/* QUEST DAY pixel animation foundation.
+ * Render existing 3-stage art to a low-resolution transparent canvas.
+ * Original artwork remains in the DOM as fallback and can be restored.
+ * This is a procedural pixel conversion, not 72 hand-drawn sprite sheets.
+ */
+(function(){
+ "use strict";
+ const style=document.createElement("style");
+ style.textContent=[
+ ".qd-pixel-hero{isolation:isolate;--qd-pixel-size:64px}",
+ ".qd-pixel-hero.qd-pixel-ready>img,.qd-pixel-hero.qd-pixel-ready>svg{opacity:0!important}",
+ ".qd-pixel-canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none;z-index:2;transform-origin:50% 80%;animation:qdPixelIdle 1.65s steps(5,end) infinite}",
+ ".qd-pixel-hero[data-qdp-stage='2'] .qd-pixel-canvas{animation-duration:1.35s;filter:drop-shadow(0 0 5px #9b8cff88)}",
+ ".qd-pixel-hero[data-qdp-stage='3'] .qd-pixel-canvas{animation-duration:1.1s;filter:drop-shadow(0 0 9px #a78bffbb)}",
+ ".qd-pixel-hero[data-qdp-stage='3']:before{content:'';position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,#b39aff44,transparent 68%);animation:qdPixelAura 2.3s steps(8,end) infinite;pointer-events:none}",
+ "@keyframes qdPixelIdle{0%,100%{transform:translateY(0) scale(1)}25%{transform:translateY(-2px) scale(1.015)}50%{transform:translateY(-4px) scale(1.025)}75%{transform:translateY(-2px) scale(1.015)}}",
+ "@keyframes qdPixelAura{0%,100%{opacity:.35;transform:scale(.9)}50%{opacity:.9;transform:scale(1.08)}}",
+ "@media(prefers-reduced-motion:reduce){.qd-pixel-canvas,.qd-pixel-hero:before{animation:none!important}}"
+ ].join("");
+ document.head.appendChild(style);
+ const cache=new Map();
+ const pending=new WeakSet();
+ function renderPixel(el){
+   if(!el.isConnected||pending.has(el)||el.querySelector(".qd-pixel-canvas"))return;
+   const source=el.querySelector("img[data-qdp-portrait]")||el.querySelector("svg");
+   if(!source)return;
+   if(source.tagName.toLowerCase()==="img"&&!source.complete)return;
+   pending.add(el);
+   const id=el.dataset.qdpId||"",stage=el.dataset.qdpStage||"1";
+   const key=id+":"+stage+":"+(source.getAttribute("src")||"svg");
+   const cached=cache.get(key);
+   if(cached){install(el,cached);pending.delete(el);return}
+   const img=new Image();
+   let objectUrl=null;
+   if(source.tagName.toLowerCase()==="svg"){
+     const svg=source.cloneNode(true);
+     svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+     const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml"});
+     objectUrl=URL.createObjectURL(blob);
+     img.src=objectUrl;
+   }else img.src=source.currentSrc||source.src;
+   img.onload=function(){
+     try{
+       const canvas=document.createElement("canvas");
+       canvas.width=64;canvas.height=64;
+       const ctx=canvas.getContext("2d",{alpha:true});
+       if(!ctx)return;
+       ctx.clearRect(0,0,64,64);
+       const w=img.naturalWidth||64,h=img.naturalHeight||64;
+       const scale=Math.min(60/w,60/h);
+       ctx.imageSmoothingEnabled=true;
+       ctx.drawImage(img,(64-w*scale)/2,(64-h*scale)/2,w*scale,h*scale);
+       const url=canvas.toDataURL("image/png");
+       if(cache.size>120)cache.clear();
+       cache.set(key,url);
+       if(el.isConnected)install(el,url);
+     }catch(err){console.warn("Pixel art fallback",err)}
+     finally{if(objectUrl)URL.revokeObjectURL(objectUrl);pending.delete(el)}
+   };
+   img.onerror=function(){if(objectUrl)URL.revokeObjectURL(objectUrl);pending.delete(el)};
+ }
+ function install(el,url){
+   if(el.querySelector(".qd-pixel-canvas"))return;
+   const image=document.createElement("img");
+   image.className="qd-pixel-canvas";
+   image.alt="";
+   image.setAttribute("aria-hidden","true");
+   image.src=url;
+   el.appendChild(image);
+   el.classList.add("qd-pixel-ready");
+ }
+ let scheduled=false;
+ function scan(){
+   if(scheduled)return;
+   scheduled=true;
+   requestAnimationFrame(()=>{
+     scheduled=false;
+     document.querySelectorAll(".qd-pixel-hero").forEach(renderPixel);
+   });
+ }
+ document.addEventListener("load",function(e){
+   if(e.target.matches?.(".qd-pixel-hero img[data-qdp-portrait]"))scan();
+ },true);
+ const observer=new MutationObserver(scan);
+ observer.observe(document.body,{subtree:true,childList:true});
+ scan();
+ window.QuestDayPixelArt=Object.freeze({refresh:scan});
+})();
