@@ -51,7 +51,8 @@
  "@media(max-width:359px){.qd20-card{padding:14px}.qd20-title{font-size:25px}.qd20-logo{width:64px;height:64px;font-size:31px}}"
  ].join("");
  document.head.appendChild(css);
- css.textContent+=".qd20-social-divider{display:flex;align-items:center;justify-content:center;margin:20px 0 10px;font-size:12px;color:#d0c9ec}.qd20-social-list{display:grid;gap:8px}.qd20-btn.qd20-social{margin:0;background:#fff;color:#292841;border:1px solid #e4e0ef;font-weight:800}.qd20-btn.qd20-social:active{transform:scale(.99)}";\n const note=document.createElement("div");
+ css.textContent+=".qd20-social-divider{display:flex;align-items:center;justify-content:center;margin:20px 0 10px;font-size:12px;color:#d0c9ec}.qd20-social-list{display:grid;gap:8px}.qd20-btn.qd20-social{margin:0;background:#fff;color:#292841;border:1px solid #e4e0ef;font-weight:800}.qd20-btn.qd20-social:active{transform:scale(.99)}";
+ const note=document.createElement("div");
  note.className="qd20-settings";
  note.innerHTML='<div><strong>🛡️ 계정 및 로그인</strong><span>로그인 · 회원가입 · 게스트 계정 연결</span></div>'+
   '<button type="button" id="qd20AccountButton">계정 관리</button>';
