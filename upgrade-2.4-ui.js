@@ -112,6 +112,40 @@
     html.qd24-dark .fr-page textarea,html.qd24-dark .cdx-shell input{background:var(--bg)!important;color:var(--ink)!important;border-color:var(--line)!important}
     html.qd24-dark .ch-note,html.qd24-dark .fr-muted,html.qd24-dark .qd14-dialog p{color:var(--muted)!important}
     html.qd24-dark .cdx-filter,html.qd24-dark .ch-tab{background:var(--qd-soft);color:var(--ink)}
+
+    /* 2.5: iOS safe areas and responsive layout across narrow and wide devices. */
+    html,body{min-width:0;width:100%;max-width:100%;overflow-x:clip}
+    body{min-height:100vh;min-height:100dvh}
+    .app{min-width:0;width:100%;max-width:760px;padding-top:max(16px,env(safe-area-inset-top));padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(118px + env(safe-area-inset-bottom))}
+    .app *{min-width:0}
+    .stats,.ch-grid,.cdx-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr))}
+    .ch-hero-main,.fr-user,.section-title{min-width:0;flex-wrap:wrap}
+    .ch-hero-visual{flex:0 1 42%;min-width:min(110px,36vw);max-width:190px}
+    img,svg,canvas{max-width:100%}
+    nav{box-sizing:border-box;position:fixed!important;bottom:0!important;bottom:env(safe-area-inset-bottom,0px)!important;left:0;right:0;width:100%;max-width:760px;z-index:80!important;padding:6px max(6px,env(safe-area-inset-right)) 6px max(6px,env(safe-area-inset-left))!important;gap:clamp(1px,1vw,8px);overflow:visible}
+    nav button{flex:1 1 0;min-width:0!important;min-height:50px;max-width:100%;padding:5px 1px;font-size:clamp(9px,2.6vw,12px);white-space:normal;line-height:1.15;overflow-wrap:anywhere}
+    nav button b{font-size:clamp(17px,5vw,22px)}
+    .modal,.qd14-overlay,.ch-modal,.cdx-detail-mask{padding-bottom:max(12px,env(safe-area-inset-bottom))}
+    .dialog,.ch-dialog,.cdx-detail,.qd14-dialog,.qd20-card{max-width:min(100%,520px);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);overflow-y:auto}
+    .fr-avatar-art .ch-art,.fr-avatar-art .ch-art svg{width:100%;height:100%;max-height:none}
+    .fr-avatar-art .ch-art img{object-fit:contain}
+    /* Complete dark surfaces left white by legacy feature modules. */
+    html.qd24-dark .fr-avatar,html.qd24-dark .ch-image-wrap,
+    html.qd24-dark .ch-collection-divider,html.qd24-dark .qd14-calendar,
+    html.qd24-dark .qd14-overlay .qd14-dialog,html.qd24-dark .ch-modal .ch-dialog,
+    html.qd24-dark .cdx-detail-mask .cdx-detail{background-color:var(--qd-surface)!important;color:var(--ink)!important;border-color:var(--line)!important}
+    html.qd24-dark .ch-page input,html.qd24-dark .ch-page select,html.qd24-dark .ch-page textarea,
+    html.qd24-dark .fr-page input,html.qd24-dark .fr-page textarea,
+    html.qd24-dark .qd14-dialog input,html.qd24-dark .qd14-dialog select,
+    html.qd24-dark .qd20-shell input,html.qd24-dark .qd20-shell select,
+    html.qd24-dark .cdx-shell input,html.qd24-dark .cdx-shell select,
+    html.qd24-dark .dialog input,html.qd24-dark .dialog select{background:var(--bg)!important;color:var(--ink)!important;border-color:var(--line)!important}
+    html.qd24-dark .fr-btn,html.qd24-dark .ch-tab,html.qd24-dark .ch-btn,
+    html.qd24-dark .cdx-filter,html.qd24-dark .cdx-stage-tab,
+    html.qd24-dark .qd14-arrow,html.qd24-dark .qd14-edit,
+    html.qd24-dark .setting-btn,html.qd24-dark .secondary{background:var(--qd-soft)!important;color:var(--ink)!important;border-color:var(--line)!important}
+    html.qd24-dark .fr-page p,html.qd24-dark .ch-page p,html.qd24-dark .cdx-shell p{color:inherit}
+    @media(max-width:350px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-hero-visual{flex-basis:100%;max-width:170px}.ch-hero-copy{flex-basis:100%}nav button{font-size:9px}}
     @media(max-width:390px){.cdx-grid,.ch-grid{gap:8px}.ch-hero-main{gap:9px;padding:12px}.ch-hero-visual{min-width:95px}}
     @media(max-width:430px){.qd24-setting-row{gap:8px}.qd24-setting-row select{max-width:130px}.stats{gap:7px}}
     @media(min-width:700px){.app{padding-bottom:40px}nav{max-width:360px;border-radius:20px 20px 0 0}}
