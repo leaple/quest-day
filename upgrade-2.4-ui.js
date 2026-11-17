@@ -145,6 +145,45 @@
     html.qd24-dark .qd14-arrow,html.qd24-dark .qd14-edit,
     html.qd24-dark .setting-btn,html.qd24-dark .secondary{background:var(--qd-soft)!important;color:var(--ink)!important;border-color:var(--line)!important}
     html.qd24-dark .fr-page p,html.qd24-dark .ch-page p,html.qd24-dark .cdx-shell p{color:inherit}
+
+    /* 2.6: cover all growth/report/social surfaces left light by older modules. */
+    html.qd24-dark .page .card,html.qd24-dark .page .stat,
+    html.qd24-dark .page .achievement,html.qd24-dark .page .s17-wrap,
+    html.qd24-dark .page .s17-card,html.qd24-dark .page .s17-chat,
+    html.qd24-dark .page .s17-bubble,html.qd24-dark .page .s17-note,
+    html.qd24-dark .page .qd14-day,html.qd24-dark .page .qd14-log-icon,
+    html.qd24-dark .page .fr-panel,html.qd24-dark .page .fr-list-row,
+    html.qd24-dark .page .ch-card,html.qd24-dark .page .cdx-card,
+    html.qd24-dark .page .qd20-card,
+    html.qd24-dark .page [style*="background: white"],
+    html.qd24-dark .page [style*="background:white"],
+    html.qd24-dark .page [style*="background: #fff"],
+    html.qd24-dark .page [style*="background:#fff"],
+    html.qd24-dark .page [style*="background-color: white"],
+    html.qd24-dark .page [style*="background-color:#fff"]{
+      background:var(--qd-surface)!important;color:var(--ink)!important;border-color:var(--line)!important;
+    }
+    html.qd24-dark .page .s17-card.soft,html.qd24-dark .page .s17-bubble.mine,
+    html.qd24-dark .page .s17-tab,html.qd24-dark .page .s17-pill,
+    html.qd24-dark .page .s17-progress,html.qd24-dark .page .qd14-day.selected,
+    html.qd24-dark .page .qd14-count,html.qd24-dark .page .s17-btn.alt,
+    html.qd24-dark .page .s17-btn.danger{background:var(--qd-soft)!important;color:var(--purple)!important}
+    html.qd24-dark .page .s17-tab.active,html.qd24-dark .page .s17-btn:not(.alt):not(.danger){
+      background:#6656d3!important;color:#fff!important;
+    }
+    html.qd24-dark .page .s17-heading,html.qd24-dark .page .s17-title,
+    html.qd24-dark .page .s17-strong,html.qd24-dark .page .qd14-field label,
+    html.qd24-dark .page .achievement strong{color:var(--ink)!important}
+    html.qd24-dark .page .s17-muted,html.qd24-dark .page .s17-caption,
+    html.qd24-dark .page .s17-empty,html.qd24-dark .page .qd14-info,
+    html.qd24-dark .page .qd14-log-main small{color:var(--muted)!important}
+    html.qd24-dark .page .s17-input,html.qd24-dark .page .s17-select,
+    html.qd24-dark .page .s17-textarea{background:var(--bg)!important;color:var(--ink)!important;border-color:var(--line)!important}
+    /* The bottom safe area belongs inside the navigation, not below it. */
+    nav{bottom:0!important;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))!important;
+      border-radius:0!important;max-width:760px}
+    @media(min-width:700px){nav{border-radius:20px 20px 0 0!important}}
+
     @media(max-width:350px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-hero-visual{flex-basis:100%;max-width:170px}.ch-hero-copy{flex-basis:100%}nav button{font-size:9px}}
     @media(max-width:390px){.cdx-grid,.ch-grid{gap:8px}.ch-hero-main{gap:9px;padding:12px}.ch-hero-visual{min-width:95px}}
     @media(max-width:430px){.qd24-setting-row{gap:8px}.qd24-setting-row select{max-width:130px}.stats{gap:7px}}
