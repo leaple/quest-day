@@ -310,14 +310,14 @@
   function portrait(character) {
     const id=character.id,key=portraitKey(id),stage=portraitStage(id);
     if(character.collection==="vanguard" && window.QuestDayHeroArt?.has(id)) {
-      return '<div class="ch-art qdh-hero" data-qdp-id="'+safe(id)+'" data-qdp-stage="'+stage+'">'+window.QuestDayHeroArt.draw(id,stage)+'</div>';
+      return '<div class="ch-art qdh-hero qd-pixel-hero" data-qdp-id="'+safe(id)+'" data-qdp-stage="'+stage+'">'+window.QuestDayHeroArt.draw(id,stage)+'</div>';
     }
     const status=failedPortraits.has(key)?"failed":readyPortraits.has(key)?"ready":"loading";
     const svg=svgPortrait(character);
     const source=portraitSrc(id);
     const image=failedPortraits.has(key)?"":'<img data-qdp-portrait="'+safe(key)+'" data-qdp-fallback="'+safe(fallbackPortraitSrc(id))+'" loading="eager" decoding="async" src="'+safe(source)+'" alt="">';
     const aura=character.visual?.palette?.[0]||"#b2b5ff";
-    return '<div class="ch-art qdp-'+status+'" data-qdp-id="'+safe(id)+'" data-qdp-stage="'+stage+'" style="--qd-aura:'+safe(aura)+'">'+svg+image+'</div>';
+    return '<div class="ch-art qd-pixel-hero qdp-'+status+'" data-qdp-id="'+safe(id)+'" data-qdp-stage="'+stage+'" style="--qd-aura:'+safe(aura)+'">'+svg+image+'</div>';
   }
 
   // Reuse the same stage-aware character art in profile screens.
