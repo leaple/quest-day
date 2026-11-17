@@ -273,9 +273,18 @@
    if(result.error)throw result.error;
    if(ticket!==accountTicket)return;
    accountUser=result.data?.user||null;
+   if(mode==="account"){
+    const u=accountUser;
+    noticeText=u?.email_confirmed_at
+     ?"새로고침 완료 · 이메일 인증이 확인됐어요."
+     :u?.new_email||u?.email
+      ?"새로고침 완료 · 아직 이메일 인증이 확인되지 않았어요. 인증 메일의 링크를 확인해 주세요."
+      :"새로고침 완료 · 현재 게스트 계정으로 확인됐어요.";
+   }
   }catch(e){
    if(ticket!==accountTicket)return;
    error=(e?.message||"계정 연결을 확인하지 못했어요.").slice(0,230);
+   noticeText="";
   }finally{
    if(ticket===accountTicket){
     accountLoading=false;
