@@ -251,6 +251,67 @@
     html.qd24-dark .qd23-panel .qd23-sub,
     html.qd24-dark .qd23-panel .qd23-warning{color:var(--muted)!important}
 
+
+    /* Verified real DOM classes: cards in growth/settings, notification, cloud,
+       achievement reports, and codex controls. Keep all text readable. */
+    html.qd24-dark body .card,
+    html.qd24-dark body .qd23-panel,
+    html.qd24-dark body .qd19-box,
+    html.qd24-dark body .qd14-card,
+    html.qd24-dark body .cdx-ring-inner,
+    html.qd24-dark body .cdx-controls,
+    html.qd24-dark body .cdx-next,
+    html.qd24-dark body .cdx-next-card,
+    html.qd24-dark body .cdx-stat,
+    html.qd24-dark body .cdx-summary-stat,
+    html.qd24-dark body .cdx-search,
+    html.qd24-dark body .ch-stat,
+    html.qd24-dark body .ch-panel,
+    html.qd24-dark body .ch-collection-card{
+      background-color:#1b1e2c!important;
+      color:#f2f2fb!important;
+      border-color:#303449!important;
+    }
+    html.qd24-dark body .card h2,
+    html.qd24-dark body .card h3,
+    html.qd24-dark body .card strong,
+    html.qd24-dark body .qd23-panel h3,
+    html.qd24-dark body .qd23-panel b,
+    html.qd24-dark body .qd19-box h3,
+    html.qd24-dark body .cdx-next-card h3{
+      color:#f2f2fb!important;
+    }
+    html.qd24-dark body .card p,
+    html.qd24-dark body .card .note,
+    html.qd24-dark body .qd23-panel small,
+    html.qd24-dark body .qd23-panel .qd23-sub,
+    html.qd24-dark body .qd23-panel .qd23-warning,
+    html.qd24-dark body .qd19-box p{
+      color:#a6abc0!important;
+    }
+    html.qd24-dark body .card .stat,
+    html.qd24-dark body .card .achievement,
+    html.qd24-dark body .card .progress,
+    html.qd24-dark body .card .report-bar,
+    html.qd24-dark body .card .reward{
+      border-color:#303449!important;
+    }
+    html.qd24-dark body .card .stat,
+    html.qd24-dark body .card .report-bar,
+    html.qd24-dark body .card .empty{
+      background:#28263f!important;color:#f2f2fb!important;
+    }
+    html.qd24-dark body .qd23-panel input[type="checkbox"]{accent-color:#a59aff}
+    /* iOS: nav background extends to the home indicator, without a floating gap. */
+    html body nav{
+      bottom:0!important;
+      margin-bottom:0!important;
+      transform:none!important;
+      padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;
+      background:var(--qd-surface)!important;
+    }
+    html body{background:var(--bg)!important}
+
     @media(max-width:350px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-hero-visual{flex-basis:100%;max-width:170px}.ch-hero-copy{flex-basis:100%}nav button{font-size:9px}}
     @media(max-width:390px){.cdx-grid,.ch-grid{gap:8px}.ch-hero-main{gap:9px;padding:12px}.ch-hero-visual{min-width:95px}}
     @media(max-width:430px){.qd24-setting-row{gap:8px}.qd24-setting-row select{max-width:130px}.stats{gap:7px}}
