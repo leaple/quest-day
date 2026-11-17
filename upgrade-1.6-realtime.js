@@ -357,11 +357,6 @@
       avatarMarkup(f.avatar)+'<div class="rt16-pair-main"><strong>'+esc(f.nickname)+(f.self?" (나)":"")+
       '</strong><div class="rt16-small">Lv.'+f.level+' · 완료 '+f.quests+'개</div></div>'+
       '<strong style="font-size:12px;color:#6a5ac7">'+f.xp+' XP</strong></div>').join("")+'</div>'+
-    '<div class="fr-panel"><div class="rt16-options">'+action("지금 새로고침","refresh","alt")+
-      action("실시간 연결 끄기","stop","alt")+'</div>'+
-      '<div class="rt16-options" style="margin-top:7px">'+action("내 서버 공유 정보 삭제","delete","remove")+'</div>'+
-      '<p class="fr-muted">마지막 확인: '+esc(lastSync||"확인 전")+
-      '. 연결을 꺼도 서버 데이터는 남으며, 삭제 버튼으로 공유 정보와 친구 관계를 지울 수 있어요.</p></div>'+
     '<div class="rt16-warning">🔒 퀘스트 제목이나 세부 활동 기록은 업로드하지 않아요. '+
     '익명 계정은 기기를 바꾸거나 브라우저 데이터를 삭제하면 복구할 수 없을 수 있어요. '+
     '서로 친구가 된 상대에게만 성장 요약이 보여요.</div>';
