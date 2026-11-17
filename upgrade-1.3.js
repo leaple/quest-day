@@ -631,7 +631,7 @@
  const style=document.createElement("style");
  style.textContent=[
  ".qd-pixel-hero{isolation:isolate;--qd-pixel-size:64px}",
- ".qd-pixel-hero.qd-pixel-ready>img,.qd-pixel-hero.qd-pixel-ready>svg{opacity:0!important}",
+ ".qd-pixel-hero.qd-pixel-ready>img:not(.qd-pixel-canvas),.qd-pixel-hero.qd-pixel-ready>svg{opacity:0!important}",
  ".qd-pixel-canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none;z-index:2;transform-origin:50% 80%;animation:qdPixelIdle 1.65s steps(5,end) infinite}",
  ".qd-pixel-hero[data-qdp-stage='2'] .qd-pixel-canvas{animation-duration:1.35s;filter:drop-shadow(0 0 5px #9b8cff88)}",
  ".qd-pixel-hero[data-qdp-stage='3'] .qd-pixel-canvas{animation-duration:1.1s;filter:drop-shadow(0 0 9px #a78bffbb)}",
