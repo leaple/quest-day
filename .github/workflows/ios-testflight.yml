@@ -21,6 +21,32 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Import Sprout pixel sprite test assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP="quest-day-sprout-18-transparent-png.zip"
+          if [ ! -f "$ZIP" ]; then
+            echo "::warning::Sprout ZIP not uploaded yet; existing character art will be used."
+          else
+            python3 - <<'PY'
+          import zipfile, os, pathlib, shutil
+          zip_path="quest-day-sprout-18-transparent-png.zip"
+          with zipfile.ZipFile(zip_path) as z:
+              expected={f"art/pixel/sprout/stage{s}/idle-{i}.png" for s in range(1,4) for i in range(6)}
+              names=set(z.namelist())
+              if not expected.issubset(names):
+                  raise SystemExit("Missing expected Sprout PNG frames: "+str(sorted(expected-names)))
+              for name in sorted(expected):
+                  data=z.read(name)
+                  if not data.startswith(b"\\x89PNG\\r\\n\\x1a\\n"):
+                      raise SystemExit("Invalid PNG: "+name)
+                  dst=pathlib.Path(name)
+                  dst.parent.mkdir(parents=True,exist_ok=True)
+                  dst.write_bytes(data)
+              print("Imported 18 Sprout idle frames into the iOS build.")
+          PY
+          fi
       - name: Verify Xcode 26 SDK
         run: |
           xcodebuild -version
