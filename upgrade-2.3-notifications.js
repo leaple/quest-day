@@ -12,6 +12,7 @@ const bridge=window.QuestDayRealtime;
 const STORE="qd-notify-prefs-v1:";
 const LEDGER="qd-notify-seen-v1:";
 const DEFAULTS=Object.freeze({morning:true,evening:true,friends:true});
+const PERMISSION_ASKED="qd23-native-permission-prompted-v1";
 const MORNING_ID=922001;
 const EVENING_IDS=Array.from({length:14},(_,i)=>922100+i);
 const MANAGED_IDS=[MORNING_ID,...EVENING_IDS];
@@ -52,15 +53,13 @@ function renderSettings(){
  const account=panel.querySelector("#qd23Account");
  if(account)account.textContent=userId==="local"?
   "오프라인 기기 설정":("현재 계정별 설정 · "+(bridge?.getUser?.()?.is_anonymous?"게스트":"로그인 사용자"));
- const btn=panel.querySelector("#qd23Permission");
  const info=panel.querySelector("#qd23PermissionLabel");
- if(btn)btn.hidden=!native||!plugin;
  if(info){
   info.textContent=!native?"웹 버전에서는 설정을 저장하고 친구 알림을 앱 화면에 표시해요. 휴대폰 알림은 설치한 앱에서만 사용해요.":
     !plugin?"이 앱 빌드에 알림 플러그인이 없어요. 최신 버전으로 업데이트해 주세요.":
     permission==="granted"?"휴대폰 알림 권한 허용됨 · 09:00 / 21:00 예약 적용":
     permission==="denied"?"휴대폰 알림 권한이 차단돼 있어요. 휴대폰 앱 설정에서 알림을 허용해 주세요.":
-    "휴대폰 알림은 아래 버튼으로 권한을 허용한 후 예약돼요.";
+    "휴대폰 알림 권한을 확인하고 있어요.";
  }
 }
 function mount(){
@@ -74,7 +73,6 @@ function mount(){
   '<label class="qd23-row"><span><b>☀️ 아침 퀘스트 알림</b><small>매일 오전 9:00 · 오늘의 퀘스트 안내</small></span><input type="checkbox" data-qd23-setting="morning" aria-label="아침 9시 퀘스트 알림"></label>'+
   '<label class="qd23-row"><span><b>🌙 미완료 퀘스트 알림</b><small>오후 9:00 · 남은 퀘스트가 있을 때 예약</small></span><input type="checkbox" data-qd23-setting="evening" aria-label="저녁 9시 미완료 퀘스트 알림"></label>'+
   '<label class="qd23-row"><span><b>🤝 친구 알림</b><small>친구 요청·메시지·응원·파티 초대</small></span><input type="checkbox" data-qd23-setting="friends" aria-label="친구 및 메시지 알림"></label>'+
-  '<button type="button" id="qd23Permission" class="qd23-permit">휴대폰 알림 권한 요청</button>'+
   '<p id="qd23PermissionLabel" class="qd23-sub" role="status"></p>'+
   '<p class="qd23-warning">알림은 선택 사항이며 언제든 끌 수 있어요. 앱이 꺼진 뒤 다른 기기에서 완료한 퀘스트는 예약된 저녁 알림에 즉시 반영되지 않을 수 있어요. 친구 알림은 앱이 연결된 동안 동작하며, 앱 종료 상태의 서버 푸시는 아직 지원하지 않아요.</p>'+
   '<p id="qd23Status" class="qd23-sub" aria-live="polite"></p>';
@@ -93,28 +91,38 @@ function mount(){
  document.head.appendChild(style);
  const old=settings.querySelector("#resetBtn")?.closest(".card");
  if(old)old.insertAdjacentElement("beforebegin",panel);else settings.appendChild(panel);
- panel.addEventListener("change",event=>{
+ panel.addEventListener("change",async event=>{
   const input=event.target.closest("[data-qd23-setting]");
   if(!input)return;
   const key=input.dataset.qd23Setting;
   if(!["morning","evening","friends"].includes(key))return;
   prefs[key]=!!input.checked;
+  if(plugin&&prefs[key]&&permission!=="granted"){
+   await requestNativePermission();
+   if(permission!=="granted"){
+    prefs[key]=false;
+    input.checked=false;
+    showStatus("알림 권한이 허용되지 않아 알림을 꺼 두었어요. iPhone 설정에서 QUEST DAY 알림을 허용할 수 있어요.");
+   }
+  }
   writeLocal();
   queueCloudWrite();
   if(key==="friends")subscribeFriends();
   queueNativeSync();
   showStatus("설정이 저장됐어요.");
  });
- panel.querySelector("#qd23Permission")?.addEventListener("click",async()=>{
-  if(!plugin)return;
-  try{
+ renderSettings();
+}
+async function requestNativePermission(){
+ if(!plugin)return;
+ try{
+  const p=await plugin.checkPermissions();
+  permission=p?.display||"unknown";
+  if(permission!=="granted"){
    const result=await plugin.requestPermissions();
    permission=result?.display||"unknown";
-   renderSettings();
-   queueNativeSync(true);
-   showStatus(permission==="granted"?"휴대폰 알림 권한이 허용됐어요.":"휴대폰 알림 권한이 허용되지 않았어요.");
-  }catch(err){showStatus("알림 권한 요청에 실패했어요: "+String(err?.message||err));}
- });
+  }
+ }catch(err){console.warn("QUEST DAY notification permission",err);permission="denied";}
  renderSettings();
 }
 async function checkPermission(){
@@ -367,7 +375,17 @@ function start(){
   }
  }catch(err){console.warn("QUEST DAY notification state listener",err);}
  if(plugin){
-  checkPermission().then(()=>queueNativeSync(true));
+  checkPermission().then(async()=>{
+   if(!localStorage.getItem(PERMISSION_ASKED)){
+    localStorage.setItem(PERMISSION_ASKED,"yes");
+    await requestNativePermission();
+    if(permission!=="granted"){
+     prefs.morning=false;prefs.evening=false;prefs.friends=false;
+     writeLocal();renderSettings();
+    }
+   }
+   queueNativeSync(true);
+  });
   plugin.addListener?.("localNotificationActionPerformed",event=>{
    const type=event?.notification?.extra?.qd_kind;
    document.querySelector('nav button[data-page="'+(type==="friends"?"growth":"home")+'"]')?.click();

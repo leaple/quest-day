@@ -209,6 +209,48 @@
     html.qd24-dark #settings [style*="background: #fff"]{background:var(--qd-surface)!important;color:var(--ink)!important}
     html.qd24-dark #frFriends .rt16-warning{background:var(--qd-surface)!important;color:var(--muted)!important;border-color:var(--line)!important}
 
+
+    /* Complete dark surfaces for legacy cards and dynamically rendered modules. */
+    html.qd24-dark #home .card,html.qd24-dark #growth .card,
+    html.qd24-dark #codex .card,html.qd24-dark #settings .card,
+    html.qd24-dark #records .card,html.qd24-dark #shop .card,
+    html.qd24-dark .qd23-panel,html.qd24-dark .qd19-cloud-panel,
+    html.qd24-dark .cdx-controls,html.qd24-dark .cdx-toolbar,
+    html.qd24-dark .cdx-next,html.qd24-dark .cdx-next-card,
+    html.qd24-dark .cdx-summary-stat,html.qd24-dark .cdx-stat,
+    html.qd24-dark .cdx-search,html.qd24-dark .ch-stat,
+    html.qd24-dark .ch-panel,html.qd24-dark .ch-collection,
+    html.qd24-dark .ch-collection-card{
+      background:var(--qd-surface)!important;color:var(--ink)!important;border-color:var(--line)!important;
+    }
+    html.qd24-dark #settings .card h2,html.qd24-dark #settings .card h3,
+    html.qd24-dark #growth .card h2,html.qd24-dark #growth .card h3,
+    html.qd24-dark .qd23-panel h3,html.qd24-dark .qd23-row b,
+    html.qd24-dark .cdx-card h3,html.qd24-dark .cdx-next h3,
+    html.qd24-dark .cdx-next-card h3,html.qd24-dark .ch-card h3,
+    html.qd24-dark .ch-card h4,html.qd24-dark .cdx-grid h3{
+      color:var(--ink)!important;
+    }
+    html.qd24-dark #settings .card p,html.qd24-dark #growth .card p,
+    html.qd24-dark .qd23-panel p,html.qd24-dark .qd23-row small,
+    html.qd24-dark .cdx-card p,html.qd24-dark .cdx-next p,
+    html.qd24-dark .cdx-next-card p,html.qd24-dark .ch-card p{
+      color:var(--muted)!important;
+    }
+    html.qd24-dark .qd23-row{border-color:var(--line)!important}
+    html.qd24-dark .cdx-search input,html.qd24-dark .cdx-controls input,
+    html.qd24-dark .cdx-controls select,html.qd24-dark .cdx-toolbar select,
+    html.qd24-dark .cdx-shell select,html.qd24-dark .ch-page select,
+    html.qd24-dark #settings select{
+      background:#131522!important;color:var(--ink)!important;border-color:var(--line)!important;
+    }
+    html.qd24-dark .cdx-next-card [style*="color:#"],
+    html.qd24-dark .cdx-card [style*="color:#"]{color:var(--ink)!important}
+    html.qd24-dark .cdx-card[aria-disabled="true"],
+    html.qd24-dark .cdx-card.locked{opacity:.7}
+    html.qd24-dark .qd23-panel .qd23-sub,
+    html.qd24-dark .qd23-panel .qd23-warning{color:var(--muted)!important}
+
     @media(max-width:350px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-hero-visual{flex-basis:100%;max-width:170px}.ch-hero-copy{flex-basis:100%}nav button{font-size:9px}}
     @media(max-width:390px){.cdx-grid,.ch-grid{gap:8px}.ch-hero-main{gap:9px;padding:12px}.ch-hero-visual{min-width:95px}}
     @media(max-width:430px){.qd24-setting-row{gap:8px}.qd24-setting-row select{max-width:130px}.stats{gap:7px}}
