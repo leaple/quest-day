@@ -109,7 +109,11 @@
   function portrait(avatar){
     const id=characters.has(avatar)?avatar:"sprout";
     if(id==="astronaut")return '<div class="fr-avatar"><span>🚀</span></div>';
-    return '<div class="fr-avatar"><img src="./art/'+escape(id==="starter"?"sprout":id)+
+    const normalized=id==="starter"?"sprout":id;
+    const isOwn=state.rpg?.equipped===avatar;
+    const artwork=window.QuestDayPortrait?.markup(normalized,isOwn?undefined:1);
+    if(artwork)return '<div class="fr-avatar fr-avatar-art">'+artwork+'</div>';
+    return '<div class="fr-avatar"><img src="./art/'+escape(normalized)+
       '.png?v=4" loading="lazy" alt=""></div>';
   }
   function statsMarkup(stats){
