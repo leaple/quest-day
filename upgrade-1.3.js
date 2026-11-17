@@ -645,23 +645,18 @@
  const pending=new WeakSet();
  function renderPixel(el){
    if(!el.isConnected||pending.has(el)||el.querySelector(".qd-pixel-canvas"))return;
-   const source=el.querySelector("img[data-qdp-portrait]")||el.querySelector("svg");
+   const source=el.querySelector("svg")||el.querySelector("img[data-qdp-portrait]");
    if(!source)return;
-   if(source.tagName.toLowerCase()==="img"&&!source.complete)return;
+   const isSvg=source.tagName.toLowerCase()==="svg";
+   if(!isSvg&&!source.complete)return;
    pending.add(el);
    const id=el.dataset.qdpId||"",stage=el.dataset.qdpStage||"1";
-   const key=id+":"+stage+":"+(source.getAttribute("src")||"svg");
+   const key=id+":"+stage+":"+(isSvg?"vector":source.getAttribute("src")||"image");
    const cached=cache.get(key);
    if(cached){install(el,cached);pending.delete(el);return}
    const img=new Image();
    let objectUrl=null;
-   if(source.tagName.toLowerCase()==="svg"){
-     const svg=source.cloneNode(true);
-     svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
-     const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml"});
-     objectUrl=URL.createObjectURL(blob);
-     img.src=objectUrl;
-   }else img.src=source.currentSrc||source.src;
+   function cleanup(){if(objectUrl)URL.revokeObjectURL(objectUrl);pending.delete(el)}
    img.onload=function(){
      try{
        const canvas=document.createElement("canvas");
@@ -678,9 +673,17 @@
        cache.set(key,url);
        if(el.isConnected)install(el,url);
      }catch(err){console.warn("Pixel art fallback",err)}
-     finally{if(objectUrl)URL.revokeObjectURL(objectUrl);pending.delete(el)}
+     finally{cleanup()}
    };
-   img.onerror=function(){if(objectUrl)URL.revokeObjectURL(objectUrl);pending.delete(el)};
+   img.onerror=function(){cleanup()};
+   // Set event handlers BEFORE src: small SVG data can load synchronously on iOS.
+   if(isSvg){
+     const svg=source.cloneNode(true);
+     svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+     const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml"});
+     objectUrl=URL.createObjectURL(blob);
+     img.src=objectUrl;
+   }else img.src=source.currentSrc||source.src;
  }
  function install(el,url){
    if(el.querySelector(".qd-pixel-canvas"))return;
