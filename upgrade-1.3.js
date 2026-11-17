@@ -621,94 +621,107 @@
 })();
 
 
-/* QUEST DAY pixel animation foundation.
- * Render existing 3-stage art to a low-resolution transparent canvas.
- * Original artwork remains in the DOM as fallback and can be restored.
- * This is a procedural pixel conversion, not 72 hand-drawn sprite sheets.
- */
+/* Frame-by-frame pixel animation. Each portrait produces six distinct 64px
+   bitmaps; frames change actual pixel positions rather than moving an image.
+   Procedural frames are a foundation, not hand-authored sprite sheets. */
 (function(){
  "use strict";
  const style=document.createElement("style");
  style.textContent=[
- ".qd-pixel-hero{isolation:isolate;--qd-pixel-size:64px}",
- ".qd-pixel-hero.qd-pixel-ready>img:not(.qd-pixel-canvas),.qd-pixel-hero.qd-pixel-ready>svg{opacity:0!important}",
- ".qd-pixel-canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none;z-index:2;transform-origin:50% 90%;animation:qdPixelBreath 3.2s ease-in-out infinite}",
- ".qd-pixel-hero[data-qdp-stage='2'] .qd-pixel-canvas{animation-duration:3s;filter:drop-shadow(0 0 5px #9b8cff88)}",
- ".qd-pixel-hero[data-qdp-stage='3'] .qd-pixel-canvas{animation-duration:2.85s;filter:drop-shadow(0 0 9px #a78bffbb)}",
- ".qd-pixel-hero[data-qdp-stage='3']:before{content:'';position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,#b39aff44,transparent 68%);animation:qdPixelAura 3.2s ease-in-out infinite;pointer-events:none}",
- "@keyframes qdPixelBreath{0%,100%{transform:scaleX(1) scaleY(1)}50%{transform:scaleX(1.009) scaleY(1.012)}}",
- "@keyframes qdPixelAura{0%,100%{opacity:.3;transform:scale(.97)}50%{opacity:.58;transform:scale(1.015)}}",
- "@media(prefers-reduced-motion:reduce){.qd-pixel-canvas,.qd-pixel-hero:before{animation:none!important}}"
+ ".qd-pixel-hero{isolation:isolate}",
+ ".qd-pixel-hero.qd-pixel-ready>img:not(.qd-pixel-frame),.qd-pixel-hero.qd-pixel-ready>svg{opacity:0!important}",
+ ".qd-pixel-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none;z-index:2}",
+ ".qd-pixel-hero[data-qdp-stage='2'] .qd-pixel-frame{filter:drop-shadow(0 0 5px #9b8cff88)}",
+ ".qd-pixel-hero[data-qdp-stage='3'] .qd-pixel-frame{filter:drop-shadow(0 0 8px #a78bff99)}",
+ "@media(prefers-reduced-motion:reduce){.qd-pixel-hero .qd-pixel-frame{animation:none!important}}"
  ].join("");
  document.head.appendChild(style);
- const cache=new Map();
- const pending=new WeakSet();
- function renderPixel(el){
-   if(!el.isConnected||pending.has(el)||el.querySelector(".qd-pixel-canvas"))return;
-   const source=el.querySelector("svg")||el.querySelector("img[data-qdp-portrait]");
-   if(!source)return;
-   const isSvg=source.tagName.toLowerCase()==="svg";
-   if(!isSvg&&!source.complete)return;
-   pending.add(el);
-   const id=el.dataset.qdpId||"",stage=el.dataset.qdpStage||"1";
-   const key=id+":"+stage+":"+(isSvg?"vector":source.getAttribute("src")||"image");
-   const cached=cache.get(key);
-   if(cached){install(el,cached);pending.delete(el);return}
-   const img=new Image();
-   let objectUrl=null;
-   function cleanup(){if(objectUrl)URL.revokeObjectURL(objectUrl);pending.delete(el)}
-   img.onload=function(){
-     try{
-       const canvas=document.createElement("canvas");
-       canvas.width=64;canvas.height=64;
-       const ctx=canvas.getContext("2d",{alpha:true});
-       if(!ctx)return;
-       ctx.clearRect(0,0,64,64);
-       const w=img.naturalWidth||64,h=img.naturalHeight||64;
-       const scale=Math.min(60/w,60/h);
-       ctx.imageSmoothingEnabled=true;
-       ctx.drawImage(img,(64-w*scale)/2,(64-h*scale)/2,w*scale,h*scale);
-       const url=canvas.toDataURL("image/png");
-       if(cache.size>120)cache.clear();
-       cache.set(key,url);
-       if(el.isConnected)install(el,url);
-     }catch(err){console.warn("Pixel art fallback",err)}
-     finally{cleanup()}
-   };
-   img.onerror=function(){cleanup()};
-   // Set event handlers BEFORE src: small SVG data can load synchronously on iOS.
-   if(isSvg){
-     const svg=source.cloneNode(true);
-     svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
-     const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml"});
-     objectUrl=URL.createObjectURL(blob);
-     img.src=objectUrl;
-   }else img.src=source.currentSrc||source.src;
+ const frameCache=new Map(),pending=new WeakSet(),active=new Set();
+ const frameSteps=[0,1,2,2,1,0],frameMs=340;
+ const reduce=window.matchMedia?.("(prefers-reduced-motion: reduce)");
+ function buildFrames(img){
+  const base=document.createElement("canvas");base.width=64;base.height=64;
+  const ctx=base.getContext("2d",{willReadFrequently:true});
+  if(!ctx)return null;
+  const w=img.naturalWidth||64,h=img.naturalHeight||64,scale=Math.min(60/w,60/h);
+  ctx.drawImage(img,(64-w*scale)/2,(64-h*scale)/2,w*scale,h*scale);
+  const src=ctx.getImageData(0,0,64,64),frames=[];
+  const canvas=document.createElement("canvas");canvas.width=64;canvas.height=64;
+  const out=canvas.getContext("2d");
+  for(let frame=0;frame<6;frame++){
+   const dst=out.createImageData(64,64),breath=frameSteps[frame];
+   // Feet remain anchored. Upper torso expands by 1-2 real pixel columns,
+   // and head/shoulders subtly change silhouette frame by frame.
+   for(let y=0;y<64;y++){
+    const upper=Math.max(0,Math.min(1,(54-y)/35));
+    const expand=breath*upper;
+    for(let x=0;x<64;x++){
+     const sx=Math.max(0,Math.min(63,Math.round(32+(x-32)*(1-expand*.015))));
+     const sy=Math.max(0,Math.min(63,Math.round(y+expand*(y<36?.55:.15))));
+     const from=(sy*64+sx)*4,to=(y*64+x)*4;
+     for(let k=0;k<4;k++)dst.data[to+k]=src.data[from+k];
+    }
+   }
+   out.putImageData(dst,0,0);
+   frames.push(canvas.toDataURL("image/png"));
+  }
+  return frames;
  }
- function install(el,url){
-   if(el.querySelector(".qd-pixel-canvas"))return;
-   const image=document.createElement("img");
-   image.className="qd-pixel-canvas";
-   image.alt="";
-   image.setAttribute("aria-hidden","true");
-   image.src=url;
-   el.appendChild(image);
-   el.classList.add("qd-pixel-ready");
+ function attach(el,frames){
+  if(!el.isConnected||el.querySelector(".qd-pixel-frame"))return;
+  const image=document.createElement("img");image.className="qd-pixel-frame";
+  image.alt="";image.setAttribute("aria-hidden","true");image.src=frames[0];
+  el.appendChild(image);el.classList.add("qd-pixel-ready");
+  active.add({el,image,frames});
  }
- let scheduled=false;
+ function convert(el){
+  if(!el.isConnected||pending.has(el)||el.querySelector(".qd-pixel-frame"))return;
+  const source=el.querySelector("svg")||el.querySelector("img[data-qdp-portrait]");
+  if(!source)return;
+  const svg=source.tagName.toLowerCase()==="svg";
+  if(!svg&&!source.complete)return;
+  const id=el.dataset.qdpId||"",stage=el.dataset.qdpStage||"1";
+  const key=id+":"+stage+":"+(svg?"svg":source.getAttribute("src")||"img");
+  if(frameCache.has(key)){attach(el,frameCache.get(key));return}
+  pending.add(el);
+  const img=new Image();let url=null;
+  const cleanup=()=>{if(url)URL.revokeObjectURL(url);pending.delete(el)};
+  img.onload=()=>{
+   try{const frames=buildFrames(img);if(frames){
+    if(frameCache.size>120)frameCache.clear();
+    frameCache.set(key,frames);attach(el,frames);
+   }}catch(e){console.warn("Pixel frame fallback",e)}finally{cleanup()}
+  };
+  img.onerror=cleanup;
+  if(svg){
+   const clone=source.cloneNode(true);clone.setAttribute("xmlns","http://www.w3.org/2000/svg");
+   url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(clone)],{type:"image/svg+xml"}));
+   img.src=url;
+  }else img.src=source.currentSrc||source.src;
+ }
+ let queued=false;
  function scan(){
-   if(scheduled)return;
-   scheduled=true;
-   requestAnimationFrame(()=>{
-     scheduled=false;
-     document.querySelectorAll(".qd-pixel-hero").forEach(renderPixel);
-   });
+  if(queued)return;queued=true;
+  requestAnimationFrame(()=>{queued=false;document.querySelectorAll(".qd-pixel-hero").forEach(convert)});
  }
- document.addEventListener("load",function(e){
-   if(e.target.matches?.(".qd-pixel-hero img[data-qdp-portrait]"))scan();
+ let tick=0,last=0;
+ function animate(time){
+  if(time-last>=frameMs){
+   last=time;tick=(tick+1)%6;
+   for(const item of active){
+    if(!item.el.isConnected){active.delete(item);continue}
+    if(!document.hidden&&item.el.getClientRects().length){
+     item.image.src=item.frames[reduce?.matches?0:tick];
+    }
+   }
+  }
+  requestAnimationFrame(animate);
+ }
+ requestAnimationFrame(animate);
+ document.addEventListener("load",e=>{
+  if(e.target.matches?.(".qd-pixel-hero img[data-qdp-portrait]"))scan();
  },true);
- const observer=new MutationObserver(scan);
- observer.observe(document.body,{subtree:true,childList:true});
+ new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});
  scan();
  window.QuestDayPixelArt=Object.freeze({refresh:scan});
 })();
