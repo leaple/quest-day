@@ -320,6 +320,16 @@
     return '<div class="ch-art qdp-'+status+'" data-qdp-id="'+safe(id)+'" data-qdp-stage="'+stage+'" style="--qd-aura:'+safe(aura)+'">'+svg+image+'</div>';
   }
 
+  // Reuse the same stage-aware character art in profile screens.
+  window.QuestDayPortrait = Object.freeze({
+    markup(id, stageOverride) {
+      const character=findCharacter(id);
+      if(!character)return "";
+      if(stageOverride===1 && window.QuestDayHeroArt?.has(character.id))
+        return window.QuestDayHeroArt.draw(character.id,1);
+      return portrait(character);
+    }
+  });
   function cardMarkup(character) {
     const isOwned=owned(character), unlocked=conditionMet(character),
       isEquipped=canonicalId(state.rpg.equipped)===character.id;
