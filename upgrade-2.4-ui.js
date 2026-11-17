@@ -455,6 +455,12 @@
       background-color:#292d43!important;color:#f4f2ff!important;
     }
 
+    html.qd24-dark #frFriends .fr-stats>div{background:#292d43!important;border:1px solid #41465e!important;color:#f4f2ff!important}
+    html.qd24-dark #frFriends .fr-stats strong{color:#f4f2ff!important;opacity:1!important}
+    html.qd24-dark #frFriends .fr-stats small{color:#bec4db!important;opacity:1!important}
+    html.qd24-dark #frFriends :is(.fr-name,.fr-field label){color:#f4f2ff!important}
+    html.qd24-dark #frFriends :is(.fr-muted,.fr-tiny){color:#b8bed4!important}
+    html.qd24-dark #frFriends :is(.fr-preview,.fr-note,.fr-badge){background:#292d43!important;color:#d6d7ed!important;border-color:#41465e!important}
     @media(max-width:350px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-hero-visual{flex-basis:100%;max-width:170px}.ch-hero-copy{flex-basis:100%}nav button{font-size:9px}}
     @media(max-width:390px){.cdx-grid,.ch-grid{gap:8px}.ch-hero-main{gap:9px;padding:12px}.ch-hero-visual{min-width:95px}}
     @media(max-width:430px){.qd24-setting-row{gap:8px}.qd24-setting-row select{max-width:130px}.stats{gap:7px}}
