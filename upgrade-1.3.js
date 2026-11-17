@@ -632,12 +632,12 @@
  style.textContent=[
  ".qd-pixel-hero{isolation:isolate;--qd-pixel-size:64px}",
  ".qd-pixel-hero.qd-pixel-ready>img:not(.qd-pixel-canvas),.qd-pixel-hero.qd-pixel-ready>svg{opacity:0!important}",
- ".qd-pixel-canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none;z-index:2;transform-origin:50% 80%;animation:qdPixelIdle 1.65s steps(5,end) infinite}",
- ".qd-pixel-hero[data-qdp-stage='2'] .qd-pixel-canvas{animation-duration:1.35s;filter:drop-shadow(0 0 5px #9b8cff88)}",
- ".qd-pixel-hero[data-qdp-stage='3'] .qd-pixel-canvas{animation-duration:1.1s;filter:drop-shadow(0 0 9px #a78bffbb)}",
- ".qd-pixel-hero[data-qdp-stage='3']:before{content:'';position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,#b39aff44,transparent 68%);animation:qdPixelAura 2.3s steps(8,end) infinite;pointer-events:none}",
- "@keyframes qdPixelIdle{0%,100%{transform:translateY(0) scale(1)}25%{transform:translateY(-2px) scale(1.015)}50%{transform:translateY(-4px) scale(1.025)}75%{transform:translateY(-2px) scale(1.015)}}",
- "@keyframes qdPixelAura{0%,100%{opacity:.35;transform:scale(.9)}50%{opacity:.9;transform:scale(1.08)}}",
+ ".qd-pixel-canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none;z-index:2;transform-origin:50% 90%;animation:qdPixelBreath 3.2s ease-in-out infinite}",
+ ".qd-pixel-hero[data-qdp-stage='2'] .qd-pixel-canvas{animation-duration:3s;filter:drop-shadow(0 0 5px #9b8cff88)}",
+ ".qd-pixel-hero[data-qdp-stage='3'] .qd-pixel-canvas{animation-duration:2.85s;filter:drop-shadow(0 0 9px #a78bffbb)}",
+ ".qd-pixel-hero[data-qdp-stage='3']:before{content:'';position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,#b39aff44,transparent 68%);animation:qdPixelAura 3.2s ease-in-out infinite;pointer-events:none}",
+ "@keyframes qdPixelBreath{0%,100%{transform:scaleX(1) scaleY(1)}50%{transform:scaleX(1.009) scaleY(1.012)}}",
+ "@keyframes qdPixelAura{0%,100%{opacity:.3;transform:scale(.97)}50%{opacity:.58;transform:scale(1.015)}}",
  "@media(prefers-reduced-motion:reduce){.qd-pixel-canvas,.qd-pixel-hero:before{animation:none!important}}"
  ].join("");
  document.head.appendChild(style);
