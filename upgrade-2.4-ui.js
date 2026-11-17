@@ -184,6 +184,31 @@
       border-radius:0!important;max-width:760px}
     @media(min-width:700px){nav{border-radius:20px 20px 0 0!important}}
 
+
+    /* Account and privacy settings are dynamically created by legacy modules. */
+    html.qd24-dark #settings .qd20-settings,
+    html.qd24-dark #settings .qd20-settings *,
+    html.qd24-dark #settings .qd20-cloud,
+    html.qd24-dark #settings .qd20-cloud-card,
+    html.qd24-dark #settings .qd19-panel,
+    html.qd24-dark #settings .qd19-card,
+    html.qd24-dark #settings .qd19-wrap,
+    html.qd24-dark #settings .qd20-settings ~ .card{
+      background-color:var(--qd-surface)!important;border-color:var(--line)!important;
+    }
+    html.qd24-dark #settings .qd20-settings strong,
+    html.qd24-dark #settings .qd20-settings h2,
+    html.qd24-dark #settings .qd20-settings h3,
+    html.qd24-dark #settings .qd19-panel strong{color:var(--ink)!important}
+    html.qd24-dark #settings .qd20-settings span,
+    html.qd24-dark #settings .qd20-settings p,
+    html.qd24-dark #settings .qd19-panel p{color:var(--muted)!important}
+    html.qd24-dark #settings .qd20-settings button,
+    html.qd24-dark #settings .qd19-panel button{background:var(--qd-soft)!important;color:var(--purple)!important}
+    html.qd24-dark #settings [style*="background:#fff"],
+    html.qd24-dark #settings [style*="background: #fff"]{background:var(--qd-surface)!important;color:var(--ink)!important}
+    html.qd24-dark #frFriends .rt16-warning{background:var(--qd-surface)!important;color:var(--muted)!important;border-color:var(--line)!important}
+
     @media(max-width:350px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-hero-visual{flex-basis:100%;max-width:170px}.ch-hero-copy{flex-basis:100%}nav button{font-size:9px}}
     @media(max-width:390px){.cdx-grid,.ch-grid{gap:8px}.ch-hero-main{gap:9px;padding:12px}.ch-hero-visual{min-width:95px}}
     @media(max-width:430px){.qd24-setting-row{gap:8px}.qd24-setting-row select{max-width:130px}.stats{gap:7px}}
