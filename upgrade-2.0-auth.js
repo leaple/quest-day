@@ -52,6 +52,27 @@
  ].join("");
  document.head.appendChild(css);
  css.textContent+=".qd20-social-divider{display:flex;align-items:center;justify-content:center;margin:20px 0 10px;font-size:12px;color:#d0c9ec}.qd20-social-list{display:grid;gap:8px}.qd20-btn.qd20-social{margin:0;background:#fff;color:#292841;border:1px solid #e4e0ef;font-weight:800}.qd20-btn.qd20-social:active{transform:scale(.99)}";
+ // Responsive authentication layout: short iPhones, landscape, keyboard and safe areas.
+ css.textContent += [
+  ".qd20-entry{width:100%;max-width:100%;height:100%;height:100dvh;min-height:0;overflow-x:hidden;overflow-y:auto;align-items:safe center;justify-content:center;padding:calc(14px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px))}",
+  ".qd20-shell{width:min(100%,440px);max-width:100%;margin:auto;min-width:0;padding:0 0 2px}",
+  ".qd20-card{width:100%;max-width:100%;padding:clamp(14px,4vw,22px);border-radius:22px;box-shadow:0 14px 45px #08071944}",
+  ".qd20-top{margin-bottom:clamp(8px,2vh,20px)}",
+  ".qd20-logo{width:clamp(52px,11vh,76px);height:clamp(52px,11vh,76px);font-size:clamp(26px,5vh,38px);margin:4px auto 12px}",
+  ".qd20-title{font-size:clamp(22px,6vw,30px);line-height:1.22;overflow-wrap:break-word;margin:0 0 8px}",
+  ".qd20-sub{font-size:clamp(12px,3.2vw,14px);line-height:1.55;margin:0 auto clamp(12px,3vh,24px);max-width:350px}",
+  ".qd20-field{margin:12px 0 6px;font-size:13px}",
+  ".qd20-input{min-height:48px;height:auto;font-size:16px;padding:12px 13px;border-radius:12px}",
+  ".qd20-btn{min-height:48px;margin:8px 0;font-size:clamp(12px,3.4vw,14px);padding:11px 12px;overflow-wrap:anywhere}",
+  ".qd20-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.qd20-row>.qd20-btn{width:100%;margin:8px 0}",
+  ".qd20-social-list{grid-template-columns:1fr;gap:8px}.qd20-social-divider{margin:16px 0 10px}",
+  ".qd20-notice,.qd20-error{overflow-wrap:anywhere;line-height:1.55}",
+  ".qd20-foot{margin:13px 6px 0;overflow-wrap:anywhere}",
+  "@media(max-height:690px){.qd20-entry{align-items:flex-start}.qd20-shell{margin:auto}.qd20-logo{width:48px;height:48px;font-size:25px;margin:0 auto 8px}.qd20-top{margin-bottom:8px}.qd20-sub{margin-bottom:12px}.qd20-card{padding:13px}.qd20-btn{min-height:44px;margin:6px 0}}",
+  "@media(orientation:landscape) and (max-height:500px){.qd20-entry{align-items:flex-start}.qd20-shell{width:min(100%,540px)}.qd20-logo{display:none}.qd20-title{font-size:22px}.qd20-sub{margin-bottom:10px}.qd20-card{padding:12px 16px}}",
+  "@media(max-width:330px){.qd20-row{grid-template-columns:1fr}.qd20-card{padding:12px}.qd20-btn{min-height:44px}}",
+  "@media(prefers-reduced-motion:reduce){.qd20-entry *{animation:none!important;transition:none!important}}"
+ ].join("");
  const note=document.createElement("div");
  note.className="qd20-settings";
  note.innerHTML='<div><strong>🛡️ 계정 및 로그인</strong><span>로그인 · 회원가입 · 게스트 계정 연결</span></div>'+

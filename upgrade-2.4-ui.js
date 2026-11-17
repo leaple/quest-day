@@ -312,6 +312,75 @@
     }
     html body{background:var(--bg)!important}
 
+
+    /* Unified dark tokens across independently styled legacy modules. */
+    html.qd24-dark{
+      --qd-card:#1b1e2c;--qd-raised:#262a3d;--qd-field:#141723;
+      --qd-text:#f3f2fc;--qd-secondary:#adb3cb;--qd-accent:#b5a8ff;
+    }
+    html.qd24-dark body :is(
+      .card,.stat,.quest,.empty,.dialog,.qd14-card,.qd19-box,.qd19-state,
+      .qd20-settings,.qd23-panel,.qd14-calendar,.qd14-day,.qd14-dialog,
+      .fr-panel,.fr-list-row,.fr-avatar,.s17-wrap,.s17-card,.s17-chat,
+      .s17-note,.s17-bubble,.ch-panel,.ch-card,.ch-dialog,.ch-growth-panel,
+      .ch-collection,.ch-collection-card,.cdx-controls,.cdx-toolbar,
+      .cdx-search,.cdx-stat,.cdx-summary-stat,.cdx-next,.cdx-next-card,
+      .cdx-ring-inner,.cdx-detail,.cdx-card,.cdx-detail-mask .cdx-detail
+    ){
+      background-color:var(--qd-card)!important;
+      color:var(--qd-text)!important;
+      border-color:var(--line)!important;
+    }
+    html.qd24-dark body :is(
+      .card,.qd19-box,.qd20-settings,.qd23-panel,.qd14-card,.fr-panel,
+      .s17-wrap,.ch-panel,.ch-card,.cdx-controls,.cdx-next,.cdx-next-card
+    ) :is(h1,h2,h3,h4,h5,h6,strong,b){
+      color:var(--qd-text)!important;
+    }
+    html.qd24-dark body :is(
+      .card,.qd19-box,.qd20-settings,.qd23-panel,.qd14-card,.fr-panel,
+      .s17-wrap,.ch-panel,.ch-card,.cdx-controls,.cdx-next,.cdx-next-card
+    ) :is(p,small,.note,.muted,.qd23-sub,.qd23-warning,.s17-muted,.s17-caption,.fr-muted){
+      color:var(--qd-secondary)!important;
+    }
+    html.qd24-dark body :is(
+      .filter,.check,.qd19-state,.qd14-day,.qd14-count,.qd14-log-icon,
+      .s17-pill,.s17-tab,.s17-progress,.s17-note,.s17-bubble.mine,
+      .cdx-ring-inner,.cdx-summary-stat,.cdx-stat,.cdx-next-card,
+      .ch-stat,.ch-collection-card,.qd20-settings button
+    ){
+      background-color:var(--qd-raised)!important;
+      color:var(--qd-text)!important;
+      border-color:var(--line)!important;
+    }
+    html.qd24-dark body :is(
+      input:not([type="checkbox"]):not([type="radio"]),
+      select,textarea,.s17-input,.s17-select,.s17-textarea,.cdx-search input,
+      .qd20-input,.qd14-dialog input,.qd14-dialog select
+    ){
+      background-color:var(--qd-field)!important;
+      color:var(--qd-text)!important;
+      border-color:#444961!important;
+      caret-color:var(--qd-accent);
+    }
+    html.qd24-dark body :is(input,textarea)::placeholder{color:#9da5c1!important;opacity:1}
+    html.qd24-dark body :is(.card,.qd19-box,.qd23-panel,.qd14-card,.cdx-next-card) [style*="background: white"],
+    html.qd24-dark body :is(.card,.qd19-box,.qd23-panel,.qd14-card,.cdx-next-card) [style*="background:#fff"],
+    html.qd24-dark body :is(.card,.qd19-box,.qd23-panel,.qd14-card,.cdx-next-card) [style*="background: #fff"]{
+      background-color:var(--qd-raised)!important;color:var(--qd-text)!important;
+    }
+    html.qd24-dark body .cdx-card :is(h3,p,small,strong),
+    html.qd24-dark body .ch-card :is(h3,p,small,strong){color:var(--qd-text)!important}
+    html.qd24-dark body :is(.cdx-card.locked,.cdx-card[aria-disabled="true"]) :is(h3,p,small,strong){color:#d0d2e4!important}
+    html.qd24-dark body .qd20-entry .qd20-card{background:rgba(27,30,44,.95)!important}
+    html.qd24-dark body .qd20-entry .qd20-btn.qd20-social{
+      background:#292d43!important;color:#f3f2fc!important;border-color:#4a4e69!important;
+    }
+    html.qd24-dark body .qd20-entry .qd20-field,
+    html.qd24-dark body .qd20-entry .qd20-title{color:#fff!important}
+    html.qd24-dark body nav{bottom:0!important;margin-bottom:0!important;
+      padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))!important}
+
     @media(max-width:350px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-hero-visual{flex-basis:100%;max-width:170px}.ch-hero-copy{flex-basis:100%}nav button{font-size:9px}}
     @media(max-width:390px){.cdx-grid,.ch-grid{gap:8px}.ch-hero-main{gap:9px;padding:12px}.ch-hero-visual{min-width:95px}}
     @media(max-width:430px){.qd24-setting-row{gap:8px}.qd24-setting-row select{max-width:130px}.stats{gap:7px}}
