@@ -636,6 +636,22 @@
  "@media(prefers-reduced-motion:reduce){.qd-pixel-hero .qd-pixel-frame{animation:none!important}}"
  ].join("");
  document.head.appendChild(style);
+ // Independently authored sprites take priority over procedural fallback.
+ // A sprite is six separate transparent PNG frames per stage, stored under
+ // art/pixel/<character-id>/stage<1-3>/idle-<0-5>.png.
+ const authoredCache=new Map();
+ function authoredFrames(id,stage){
+  const key=id+":"+stage;
+  if(authoredCache.has(key))return authoredCache.get(key);
+  const promise=Promise.all(Array.from({length:6},(_,i)=>new Promise((resolve,reject)=>{
+   const img=new Image();
+   img.onload=()=>resolve(img.src);
+   img.onerror=reject;
+   img.src="./art/pixel/"+encodeURIComponent(id)+"/stage"+stage+"/idle-"+i+".png";
+  }))).catch(()=>null);
+  authoredCache.set(key,promise);
+  return promise;
+ }
  const frameCache=new Map(),pending=new WeakSet(),active=new Set();
  const frameSteps=[0,1,2,2,1,0],frameMs=340;
  const reduce=window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -684,6 +700,15 @@
   const key=id+":"+stage+":"+(svg?"svg":source.getAttribute("src")||"img");
   if(frameCache.has(key)){attach(el,frameCache.get(key));return}
   pending.add(el);
+  // Load real artist-made pixel frames first; preserve the existing art when
+  // that character/stage has not been authored yet.
+  authoredFrames(id,stage).then(frames=>{
+   if(!el.isConnected){pending.delete(el);return}
+   if(frames){attach(el,frames);pending.delete(el);return}
+   convertFallback(el,source,svg,key);
+  });
+ }
+ function convertFallback(el,source,svg,key){
   const img=new Image();let url=null;
   const cleanup=()=>{if(url)URL.revokeObjectURL(url);pending.delete(el)};
   img.onload=()=>{

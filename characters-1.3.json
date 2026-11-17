@@ -9,9 +9,9 @@
     "realMoneyPurchases": false
   },
   "artDirection": {
-    "title": "프리미엄 치비 판타지 — 일상을 함께하는 작은 수호자들",
+    "title": "QUEST DAY — 고퀄리티 픽셀 판타지 RPG",
     "proportions": "머리:몸 약 1:1.2, 큰 표정, 각 캐릭터별 독특한 실루엣",
-    "presentation": "정면 3/4 뷰, 흰색 또는 투명 배경, 과장되지 않은 부드러운 음영, 카드형 도감",
+    "presentation": "투명 배경의 독립 3/4뷰 픽셀 캐릭터, 선명한 실루엣과 제한된 팔레트, 캐릭터별 무기와 의상",
     "originality": "기존 게임의 캐릭터나 의상 디자인을 복제하지 않은 독자적 아트",
     "rarityAccents": {
       "common": "#83C8AA",
@@ -19,7 +19,10 @@
       "epic": "#B18AF9",
       "legendary": "#E7C264"
     },
-    "evolving": "1단계 기본 → 2단계 장식/소품 추가 → 3단계 고유 오라 및 배경 연출"
+    "evolving": "24종 × 3단계: 외형, 무기, 오라를 각 단계별 독립 제작",
+    "animation": "캐릭터별 진화 단계마다 6장의 별도 PNG idle 프레임을 우선 사용하며 픽셀 자체가 변한다. 미제작 캐릭터는 기존 자동 변환으로 표시한다.",
+    "spritePath": "art/pixel/{id}/stage{1|2|3}/idle-{0..5}.png",
+    "spriteSize": "64×64 transparent PNG, consistent alignment and anchored feet"
   },
   "playerStorage": {
     "existingKey": "quest-day-mvp-v1",
