@@ -1,5 +1,5 @@
 /* QUEST DAY 1.1 — network first, offline fallback */
-const CACHE_NAME = "quest-day-cache-v66";
+const CACHE_NAME = "quest-day-cache-v67";
 const FILES = [
   "./",
   "./index.html",
@@ -11,7 +11,7 @@ const FILES = [
   "./upgrade-1.1.js",
   "./upgrade-1.2.js",
   "./hero-portraits.js?v=20261115-24",
-  "./upgrade-1.3.js?v=20261120-26",
+  "./upgrade-1.3.js?v=20261120-27",
   "./codex-2.2.js?v=20261115-3",
   "./upgrade-1.4.js?v=20261115-6",
   "./upgrade-1.5-friends.js",
@@ -97,6 +97,22 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   if (request.method !== "GET" ||
       new URL(request.url).origin !== self.location.origin) return;
+
+  // The authored frames can be normalized without changing their filename.
+  // Fetch them fresh online, but retain a cached copy for offline play.
+  if (url.pathname.includes("/art/pixel/") && url.pathname.endsWith(".png")) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+      try {
+        const response = await fetch(request);
+        if (response.ok) await cache.put(request, response.clone());
+        return response;
+      } catch {
+        return (await cache.match(request)) || Response.error();
+      }
+    })());
+    return;
+  }
 
   // Character portraits are immutable within a version: read them from cache first.
   // The ?v= query changes when artwork is replaced, so updates remain fresh.
