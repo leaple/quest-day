@@ -326,7 +326,7 @@
       const character=findCharacter(id);
       if(!character)return "";
       if(stageOverride===1 && window.QuestDayHeroArt?.has(character.id))
-        return window.QuestDayHeroArt.draw(character.id,1);
+        return '<div class="ch-art qdh-hero qd-pixel-hero" data-qdp-id="'+safe(character.id)+'" data-qdp-stage="1">'+window.QuestDayHeroArt.draw(character.id,1)+'</div>';
       return portrait(character);
     }
   });
@@ -631,6 +631,7 @@
  ".qd-pixel-hero{isolation:isolate}",
  ".qd-pixel-hero.qd-pixel-ready>img:not(.qd-pixel-frame),.qd-pixel-hero.qd-pixel-ready>svg{opacity:0!important}",
  ".qd-pixel-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none;z-index:2}",
+ ".qd-pixel-frame.qd-authored-sprite{image-rendering:auto;transform:none;filter:drop-shadow(0 7px 9px #48418917)}",
  ".qd-pixel-hero[data-qdp-stage='2'] .qd-pixel-frame{filter:drop-shadow(0 0 5px #9b8cff88)}",
  ".qd-pixel-hero[data-qdp-stage='3'] .qd-pixel-frame{filter:drop-shadow(0 0 8px #a78bff99)}",
  "@media(prefers-reduced-motion:reduce){.qd-pixel-hero .qd-pixel-frame{animation:none!important}}"
@@ -683,9 +684,9 @@
   }
   return frames;
  }
- function attach(el,frames){
+ function attach(el,frames,authored=false){
   if(!el.isConnected||el.querySelector(".qd-pixel-frame"))return;
-  const image=document.createElement("img");image.className="qd-pixel-frame";
+  const image=document.createElement("img");image.className="qd-pixel-frame"+(authored?" qd-authored-sprite":"");
   image.alt="";image.setAttribute("aria-hidden","true");image.src=frames[0];
   el.appendChild(image);el.classList.add("qd-pixel-ready");
   active.add({el,image,frames});
@@ -704,7 +705,7 @@
   // that character/stage has not been authored yet.
   authoredFrames(id,stage).then(frames=>{
    if(!el.isConnected){pending.delete(el);return}
-   if(frames){attach(el,frames);pending.delete(el);return}
+   if(frames){attach(el,frames,true);pending.delete(el);return}
    convertFallback(el,source,svg,key);
   });
  }
