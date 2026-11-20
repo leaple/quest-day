@@ -105,7 +105,7 @@ self.addEventListener("fetch", event => {
       const cache = await caches.open(CACHE_NAME);
       try {
         const response = await fetch(request);
-        if (response.ok) await cache.put(request, response.clone());
+        // A full 432-frame pack can exceed Safari's CacheStorage quota.\n        // Never turn a successful network response into a failed image load.\n        if (response.ok) await cache.put(request, response.clone()).catch(() => {});
         return response;
       } catch {
         return (await cache.match(request)) || Response.error();
