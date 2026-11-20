@@ -1,0 +1,39 @@
+name: Import QUEST DAY character sprites
+on:
+  push:
+    branches: [main]
+    paths:
+      - quest-day-all-24-sprites.zip
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: quest-day-sprite-import
+  cancel-in-progress: false
+
+jobs:
+  import-sprites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Validate and import all 432 PNG frames
+        run: python3 scripts/import-pixel-sprites.py
+      - name: Commit extracted sprites and remove import archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add art/pixel
+          git rm -f -- quest-day-all-24-sprites.zip
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+          else
+            git commit -m 'art: install 24 characters with 432 animated PNG frames'
+            git push origin HEAD:main
+          fi
