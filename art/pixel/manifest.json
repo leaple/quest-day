@@ -29,5 +29,8 @@
   ],
   "framesPerStage": 6,
   "stagesPerCharacter": 3,
-  "totalFrames": 432
+  "totalFrames": 432,
+  "layoutVersion": 2,
+  "normalizedTo": "knight",
+  "normalizationRules": "fixed 512px canvas; same scale per stage; head centered; feet anchored; phase-aligned 6 frame idle"
 }
