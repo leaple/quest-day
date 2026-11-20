@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "sha256": "807d5919eecc782ab4e68c6c019cd09e9cfcf150a62b4a9376b1c029fa5b6354",
+  "characterIds": [
+    "sprout",
+    "paper_messenger",
+    "dawn_runner",
+    "sunset_scribe",
+    "forest",
+    "clockkeeper",
+    "star_scribe",
+    "ninja",
+    "mage",
+    "knight",
+    "dream_whale",
+    "time_guardian",
+    "hero_aren",
+    "hero_lyra",
+    "hero_kyle",
+    "hero_sera",
+    "hero_zed",
+    "hero_elin",
+    "hero_rohan",
+    "hero_eve",
+    "hero_baruk",
+    "hero_nia",
+    "hero_sion",
+    "hero_lumi"
+  ],
+  "framesPerStage": 6,
+  "stagesPerCharacter": 3,
+  "totalFrames": 432
+}
