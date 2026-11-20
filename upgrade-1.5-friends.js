@@ -4,7 +4,7 @@
 (function(){
   "use strict";
   const TAG="QD-FRIEND", LIMIT=100;
-  const characters=new Set(["starter","sprout","paper_messenger","dawn_runner","sunset_scribe","forest","clockkeeper","star_scribe","ninja","mage","knight","dream_whale","time_guardian","astronaut"]);
+  const characters=new Set(["starter","sprout","paper_messenger","dawn_runner","sunset_scribe","forest","clockkeeper","star_scribe","ninja","mage","knight","dream_whale","time_guardian","astronaut","hero_aren","hero_lyra","hero_kyle","hero_sera","hero_zed","hero_elin","hero_rohan","hero_eve","hero_baruk","hero_nia","hero_sion","hero_lumi"]);
   const css=document.createElement("style");
   css.textContent=[
     ".fr-page{padding-top:4px}.fr-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0}.fr-title h2{margin:0;font-size:22px}",
