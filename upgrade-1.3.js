@@ -630,6 +630,8 @@
  style.textContent=[
  ".qd-pixel-hero{isolation:isolate}",
  ".qd-pixel-hero.qd-pixel-ready>img:not(.qd-pixel-frame),.qd-pixel-hero.qd-pixel-ready>svg{opacity:0!important}",
+ ".qd-pixel-hero.qd-pixel-ready>svg{display:none!important}",
+ ".qd-pixel-hero.qd-pixel-ready>img.qd-pixel-frame{opacity:1!important;visibility:visible!important}",
  ".qd-pixel-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none;z-index:2}",
  ".qd-pixel-frame.qd-authored-sprite{image-rendering:auto;transform:none;filter:drop-shadow(0 7px 9px #48418917)}",
  ".qd-pixel-hero[data-qdp-stage='2'] .qd-pixel-frame{filter:drop-shadow(0 0 5px #9b8cff88)}",
@@ -648,7 +650,7 @@
    const img=new Image();
    img.onload=()=>resolve(img.src);
    img.onerror=reject;
-   img.src="./art/pixel/"+encodeURIComponent(id)+"/stage"+stage+"/idle-"+i+".png";
+   img.src="./art/pixel/"+encodeURIComponent(id)+"/stage"+stage+"/idle-"+i+".png?v=20261120-aligned";
   }))).catch(()=>null);
   authoredCache.set(key,promise);
   return promise;

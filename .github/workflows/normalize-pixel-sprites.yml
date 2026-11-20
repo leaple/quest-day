@@ -1,0 +1,44 @@
+name: Normalize QUEST DAY sprite alignment
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/normalize-pixel-sprites.py
+      - .github/workflows/normalize-pixel-sprites.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: quest-day-normalize-sprites
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image processing dependencies
+        run: python3 -m pip install 'Pillow>=11,<13' 'numpy>=2,<3' 'opencv-python-headless>=4.10,<5'
+      - name: Align sprites against approved Moon Knight reference
+        run: python3 scripts/normalize-pixel-sprites.py
+      - name: Commit normalized sprites
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add art/pixel
+          if git diff --cached --quiet; then
+            echo "No sprite changes"
+          else
+            git commit -m "art: align 414 sprite frames to moon knight proportions"
+            git push origin HEAD:main
+          fi
