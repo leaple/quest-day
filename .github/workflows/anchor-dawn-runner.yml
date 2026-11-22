@@ -1,0 +1,44 @@
+name: Repair Dawn Runner sprite positions
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/anchor-dawn-runner.py
+      - .github/workflows/anchor-dawn-runner.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: quest-day-dawn-runner-anchor
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PNG processing dependencies
+        run: python3 -m pip install 'Pillow>=11,<13' 'numpy>=2,<3' 'opencv-python-headless>=4.10,<5'
+      - name: Anchor the 18 Dawn Runner frames
+        run: python3 scripts/anchor-dawn-runner.py
+      - name: Commit frame repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add art/pixel/dawn_runner art/pixel/manifest.json
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+          else
+            git commit -m 'art: stabilize Dawn Runner idle frames without body movement'
+            git push origin HEAD:main
+          fi
