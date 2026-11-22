@@ -495,13 +495,13 @@
     return level;
   }
   function evolutionArtwork(character, form) {
-    const id=character.id;
-    if(character.collection==="vanguard" && window.QuestDayHeroArt?.has(id)) {
-      return window.QuestDayHeroArt.draw(id,form);
-    }
-    // Original guardians retain their own existing stage artwork.
-    const url="./art/evolution/"+encodeURIComponent(id)+"-stage"+form+".svg?v=35";
-    return '<img src="'+url+'" alt="'+escapeHtml(character.name)+' 진화 '+form+'단계" loading="eager" decoding="async">';
+    const id=encodeURIComponent(character.id);
+    const stage=Math.max(1,Math.min(3,Number(form)||1));
+    const src="./art/pixel/"+id+"/stage"+stage+"/idle-0.png?v=20261122-3";
+    const oldSrc=character.collection==="vanguard"
+      ? "./art/painted/individual/"+id+"-stage"+stage+((character.id==="hero_elin"&&stage===1)?".svg":".webp")+"?v=20261115-24"
+      : "./art/evolution/"+id+"-stage"+stage+".svg?v=35";
+    return '<img src="'+src+'" data-qd14-fallback="'+oldSrc+'" alt="'+escapeHtml(character.name)+' 진화 '+stage+'단계" loading="eager" decoding="async">';
   }
   function showEvolution(character,level,previous) {
     const from=Math.max(1,Math.min(level-1,Number(previous)||level-1));
@@ -524,8 +524,8 @@
     // Existing assets always have a safe PNG fallback on the main game screens.
     evoDialog.querySelectorAll(".qd14-evo-figure img").forEach(image=>{
       image.addEventListener("error",function(){
-        const backup="./art/"+encodeURIComponent(character.id)+".png?v=4";
-        if(!image.dataset.fallback){image.dataset.fallback="1";image.src=backup;}
+        const backup=image.dataset.qd14Fallback;
+        if(!image.dataset.fallback && backup){image.dataset.fallback="1";image.src=backup;}
       });
     });
     evoDialog.classList.add("open");
