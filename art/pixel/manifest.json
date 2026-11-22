@@ -32,5 +32,7 @@
   "totalFrames": 432,
   "layoutVersion": 2,
   "normalizedTo": "knight",
-  "normalizationRules": "fixed 512px canvas; same scale per stage; head centered; feet anchored; phase-aligned 6 frame idle"
+  "normalizationRules": "fixed 512px canvas; same scale per stage; head centered; feet anchored; phase-aligned 6 frame idle",
+  "dawnRunnerAnchorVersion": 3,
+  "dawnRunnerAnchor": "head x=256, stage baselines=383/389/397, fixed body; all 18 frames"
 }
