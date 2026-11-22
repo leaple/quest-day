@@ -37,13 +37,12 @@
     function key(c){const s=status(c);return s==="obtainable"?0:s==="owned"?1:s==="affordable"?2:3;}
     return key(a)-key(b)||(ranks[b.rarity]-ranks[a.rarity])||a.name.localeCompare(b.name,"ko");
   }
+  // All 24 characters now use the same installed stage-specific PNG sprite.
+  // Static previews intentionally show idle frame 0; cards animate via context.portrait.
+  const CODEX_SPRITE_VERSION="20261122-3";
   function artUrl(c,n){
-    const id=encodeURIComponent(c.id);
-    if(c.collection==="vanguard"){
-      const ext=c.id==="hero_elin"&&n===1?".svg":".webp";
-      return "./art/painted/individual/"+id+"-stage"+n+ext+"?v=20261115-24";
-    }
-    return "./art/evolution/"+id+"-stage"+n+".svg?v=35";
+    const id=encodeURIComponent(c.id),form=Math.max(1,Math.min(3,Number(n)||1));
+    return "./art/pixel/"+id+"/stage"+form+"/idle-0.png?v="+CODEX_SPRITE_VERSION;
   }
   function milestoneMessage(count){
     const next=milestone.find(n=>n>count);
@@ -168,13 +167,13 @@
       '<h3 class="cdx-detail-heading">'+esc(c.name)+(c.role?' · '+esc(c.role):'')+'</h3>'+
       '<p class="cdx-detail-sub">'+esc(c.tagline||"")+'</p>'+
       '<div class="cdx-detail-image"><img src="'+artUrl(c,stageNumber)+'" alt="'+esc(c.name)+' 진화 '+stageNumber+'단계 일러스트" loading="eager" decoding="async"></div>'+
-      '<div class="cdx-compare-label"><span>진화 단계별 원화 비교</span><span>그림을 눌러 크게 보기</span></div>'+
-      '<div class="cdx-stage-tabs" role="group" aria-label="진화 단계 원화 비교">'+[1,2,3].map(n=>'<button type="button" class="cdx-stage-tab" data-cdx-stage="'+n+'" aria-label="'+esc(c.name)+' '+n+'단계 원화 확대" aria-pressed="'+(n===stageNumber)+'">'+
+      '<div class="cdx-compare-label"><span>진화 단계별 픽셀아트 비교</span><span>그림을 눌러 크게 보기</span></div>'+
+      '<div class="cdx-stage-tabs" role="group" aria-label="진화 단계 원화 비교">'+[1,2,3].map(n=>'<button type="button" class="cdx-stage-tab" data-cdx-stage="'+n+'" aria-label="'+esc(c.name)+' '+n+'단계 스프라이트 확대" aria-pressed="'+(n===stageNumber)+'">'+
         '<span class="cdx-stage-thumb"><img src="'+artUrl(c,n)+'" alt="" loading="lazy" decoding="async"></span><span class="cdx-stage-title">'+n+'단계</span><span>'+(!owned?"미리보기":n<=currentStage?"달성":"미달성")+'</span></button>').join("")+'</div>'+
       '<p class="cdx-detail-status">'+(owned?"✓ 보유 중 · 현재 "+currentStage+"/3단계":"🔒 미보유 · "+(unlocked?"획득 조건 달성":"해금 진행 중"))+' · '+stageText+'</p>'+
       '<section class="cdx-detail-progress"><h4>'+progressTitle+'</h4><p>'+(!owned?"조건을 충족하면 획득할 수 있어요.": "퀘스트 성과가 쌓이면 자동으로 진화해요.")+'</p>'+progressBody+'</section>'+
       '<button type="button" class="cdx-detail-action" data-cdx-action="'+esc(c.id)+'"'+(disabled?' disabled':'')+'>'+esc(buttonText)+'</button>'+
-      '<span class="cdx-detail-secondary">이 화면은 실제 보유 기록을 변경하지 않는 원화 미리보기를 제공합니다.</span></div>';
+      '<span class="cdx-detail-secondary">이 화면은 실제 보유 기록을 변경하지 않는 스프라이트 미리보기를 제공합니다.</span></div>';
   }
   function closeDetail(){const mask=document.getElementById("cdxDetailMask");if(mask)mask.classList.remove("open");document.body.style.overflow="";if(lastFocus&&lastFocus.isConnected)lastFocus.focus();}
   let lastFocus=null;
