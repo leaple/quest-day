@@ -650,7 +650,7 @@
    const img=new Image();
    img.onload=()=>resolve(img.src);
    img.onerror=reject;
-   img.src="./art/pixel/"+encodeURIComponent(id)+"/stage"+stage+"/idle-"+i+".png?v=20261120-aligned";
+   img.src="./art/pixel/"+encodeURIComponent(id)+"/stage"+stage+"/idle-"+i+".png?v=20261122-3";
   }))).catch(()=>null);
   authoredCache.set(key,promise);
   return promise;
